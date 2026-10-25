@@ -9,9 +9,9 @@ export default function Home() {
         <div aria-hidden="true" className="pointer-events-none absolute -right-24 -top-28 h-80 w-80 rounded-full bg-[#e8b4c5]/40 blur-3xl" />
         <div aria-hidden="true" className="pointer-events-none absolute -left-32 top-[26rem] h-72 w-72 rounded-full bg-[#d8c2df]/50 blur-3xl" />
         <header className="relative mx-auto flex max-w-7xl items-center justify-between px-5 py-5 sm:px-8 lg:px-12">
-          <Link href="/" aria-label="ELUDA home" className="flex items-center gap-3">
-            <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#4a2148] text-lg font-semibold text-[#f9d9b4] shadow-lg shadow-[#4a2148]/15">e</span>
-            <span className="text-xl font-semibold tracking-[0.22em]">ELUDA</span>
+          <Link href="/" aria-label="Eluda home" className="flex items-center gap-3">
+            <img src="https://raw.githubusercontent.com/sammiensubuga/Eluda/main/frontend/eluda_logo.png" alt="Eluda logo" className="h-11 w-11 rounded-xl object-contain" />
+            <span className="text-xl font-semibold tracking-[0.08em]">Eluda</span>
           </Link>
           <Link href="/login" className="rounded-full border border-[#4a2148]/15 px-4 py-2.5 text-sm font-semibold transition hover:border-[#4a2148]/40 hover:bg-white/70">
             Log in
@@ -60,7 +60,7 @@ export default function Home() {
                 </div>
                 <div className="relative mt-8 flex items-center justify-between border-t border-white/25 pt-5 text-xs text-white/80">
                   <span>Made for genuine connection</span>
-                  <span className="tracking-[0.2em]">ELUDA</span>
+                  <span className="tracking-[0.2em]">Eluda</span>
                 </div>
               </div>
             </div>
@@ -92,7 +92,7 @@ export default function Home() {
         </div>
       </section>
       <footer className="mx-auto flex max-w-7xl flex-col gap-3 px-5 py-6 text-xs text-[#8b7988] sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-12">
-        <span>© 2026 ELUDA</span>
+        <span>© 2026 Eluda</span>
         <span>For adults 18+ · Built around choice, respect, and privacy</span>
       </footer>
     </main>
