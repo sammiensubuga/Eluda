@@ -3,36 +3,61 @@
 **Status:** Baseline requirements; implementation audit pending
 
 ## Identity and access
-- Enforce permissions server-side for every private resource.
-- Users may access only data and conversations they are authorised to see.
+- Enforce authentication and authorization server-side for every private resource and state-changing action.
+- Users may access only data and conversations they are authorised to see; never trust client-supplied user IDs, roles, pass status or ownership.
 - Apply least privilege to staff, moderators and automated services.
-- Protect session lifecycle, password recovery and account suspension flows.
+- Protect session lifecycle, password recovery, account suspension and account deletion flows.
+- Require server-side checks for active chat-pass entitlement whenever a user attempts to read pass-gated messages. A client-side flag or previously cached entitlement is not sufficient.
+
+## Message privacy and pass-gated access
+- When a male user has no active pass, do not return locked message bodies or other locked message content in HTML, rendered page data, API responses, hydration state, caches or any client-accessible payload.
+- The locked-message state may show only the approved notice: `[Name] sent you a message. Upgrade to VIP to read it.` Do not expose the message body through previews, notifications, metadata, logs delivered to clients or alternate endpoints.
+- Check pass validity and the requesting user's conversation permissions on the server before returning message content; handle expiry and concurrent requests consistently.
+- Once a message is authorised to be read, any WhatsApp number contained in it must remain hidden until that same message is unlocked. Do not expose the number through separate fields, previews or APIs before authorization.
+- Enforce the approved free preset-icebreaker limit of up to 15 per day for male users server-side. Do not rely on client counters; prevent easy bypass by parallel requests, retries or account/session manipulation.
+- Women may send unrestricted custom messages under the current product rules; do not impose a preset-icebreaker-only restriction on them.
+- Do not assume how previously viewed messages behave after a pass expires until the product owner approves that rule. The implementation must follow the documented decision once resolved.
 
 ## Input and abuse controls
-- Validate all client-supplied data server-side.
-- Apply appropriate rate limits and abuse detection to authentication, likes, messages and reports.
-- Protect against injection, cross-site scripting, cross-site request forgery where relevant, insecure direct object references and mass assignment.
-- Safely validate uploaded photos and restrict file type, size and access.
+- Validate all client-supplied data server-side, including profile fields, availability, casual rates, likes, messages, reports and account settings.
+- Apply appropriate rate limits and abuse detection to authentication, likes, messages, reports, contact-sharing and other abuse-prone actions.
+- Protect against injection, cross-site scripting, cross-site request forgery where relevant, insecure direct object references, mass assignment and unsafe redirects.
+- Safely validate uploaded photos and restrict file type, size, storage access and processing.
+- Enforce product rules on the server, including minimum profile-photo requirements and required Short Time and/or Overnight rate fields for published Casual / Hookups profiles.
 
 ## Sensitive data
 - Keep secrets out of source control and client-side bundles.
-- Minimise logs containing personal or message content.
-- Protect contact details and verification records with strict access controls.
+- Minimise logs containing personal, contact, verification or message content; restrict and protect any necessary audit records.
+- Protect contact details and verification records with strict access controls. Verification status must not be represented as a guarantee of trustworthiness.
 - Use secure transport and appropriate encryption for stored data based on risk and provider capabilities.
+- Do not reveal phone numbers or other contact information before the relevant explicit consent and approved sharing flow.
+- Define and document account-deletion, retention, backup and moderation-record handling before launch; do not promise immediate erasure of all backups unless the actual retention process supports that claim.
+
+## Blocking, reporting and moderation
+- Reporting, blocking and unmatching are intended to remain free; do not put them behind a paid pass.
+- Enforce block restrictions server-side across the interactions covered by the approved product rules, not only by hiding UI controls.
+- Restrict moderator access to the minimum data needed for a case, and audit privileged access and security-relevant moderation actions where appropriate.
+- Provide safeguards against report spam, retaliation and unauthorised access to reporter identity.
 
 ## Operational security
-- Separate development, preview and production credentials.
+- Separate development, preview and production credentials; do not expose production secrets to untrusted preview deployments.
 - Define backup, restoration, incident response and credential rotation procedures.
 - Review dependencies and security advisories.
-- Audit privileged moderation access and security-relevant changes where appropriate.
+- Apply secure configuration and security headers appropriate to the chosen stack; verify access-control and cache behaviour for private responses.
+- Confirm the actual architecture, identity provider, database, file storage and deployment configuration before treating any specific control as implemented.
 
 ## Required review cases
-- A user cannot retrieve another user's private contact details.
+- A user cannot retrieve another user's private contact details or private profile data.
 - A non-participant cannot read a conversation.
+- A user without an active qualifying pass cannot retrieve locked message bodies or embedded contact details through any endpoint or client payload.
+- Pass expiry is enforced by the server, including on subsequent reads and concurrent requests.
 - A blocked user cannot continue prohibited interactions as defined by product rules.
-- Contact-sharing cannot be triggered without explicit consent.
+- Contact-sharing cannot be triggered or revealed without explicit consent.
 - Suspended/deleted accounts behave according to approved policy.
-- Rate limits and abuse controls resist automated misuse.
+- The daily free preset-icebreaker limit cannot be bypassed through parallel requests or direct API calls.
+- Upload validation, rate limits and abuse controls resist automated misuse.
+- Private responses are not improperly exposed through shared caches, logs or analytics.
+- Account deletion and retention behaviour matches the approved policy and applicable legal review.
 
 ## Status
-Requirements only. Do not mark controls implemented or tested without code inspection and test evidence.
+Requirements only. Do not mark controls implemented or tested without code inspection and test evidence. These requirements do not establish that any feature or control is currently implemented.
