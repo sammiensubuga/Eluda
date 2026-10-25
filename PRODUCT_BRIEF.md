@@ -1,15 +1,15 @@
 # ELUDA Product Brief
 
-**Document status:** Working product brief — owner decisions recorded; remaining items explicitly marked open  
+**Document status:** Working product brief — prior product decisions restored; remaining items marked open  
 **Last updated:** 2026-10-25  
 **Product:** ELUDA  
 **Repository:** https://github.com/sammiensubuga/Eluda
 
 ## 1. Summary
 
-ELUDA is a privacy-first dating platform for adults across Uganda. Its mission is to help adults discover meaningful connections and communicate at their own pace. Users can choose their relationship intentions rather than being forced into a single assumed dating goal.
+ELUDA is a privacy-first dating platform for adults across Uganda. Its mission is to help adults discover meaningful connections and communicate at their own pace. Users choose their relationship intentions.
 
-ELUDA uses a freemium model with time-limited paid passes. The agreed working price matrix and feature boundaries are recorded below. These are product decisions, not claims that payments or these features are implemented.
+The selected monetisation direction is chat-focused: everyone can browse profiles and view all profile photos, while a time-limited paid pass unlocks reading replies, sending custom messages and ongoing chat. Paid access must not be used to restrict profile photos or create VIP/VVIP profile tiers.
 
 ## 2. Mission and product principles
 
@@ -18,10 +18,11 @@ ELUDA uses a freemium model with time-limited paid passes. The agreed working pr
 - Adults only (18+).
 - Privacy, informed consent and safety are core product requirements.
 - Mobile-first responsive web experience, supporting desktop browsers.
-- Users choose their relationship intentions; the precise option set and discovery rules must be defined in the UX specification.
+- Users choose their relationship intentions; the precise options and discovery rules belong in the UX specification.
 - Build a distinctive ELUDA identity rather than copying another dating service.
 - Clearly distinguish planned, implemented and tested capabilities.
 - Verification must not be presented as a guarantee of safety or trustworthiness.
+- Monetisation should focus on chat access, not restricting access to people's profiles or photos.
 
 ## 3. Target users
 
@@ -35,18 +36,19 @@ The planned experience includes:
 1. Welcome, registration, login and account recovery.
 2. Profile creation and editing.
 3. Profile verification with honest explanation of its limitations.
-4. Discovery, profile details, likes and mutual matches.
-5. Relationship-intent selection and discovery filters.
-6. Daily Twin Picks: mutual recommendations, with plan-based daily allowances.
-7. Icebreakers and private conversations, subject to the messaging access model below.
-8. Notifications and profile-view/like visibility where the plan permits.
-9. Contact-sharing consent, privacy settings, reporting, blocking, unmatching and account deletion.
+4. Discovery, full profile details and all profile photos.
+5. Likes and mutual matches.
+6. User-selected relationship intentions and relevant discovery controls.
+7. Daily Picks: a small set of approximately 3–5 recommended profiles shown within Discover. This is a recommendation feature, not a separate game or paid “Twin Picks” entitlement.
+8. Icebreakers and private conversations, subject to the chat-access model below.
+9. Notifications and privacy/safety controls.
+10. Explicit consent before sharing personal contact details, reporting, blocking, unmatching and account deletion.
 
 These are planned capabilities. Their implementation status must be checked in the repository and must not be inferred from this brief.
 
 ## 5. Monetisation and plan matrix
 
-**Working model:** Free access plus time-limited paid passes. The following plan names, prices and durations were previously selected.
+**Selected model:** Free browsing plus time-limited paid chat passes.
 
 | Plan | Price | Duration |
 |---|---:|---|
@@ -55,40 +57,32 @@ These are planned capabilities. Their implementation status must be checked in t
 | Connect | UGX 15,000 | 7 days |
 | Plus | UGX 30,000 | 30 days |
 
-### Feature access
+### Chat access
 
-| Capability | Eluda Free | Spark | Connect | Plus |
-|---|---|---|---|---|
-| Ordinary profile discovery | Included | Included | Included | Included |
-| Preset icebreakers | 15 per day | Unlimited | Unlimited | Unlimited |
-| Custom icebreaker text | Not included | Included | Included | Included |
-| Replies and ongoing chat | Requires a paid pass | Included during pass | Included during pass | Included during pass |
-| Twin Picks per day | 1 | 3 | 5 | 10 |
-| Basic discovery filters | Included | Included | Included | Included |
-| Advanced discovery filters | Not included | Not included | Included | Included |
-| See who liked you | Not included | Not included | Included | Included |
-| Profile viewers | Not included | Not included | Included | Included |
-| VIP profile access | Preview only | Preview only | Included | Included |
-| VVIP profile access | Preview only | Preview only | Not included | Included |
-| Gold badge | Not included | Not included | Not included | Included |
+| Capability | Eluda Free | Active paid pass |
+|---|---|---|
+| Browse profiles | Included | Included |
+| View profile photos | All photos visible | All photos visible |
+| Preset icebreakers | 15 per day | Available; exact limits, if any, to be specified consistently in UX |
+| Read replies | Locked until a paid pass is active | Included during pass |
+| Send custom message text | Not included | Included during pass |
+| Ongoing chat / reply to conversations | Not included | Included during pass |
 
-VIP and VVIP profile eligibility is to be curated by ELUDA, with the featured person's consent. These labels must not imply guaranteed trustworthiness, safety or compatibility.
+The key product rule is that users can browse the full discovery experience without paying; payment unlocks chat capabilities. Do not invent plan-specific discovery advantages.
 
-### Free for everyone
+### Removed from the current MVP direction
 
-The following remain free regardless of plan:
-- Matching and likes
-- Notifications
-- Profile management
-- Verification access (without implying verification guarantees trust)
-- Safety and privacy controls
-- Reporting, blocking and unmatching
+- VIP/VVIP profile tiers and restricted profile access.
+- Blurred, locked or paywalled profile photos.
+- “Twin Picks” as a paid or game-like feature.
+- Paid priority placement and rewind.
+- Paid tiers for “See who liked you”, profile viewers, advanced discovery filters or gold badges unless the owner explicitly reopens those decisions.
 
-**Explicit exclusions from the working model:** paid priority placement and rewind are removed from the plan. Do not reintroduce them without a new owner decision.
+Daily Picks may remain a normal Discover recommendation component, with the exact presentation and recommendation logic to be settled in the UI/UX design.
 
 ### Payment implementation status
 
-The plan/pricing model is selected as the working product model, but payment provider, payment flow, refunds, expiry handling and production payment integration still require separate design and approval. Do not claim that paid passes can currently be purchased or that any payment integration is implemented.
+The plan names, prices and durations above are the working pricing decisions. Payment provider, purchase flow, refunds, pass activation/expiry and production integration require separate implementation planning and verification. Do not claim that passes can currently be purchased or that a payment integration is implemented.
 
 ## 6. Privacy, consent and safety boundaries
 
@@ -97,7 +91,7 @@ The plan/pricing model is selected as the working product model, but payment pro
 - Keep safety and privacy controls free.
 - Provide clear reporting, blocking and unmatching controls.
 - Verification is not a guarantee that a person is safe or trustworthy.
-- VIP/VVIP curation requires the featured person's consent and must not imply a safety endorsement.
+- Do not use VIP/VVIP status or profile access restrictions to imply safety, trustworthiness or compatibility.
 - Define account-deletion behaviour and data-retention periods honestly before launch.
 - Assess applicable Ugandan privacy and data-protection obligations before launch.
 
@@ -121,26 +115,27 @@ Provisional direction: deep plum, warm ivory, rose pink and restrained gold acce
 - Target audience: adults across Uganda (18+).
 - Users choose their relationship intentions.
 - Platform: responsive web app, with PWA support planned for consideration.
-- Monetisation working model: Eluda Free, Spark, Connect and Plus, with prices and durations as specified in Section 5.
-- Daily Twin Picks allowances: Free 1, Spark 3, Connect 5, Plus 10.
-- Free users receive 15 preset icebreakers daily; ongoing chat requires a paid pass.
-- See Who Liked You and profile viewers are Connect/Plus benefits.
-- Advanced filters are Connect/Plus benefits.
+- Chat-focused monetisation: Eluda Free, Spark (UGX 5,000 / 24 hours), Connect (UGX 15,000 / 7 days), Plus (UGX 30,000 / 30 days).
+- Free users can browse profiles and see all photos.
+- Free users receive 15 preset icebreakers per day.
+- An active paid pass unlocks reading replies, sending custom message text and ongoing chat.
+- Daily Picks are a normal Discover recommendation feature, not a paid Twin Picks feature or game.
+- VIP/VVIP tiers and restricted/blurred photos are removed from the current MVP direction.
 - Safety and privacy controls remain free.
-- Priority placement and rewind are excluded from the current plan.
 
 ### Open questions — not silently decided by this brief
 - Final visual identity and design tokens.
 - Exact relationship-intent options and their effects on discovery/matching.
+- Daily Picks presentation and recommendation logic.
 - Exact MVP scope, launch criteria and success metrics.
 - Verification method/provider and operational review process.
 - Backend, database, authentication, storage and real-time messaging architecture.
 - PWA scope and implementation timing.
-- Payment provider, payment UX, refunds, pass expiry and production payment integration.
+- Payment provider, purchase UX, refunds, pass expiry and production payment integration.
 - Data-retention periods, moderation operations, languages and accessibility targets.
 
 ## 10. Current implementation status
 
 This brief describes product direction and recorded decisions; it does not certify that the full product, backend, authentication, messaging, plan enforcement or payment flow exists. Check `PROJECT_STATUS.md` and verify the repository before implementation.
 
-**Review note:** This update restores prior monetisation decisions that were omitted from the previous draft. Other project documents have not been changed by this update.
+**Review note:** This revision removes stale Twin Picks and VIP/VVIP entitlements and restores the agreed chat-focused monetisation direction. Other project documents have not been changed.
