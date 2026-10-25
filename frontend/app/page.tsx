@@ -70,6 +70,7 @@ export default function Home() {
             </div>
           </div>
         </section>
+
       </div>
 
       <section className="border-t border-[#eadde3] bg-white/55">

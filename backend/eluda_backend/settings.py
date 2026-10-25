@@ -93,7 +93,8 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 # CORS Settings
-CORS_ALLOW_ALL_ORIGINS = True # Allows the React frontend to connect
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True # Allows the React frontend to connect
 
 # Email
 MAILERS = {
