@@ -5,7 +5,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "ELUDA — Real connections, your pace",
+  title: "Eluda — Real connections, your pace",
   description: "A thoughtful, privacy-minded way to find genuine connection.",
 };
 
