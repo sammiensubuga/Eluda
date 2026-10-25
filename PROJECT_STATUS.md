@@ -7,7 +7,13 @@
 **Production URL:** https://eluda.vercel.app
 
 ## Summary
-ELUDA has a GitHub repository and a Next.js frontend under `frontend/`. A provisional public welcome page has previously been deployed to a Vercel preview. This status is a cautious baseline, not a complete repository/security audit.
+ELUDA has a GitHub repository and a Next.js frontend under `frontend/`. A provisional public welcome page has previously been deployed to a Vercel preview. The documentation baseline is being reconciled with the latest product decisions. This status is a cautious baseline, not a complete repository, security or deployment audit.
+
+## Documentation progress
+- `PRODUCT_BRIEF.md`: updated with the current product direction, gender-specific messaging rules, chat access passes, and Casual / Hookups rate fields. Saved in commit `6c2938c0cfa01d338382b20fda7dd3539e06c0ab`.
+- `docs/DECISION_LOG.md`: updated to record the current approved product decisions, security constraints, implementation gates and open questions. Saved in commit `a79244c51582ad80c2dc68734c312e9ab2743780`.
+- `PROJECT_STATUS.md`: this update records the state of the documentation workflow; it does not indicate feature implementation or testing.
+- Other documentation files have not yet been reconciled against the latest Product Brief and Decision Log.
 
 ## Previously confirmed
 - Repository: `sammiensubuga/Eluda`.
@@ -26,14 +32,14 @@ ELUDA has a GitHub repository and a Next.js frontend under `frontend/`. A provis
 | Registration/login/recovery | Not confirmed implemented | Inspect routes and interactions |
 | Profile creation/discovery | Not confirmed implemented | Inspect routes and code |
 | Likes/matches/chat | Not confirmed implemented | Inspect routes and code |
-| Privacy/safety controls | Requirements needed; implementation unverified | Audit code and tests |
+| Privacy/safety controls | Requirements documented; implementation unverified | Audit code and tests |
 | Backend/database | Not confirmed | Inspect repository/configuration without exposing secrets |
 | Automated tests | Unknown | Inspect package scripts and test files |
 | Build/lint | Commands exist; current results unknown | Run against a clean checkout |
 | Production readiness | Not established | Security, functional, privacy and release review required |
 
 ## Outstanding work
-1. Complete the documentation baseline and owner review.
+1. Reconcile the remaining documentation with the current Product Brief and Decision Log, reviewing changes before editing each document.
 2. Audit repository tree, branch history, routes, assets, dependencies and available tests.
 3. Complete product requirements and screen inventory.
 4. Approve user journeys and UI/UX design system before feature implementation.
@@ -42,7 +48,7 @@ ELUDA has a GitHub repository and a Next.js frontend under `frontend/`. A provis
 7. Implement approved tasks in small changes and update this document with evidence.
 
 ## Next task
-**DOC-001:** Review and approve the documentation baseline. Then conduct a read-only repository and deployment audit before assigning implementation work.
+**DOC-003:** Review `UI_UX_SPEC.md`, `docs/SCREEN_INVENTORY.md` and `docs/USER_JOURNEYS.md` for consistency with the current Product Brief and Decision Log. Reconcile one document at a time and show the proposed changes for review. After the documentation baseline is reviewed, conduct a read-only repository and deployment audit before assigning implementation work.
 
 ## Update rules
 For every status update, distinguish:
@@ -51,4 +57,5 @@ For every status update, distinguish:
 - **Verified in preview/production:** the deployed behaviour was checked.
 - **Planned:** not implemented.
 - **Unknown:** not yet inspected.
-Never infer a passing test from the existence of a script or a successful deployment from a commit.
+
+Never infer a passing test from the existence of a script or a successful deployment from a commit. Product decisions recorded in documentation do not prove that the corresponding feature exists in code.
