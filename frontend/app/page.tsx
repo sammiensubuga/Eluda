@@ -92,7 +92,7 @@ export default function Home() {
         </div>
       </section>
       <footer className="mx-auto flex max-w-7xl flex-col gap-3 px-5 py-6 text-xs text-[#8b7988] sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-12">
-        <span>© {new Date().getFullYear()} ELUDA</span>
+        <span>© 2026 ELUDA</span>
         <span>For adults 18+ · Built around choice, respect, and privacy</span>
       </footer>
     </main>
