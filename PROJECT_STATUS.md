@@ -1,8 +1,8 @@
 # ELUDA Project Status
 
-**Status:** Documentation baseline in progress  
+**Status:** Public-access UI implementation in progress  
 **Last updated:** 2026-10-25  
-**Working branch:** `feat/public-access-foundation`  
+**Working branch:** `feat/public-access-ui`  
 **Production branch:** `main`  
 **Production URL:** https://eluda.vercel.app
 
@@ -14,6 +14,12 @@ ELUDA has a GitHub repository and a Next.js frontend under `frontend/`. A provis
 - `docs/DECISION_LOG.md`: updated to record the current approved product decisions, security constraints, implementation gates and open questions. Saved in commit `a79244c51582ad80c2dc68734c312e9ab2743780`.
 - `PROJECT_STATUS.md`: this update records the state of the documentation workflow; it does not indicate feature implementation or testing.
 - Other documentation files have not yet been reconciled against the latest Product Brief and Decision Log.
+
+## Latest implementation update (2026-10-26)
+- Added `/login` and `/register` UI routes and a shared public-auth shell on `feat/public-access-ui`.
+- Added `public/eluda-mark.svg` and updated the welcome page to use the local public asset via `next/image`.
+- Login and registration inputs and submit controls are deliberately disabled. No authentication provider, account creation, login, or recovery behavior is wired; the pages explicitly state this limitation.
+- **Not yet verified:** build, lint, route responses, responsive rendering, and preview deployment for this branch. Do not treat the UI routes as a working authentication system.
 
 ## Previously confirmed
 - Repository: `sammiensubuga/Eluda`.
