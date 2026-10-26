@@ -1,7 +1,7 @@
 # ELUDA Product Brief
 
-**Document status:** Working product brief — latest owner messaging rules recorded  
-**Last updated:** 2026-10-25  
+**Document status:** Working product brief — latest owner messaging rules and technical direction recorded  
+**Last updated:** 2026-10-26  
 **Product:** ELUDA  
 **Repository:** https://github.com/sammiensubuga/Eluda
 
@@ -113,13 +113,15 @@ Daily Picks may remain a normal Discover recommendation component; exact present
 - Assess applicable Ugandan privacy and data-protection obligations before launch.
 - The message lock is a server-side access control, not just a visual treatment.
 
-## 8. Platform and technical direction
+## 8. Selected platform and technical direction
 
-**Selected platform direction:** Responsive web application, with PWA support planned for consideration.
+**Selected direction:** A mobile-first, responsive Next.js application using TypeScript and Tailwind CSS, with Supabase PostgreSQL as the database and Supabase Auth for authentication. Use server-side authorization together with PostgreSQL Row Level Security (RLS). Supabase Storage is the selected direction for private profile-photo storage, subject to implementation and policy verification. Vercel remains the frontend hosting direction.
 
-Current repository evidence indicates a Next.js frontend in `frontend/`. Next.js + TypeScript + Tailwind CSS is the broader frontend direction; Python/Django and PostgreSQL remain proposed backend options. Authentication, storage, real-time messaging, hosting and production architecture require verification and approval.
+**Python/Django is no longer the selected target backend for new features.** A legacy Django application has existed under `backend/`; do not assume it has been removed, is unused in deployment, or has been fully replaced. Keep it intact until the current routes, data, dependencies and deployment use are audited and replacement behavior is implemented, verified and explicitly approved.
 
-PWA scope and timing are not yet specified. Native mobile applications are not part of the selected initial platform direction.
+This is an architecture decision, not a claim that the full migration is complete. The repository's Next.js frontend exists, and a Supabase profile-foundation migration has been developed in the project workflow. Source files do not prove the hosted Supabase schema is applied or that auth, storage, messaging or other product features are operational. Hosted database changes require separate explicit approval.
+
+The Super PWA direction requires app-like mobile navigation, installability, deliberate caching, offline/reconnecting states, safe update behavior, accessibility and performance. Offline behavior must never falsely claim that a server-side operation succeeded, and private messages or account data must not remain accessible through caches after authorization expires.
 
 ## 9. Visual direction
 
@@ -128,13 +130,17 @@ Provisional direction: deep plum, warm ivory, rose pink and restrained gold acce
 ## 10. Decisions and open questions
 
 ### Decisions recorded
+
 - Brand: ELUDA; audience: adults across Uganda (18+).
 - Users choose their relationship intentions.
-- Responsive web app; PWA support planned for consideration.
+- Mobile-first responsive Next.js application using TypeScript and Tailwind CSS.
+- Supabase PostgreSQL database and Supabase Auth; use server-side authorization and RLS.
+- Supabase Storage is the selected direction for private profile-photo storage; actual bucket and policies require verification.
+- Python/Django is not the target backend for new features; legacy code remains until replacement and decommissioning are explicitly reviewed.
 - Spark: UGX 5,000 / 24 hours; Connect: UGX 15,000 / 7 days; Plus: UGX 30,000 / 30 days.
 - Female users message freely, including custom messages, without paying.
 - Male users get 15 preset icebreakers daily and need an active pass to read female messages or reply.
-- Locked notice: “ [Name] sent you a message. Upgrade to VIP to read it.”
+- Locked notice: “[Name] sent you a message. Upgrade to VIP to read it.”
 - Male recipients can see message contents, including a WhatsApp number included in the message, after an active pass unlocks it.
 - Casual / Hookups profiles for women require Short Time and Overnight rate fields, with at least one populated.
 - Women can set Available, Busy or Hidden; Hidden profiles do not appear in Discovery.
@@ -142,20 +148,25 @@ Provisional direction: deep plum, warm ivory, rose pink and restrained gold acce
 - Daily Picks are a normal Discover recommendation component, not paid Twin Picks.
 - VIP/VVIP profile tiers, restricted/blurred photos, priority placement and rewind are removed from the current MVP direction.
 - Safety and privacy controls remain free.
+- Architecture documentation does not establish that the hosted Supabase schema or full application migration is complete.
 
 ### Open questions
+
 - Final visual identity and design tokens.
 - Exact relationship-intent options and discovery/matching rules.
 - Daily Picks presentation and recommendation logic.
 - Exact MVP scope, launch criteria and success metrics.
 - Verification method/provider and operational review process.
-- Backend, database, authentication, storage and real-time messaging architecture.
-- PWA scope and implementation timing.
+- Detailed Supabase Auth session/cookie integration and authorization matrix.
+- Complete data model and RLS policy coverage.
+- Private photo storage bucket configuration and access policy.
+- Realtime messaging approach and background processing.
+- PWA caching, installability, notification support and update behavior across target browsers.
 - Payment provider, purchase UX, refunds, pass activation/expiry and production payment integration.
-- Data-retention periods, moderation operations, languages and accessibility targets.
+- Data-retention periods, moderation operations, languages, accessibility targets and legacy Django decommission plan.
 
 ## 11. Current implementation status
 
-This brief records product direction; it does not certify that gender-specific message locking, pass enforcement, rate fields or payment flow exist. Verify the repository before implementation.
+This brief records product and architecture direction; it does not certify that gender-specific message locking, pass enforcement, rate fields, full Supabase Auth integration, private storage policies or payment flow exist. Verify the repository and relevant environment before implementation or release.
 
-**Review note:** This update records the owner’s exact gender-specific messaging rules and Casual / Hookups rate requirements. Other project documents have not been changed.
+**Review note:** This update records the selected Next.js + Supabase direction and keeps migration status distinct from architecture intent. The legacy Django code and hosted Supabase schema must not be assumed removed, migrated or changed without evidence.
