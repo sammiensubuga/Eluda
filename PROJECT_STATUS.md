@@ -17,9 +17,10 @@ ELUDA has a GitHub repository and a Next.js frontend under `frontend/`. A provis
 
 ## Latest implementation update (2026-10-26)
 - Added `/login` and `/register` UI routes and a shared public-auth shell on `feat/public-access-ui`.
-- Added `public/eluda-mark.svg` and updated the welcome page to use the local public asset via `next/image`.
+- Replaced the placeholder gradient/white-letter logo with a black rounded-square and gold ELUDA monogram aligned to the supplied desktop/mobile brand reference. The welcome page and public-auth shell use the shared local `/eluda-mark.svg` asset; the auth shell uses `next/image`.
 - Login and registration inputs and submit controls are deliberately disabled. No authentication provider, account creation, login, or recovery behavior is wired; the pages explicitly state this limitation.
-- **Not yet verified:** build, lint, route responses, responsive rendering, and preview deployment for this branch. Do not treat the UI routes as a working authentication system.
+- Preview deployment `dpl_BHu6qbUUZAHV5HTFYR48PHgtv5v6` was created from this branch after the logo fix; deployment and route verification are pending.
+- **Not yet verified:** lint, responsive browser rendering, accessibility checks, and functional authentication. Do not treat the UI routes as a working authentication system.
 
 ## Previously confirmed
 - Repository: `sammiensubuga/Eluda`.
