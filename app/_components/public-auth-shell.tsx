@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
@@ -26,7 +27,7 @@ export default function PublicAuthShell({
       <div aria-hidden="true" className="pointer-events-none absolute -left-32 bottom-0 h-72 w-72 rounded-full bg-[#d8c2df]/50 blur-3xl" />
       <header className="relative mx-auto flex w-full max-w-7xl items-center justify-between px-5 py-5 sm:px-8 lg:px-12">
         <Link href="/" aria-label="Eluda home" className="flex items-center gap-3 rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#9a527d]">
-          <img src="/eluda-mark.svg" alt="" className="h-11 w-11 rounded-xl object-contain" />
+          <Image src="/eluda-mark.svg" alt="" width={44} height={44} priority className="h-11 w-11 rounded-xl object-contain" />
           <span className="text-xl font-semibold tracking-[0.08em]">Eluda</span>
         </Link>
         <Link href="/" className="rounded-full px-4 py-2.5 text-sm font-semibold text-[#63345d] transition hover:bg-white/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#9a527d]">
