@@ -66,12 +66,7 @@ Current Plan decisions:
 
 These are product decisions, not proof of live payment, checkout or entitlement functionality. Payment provider, checkout, refunds, activation and expiry details require further approval. Chat Plans are distinct from VIP/VVIP profile tiers; VIP/VVIP profile tiers and paywalled profile photos are not in the current product direction.
 
-## Journey F — Share contact details
-Conversation → user chooses to share contact details → explicit consent/confirmation → share only the selected information.
-
-Contact sharing must never happen automatically. The exact UX and whether a separate contact-sharing flow is in MVP remain open. A WhatsApp number written inside a message follows the Blind Lock rules above and is visible to the man only after that message is unlocked.
-
-## Journey G — Safety intervention
+## Journey F — Safety intervention
 Profile or conversation → report or block → explain outcome and limits → prevent further unwanted interaction where specified → moderation review where applicable.
 
 Requirements:
@@ -81,12 +76,12 @@ Requirements:
 
 Open decisions: moderation operations, evidence retention, appeal process and response-time targets.
 
-## Journey H — Delete account
+## Journey G — Delete account
 Settings → explain consequences and retention → confirm identity/action → deactivate/delete according to approved policy → show completion and any legally required retention.
 
 Do not promise immediate erasure until data systems, backups and applicable obligations are defined.
 
-## Journey I — Recovery and restricted states
+## Journey H — Recovery and restricted states
 Login → recover account; expired session → re-authenticate; unavailable network → preserve safe user context; suspended account → explain available next steps without exposing sensitive moderation data.
 
 Include incomplete profile, empty Discover, no matches, message send failure, locked message, expired Plan, failed/pending purchase if purchases are later approved, and session-expired states where relevant.

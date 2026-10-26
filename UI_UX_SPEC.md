@@ -43,7 +43,7 @@ Proposed palette: deep plum, warm ivory, rose pink and restrained gold accents. 
 - Private conversation
 - Male message-locked state and upgrade notice
 - Plan selection/access information for Spark, Connect and Plus
-- Message privacy and authorization states; no contact-sharing button or number-masking mechanic
+- Message privacy and authorization states; no separate button or number-masking mechanic
 
 ### Account, safety and system
 - Notifications
@@ -66,7 +66,6 @@ This inventory is not a claim that these screens exist in code. The screen list 
 - Back navigation should preserve user context where safe.
 - Reporting and blocking must not be hidden behind multiple layers.
 - Destructive actions require clear explanations and confirmation.
-- Contact sharing must be a deliberate, informed action, never an automatic side effect.
 - Discovery is available only after sign-in.
 - Do not imply a match, verification or payment state that the system has not confirmed.
 

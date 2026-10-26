@@ -71,7 +71,7 @@ Statuses: **Approved**, **Proposed**, **Open**, **Superseded**. Only the product
 
 ## DEC-012 — Monetisation implementation gate
 - **Status:** Approved
-- **Decision:** Do not implement payment integration or paid-pass functionality until the relevant payment and product implementation plan has been reviewed and explicitly approved. The pass model recorded in DEC-007 is a product decision, not proof of a payment integration or live purchase flow.
+- **Decision:** Do not implement payment integration or paid-Plan functionality until the relevant payment and product implementation plan has been reviewed and explicitly approved. The Plan model recorded in DEC-007 is a product decision, not proof of a payment integration or live purchase flow.
 
 ## DEC-013 — Production change control
 - **Status:** Approved
@@ -84,13 +84,14 @@ Statuses: **Approved**, **Proposed**, **Open**, **Superseded**. Only the product
 - Verification approach and review states.
 - Final backend, authentication, storage and real-time architecture.
 - PWA scope and timing.
-- Payment provider, checkout, pass activation/expiry, refunds and compliance.
+- Payment provider, checkout, Plan activation/expiry, refunds and compliance.
 - Moderation operations, data retention, account deletion workflow, accessibility and language support.
 - Applicable Ugandan privacy and data-protection obligations before launch.
 
 
 ## Final stack and product rules (2026-10-26)
 - **Status:** Approved product and architecture direction; implementation status unverified
+- No contact-sharing button or flow exists; a WhatsApp number typed in a message is part of that message and follows the message lock.
 - **Audience:** ELUDA serves adults aged 18 and above across Uganda; users choose their relationship intentions.
 - **Stack:** Next.js App Router for frontend and backend, TypeScript, Tailwind CSS, Prisma ORM, Supabase PostgreSQL and Vercel hosting. There is no separate backend service; the Next.js application lives at the repository root.
 - **Plans:** Spark Plan UGX 5,000 / 24 hours; Connect Plan UGX 15,000 / 7 days; Plus Plan UGX 30,000 / 30 days; Eluda Free at UGX 0. Payments use LivePay and activation is webhook-driven.

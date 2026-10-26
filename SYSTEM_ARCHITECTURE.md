@@ -33,10 +33,10 @@ Applying any migration to the hosted Supabase database requires the owner's expl
 Provider and implementation are undecided. The approved design must cover registration, login, recovery, session expiry, logout, account suspension, and protection against account enumeration and abuse. Avoid selecting a provider until requirements, cost and operational needs are reviewed.
 
 ## 5. Data model candidates
-Potential entities include User/Account, Profile, ProfilePhoto, Preference, Like, Match, Conversation, Message, ContactShareConsent, VerificationRecord, Report, Block, Notification and ModerationAction. This is a conceptual list only; fields, relationships, retention and access policies belong in `docs/DATA_MODEL.md` after requirements review.
+Potential entities include User/Account, Profile, ProfilePhoto, Preference, Like, Match, Conversation, Message, VerificationRecord, Report, Block, Notification and ModerationAction. This is a conceptual list only; fields, relationships, retention and access policies belong in `docs/DATA_MODEL.md` after requirements review.
 
 ## 6. Messaging and consent
-Messaging access should be limited to permitted participants. Contact details must not be revealed without explicit consent. The realtime messaging approach remains open and must ensure locked message content never reaches an unauthorized client.
+Messaging access should be limited to permitted participants. A WhatsApp number typed inside a message is part of that message's content and follows the message lock. The realtime messaging approach remains open and must ensure locked message content never reaches an unauthorized client.
 
 ## 7. Deployment and change control
 - Feature work occurs on an approved feature branch.

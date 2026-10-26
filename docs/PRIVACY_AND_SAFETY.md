@@ -20,7 +20,6 @@ These are requirements for product design and future implementation, not proof t
 - Block and unblock controls with clearly explained effects.
 - Report profile, message or conduct with a safe confirmation flow.
 - Unmatch with a clear explanation of consequences.
-- Contact-sharing consent that identifies exactly what is shared and with whom.
 - Account deletion request and transparent explanation of retention exceptions.
 - Clear states for locked content, access expiry, errors and restrictions without leaking the content being protected.
 
@@ -36,17 +35,14 @@ Security requirements:
 - Enforce access checks server-side on every relevant read path, including APIs, realtime delivery, notification generation, previews, caches and reconnect/history requests.
 - Do not send locked message bodies, attachments or equivalent sensitive content to the client in HTML, API responses, client state, push notifications or other client-accessible payloads before authorization succeeds.
 - A blur, overlay, disabled button or other visual concealment is not a security control.
-- Do not rely on client-side Plan state as proof of entitlement. The server must verify the active pass and its validity.
-- When access expires, enforce the policy server-side on subsequent reads and replies; do not leave protected content available through cached or previously loaded routes. Define handling of content already lawfully viewed while a pass was active before implementation.
+- Do not rely on client-side Plan state as proof of entitlement. The server must verify the active Plan and its validity.
+- After a Plan expires, previously unlocked messages remain readable; all new incoming messages are locked.
 - Log access/security events proportionately without unnecessarily duplicating sensitive message contents into logs.
 - Test unauthorized requests, stale sessions, expired Plans, direct API calls, realtime events, notifications, caches and reconnect/history paths.
 
-## Contact sharing and WhatsApp
-- Contact sharing must be a deliberate, informed user action; never share contacts automatically.
-- A WhatsApp number intentionally included in a woman's message follows the message access rules above and is visible to the man only after the message is unlocked.
-- Clearly distinguish contact details intentionally included in a message from profile contact fields or separate contact-sharing features.
-- Do not expose contact information in notification previews, URLs, analytics or logs unnecessarily.
-- The separate contact-sharing consent flow, its exact scope and whether it is part of the MVP remain open for owner review.
+## Contact details in messages
+- A WhatsApp number included in a woman's message is part of that message and is visible to the man only after the message is unlocked.
+- There is no contact-sharing button, contact-sharing flow or number-masking mechanic. Do not expose contact information in notification previews, URLs, analytics or logs unnecessarily.
 
 ## Required user safety controls
 - Reporting, blocking and unmatching are free safety controls.
@@ -76,7 +72,6 @@ State what was verified, by what method and any limitations. Avoid broad badges 
 
 ## Open decisions
 - Age-eligibility and account verification approach.
-- Exact contact-sharing consent flow and MVP inclusion.
 - Retention periods and deletion/backups behavior by data category.
 - Moderation staffing, escalation, appeals and response targets.
 - Exact block/unmatch behavior for existing messages and matches.

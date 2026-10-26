@@ -12,7 +12,7 @@
 ## Product-level checks before release
 - [ ] Registration, login, recovery and session expiry work as specified.
 - [ ] Server-side authorisation prevents unauthorised profile, match and message access.
-- [ ] Contact details are not exposed without explicit consent.
+- [ ] Locked message content, including any WhatsApp number inside it, is not exposed before an active Plan is verified server-side.
 - [ ] Block, report and unmatch behaviour meets approved requirements.
 - [ ] Verification wording states limitations clearly.
 - [ ] Account deletion and retention behaviour matches approved policy.
