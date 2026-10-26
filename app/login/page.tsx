@@ -1,4 +1,3 @@
-import Link from "next/link";
 import PublicAuthShell from "../_components/public-auth-shell";
 
 export default function LoginPage() {
@@ -11,7 +10,7 @@ export default function LoginPage() {
       footerLink="Create an account"
       footerHref="/register"
     >
-      <form className="space-y-5" aria-describedby="login-status">
+      <form className="space-y-5">
         <div>
           <label htmlFor="email" className="mb-2 block text-sm font-semibold text-[#39233a]">Email address</label>
           <input id="email" name="email" type="email" autoComplete="email" placeholder="you@example.com" disabled className="min-h-12 w-full rounded-xl border border-[#e6d7df] bg-[#fbf8f6] px-4 text-base text-[#28142b] outline-none placeholder:text-[#a18d9c] disabled:cursor-not-allowed disabled:opacity-80" />
