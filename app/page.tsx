@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 
 export default function Home() {
@@ -10,7 +11,7 @@ export default function Home() {
         <div aria-hidden="true" className="pointer-events-none absolute -left-32 top-[26rem] h-72 w-72 rounded-full bg-[#d8c2df]/50 blur-3xl" />
         <header className="relative mx-auto flex max-w-7xl items-center justify-between px-5 py-5 sm:px-8 lg:px-12">
           <Link href="/" aria-label="Eluda home" className="flex items-center gap-3">
-            <img src="https://raw.githubusercontent.com/sammiensubuga/Eluda/main/frontend/eluda_logo.png" alt="Eluda logo" className="h-11 w-11 rounded-xl object-contain" />
+            <Image src="/eluda-mark.svg" alt="Eluda logo" width={44} height={44} className="h-11 w-11 rounded-xl object-contain" priority />
             <span className="text-xl font-semibold tracking-[0.08em]">Eluda</span>
           </Link>
           <Link href="/login" className="rounded-full border border-[#4a2148]/15 px-4 py-2.5 text-sm font-semibold transition hover:border-[#4a2148]/40 hover:bg-white/70">
