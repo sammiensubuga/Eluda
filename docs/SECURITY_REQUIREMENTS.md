@@ -7,7 +7,7 @@
 - Users may access only data and conversations they are authorised to see; never trust client-supplied user IDs, roles, Plan status or ownership.
 - Apply least privilege to staff, moderators and automated services.
 - Protect session lifecycle, password recovery, account suspension and account deletion flows.
-- Require server-side checks for active Plan entitlement whenever a user attempts to read pass-gated messages. A client-side flag or previously cached entitlement is not sufficient.
+- Require server-side checks for active Plan entitlement whenever a user attempts to read Plan-gated messages. A client-side flag or previously cached entitlement is not sufficient.
 
 ## Message privacy and Plan-gated access
 - When a male user has no active Plan, do not return locked message bodies or other locked message content in HTML, rendered page data, API responses, hydration state, caches or any client-accessible payload.
