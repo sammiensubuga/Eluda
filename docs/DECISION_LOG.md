@@ -21,17 +21,20 @@ Statuses: **Approved**, **Proposed**, **Open**, **Superseded**. Only the product
 
 ## DEC-004 — UI/UX before feature implementation
 - **Status:** Approved
-- **Decision:** Complete and review the UI/UX system design before building the main frontend feature set.
+- **Decision:** Complete and review the UI/UX system design before building the main frontend feature set. Independently approved tasks may proceed without waiting for every future screen to be complete.
 
 ## DEC-005 — Visual direction
 - **Status:** Proposed
 - **Proposal:** Deep plum, warm ivory, rose pink and restrained gold accents.
 - **Open:** Final identity, tokens, typography, iconography and component rules.
 
-## DEC-006 — Technical stack
-- **Status:** Open
-- **Proposal:** Next.js/TypeScript/Tailwind frontend; Django and PostgreSQL backend; Django Channels/Redis if justified.
-- **Open:** Verify the repository's actual architecture and approve the final stack. These options are not yet final decisions.
+## DEC-006 — Application architecture
+- **Status:** Approved direction; detailed implementation remains in progress
+- **Decision:** Use Next.js and TypeScript for the application/server layer, Supabase PostgreSQL for the database, Supabase Auth for authentication, and PostgreSQL RLS plus server-side authorization to protect data. Supabase Storage is the selected direction for private profile-photo storage, subject to implementation and policy verification.
+- **Decision:** Python/Django is no longer the target backend for new application features.
+- **Constraint:** Legacy Django code may remain in the repository during migration. Do not assume it has been removed, is unused in deployment, or has been fully replaced. Do not delete/decommission it until replacement paths are verified and explicit approval is given.
+- **Evidence boundary:** Source files and migration files do not prove that a hosted database schema, auth integration, storage policy or feature is live.
+- **Open:** Exact session library/cookie configuration, full data model and RLS matrix, storage policies, realtime approach, background jobs, backup/recovery, retention and production topology.
 
 ## DEC-007 — Chat access pass model
 - **Status:** Approved as the current product decision; implementation status not established
@@ -79,8 +82,10 @@ Statuses: **Approved**, **Proposed**, **Open**, **Superseded**. Only the product
 - Exact relationship-intention options and discovery behavior.
 - Daily Picks interface and selection logic.
 - Verification approach and review states.
-- Final backend, authentication, storage and real-time architecture.
-- PWA scope and timing.
+- Full auth/session integration and RLS authorization matrix.
+- Private photo storage policy and access URL lifecycle.
+- Realtime delivery and background processing.
+- PWA requirements and timing.
 - Payment provider, checkout, pass activation/expiry, refunds and compliance.
 - Moderation operations, data retention, account deletion workflow, accessibility and language support.
 - Applicable Ugandan privacy and data-protection obligations before launch.
