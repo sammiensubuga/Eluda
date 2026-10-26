@@ -14,7 +14,7 @@ Priority labels are working planning proposals, not final delivery commitments. 
 | PROF-01 | Profile setup and connection-category selection | P0 | Planned |
 | PROF-02 | Profile edit and photo management; minimum two photos | P0 | Planned |
 | PROF-03 | Women's availability: Available, Busy, Hidden | P0 | Planned |
-| PROF-04 | Casual / Hookups category rates: Short Time and Overnight | P0 | Planned |
+| PROF-04 | Meetups intent category (no price, rate or money fields) | P0 | Planned |
 | VER-01 | Verification explanation and status | P1 | Planned |
 | DISC-01 | Discover (signed-in users only) | P0 | Planned |
 | DISC-02 | Profile details | P0 | Planned |
@@ -24,7 +24,7 @@ Priority labels are working planning proposals, not final delivery commitments. 
 | CHAT-01 | Conversation list | P0 | Planned |
 | CHAT-02 | Private conversation and unlocked message state | P0 | Planned |
 | CHAT-03 | Male Blind Lock: locked message notice and inaccessible message content | P0 | Planned |
-| CHAT-04 | Chat access pass information: Spark, Connect and Plus | P1 | Planned; purchase/activation flow needs separate approval |
+| CHAT-04 | Chat Plan information: Spark, Connect and Plus | P1 | Planned; purchase/activation flow needs separate approval |
 | CONS-01 | Contact-sharing consent | P1 | Planned |
 | NOTIF-01 | Notifications that do not expose private message content | P1 | Planned |
 | PRIV-01 | Privacy settings | P0 | Planned |
@@ -37,10 +37,10 @@ Priority labels are working planning proposals, not final delivery commitments. 
 ## Key screen requirements
 
 - **Messaging:** Women can send unrestricted custom messages for free and do not need preset icebreakers. Men can initiate with up to 15 free preset icebreakers per day; that does not unlock a woman's reply.
-- **Male Blind Lock:** Without an active Spark, Connect or Plus pass, show exactly: `[Name] sent you a message. Upgrade to VIP to read it.` The locked message body must not be exposed to the client until server-side authorization succeeds.
+- **Male Blind Lock:** Without an active Spark, Connect or Plus Plan, show only a chat bubble with a lock icon, never message text or a teaser. The disabled read-only input displays `Eluda can't continue this chat on your current plan. Upgrade your plan to keep going.` and a `See Plans` button opens the payment modal. Locked message content must not reach the client until server-side authorization succeeds.
 - **Unlocked messaging:** An active pass unlocks reading women's messages and free replies while access is active. Any WhatsApp number contained in the message becomes visible as part of the unlocked content.
-- **Passes:** Spark is UGX 5,000 / 24 hours; Connect is UGX 15,000 / 7 days; Plus is UGX 30,000 / 30 days; Eluda Free is UGX 0 ongoing. These are recorded product decisions, not evidence of a live checkout or entitlement system.
-- **Casual / Hookups:** Women's profiles in this category have Short Time and Overnight rate fields. At least one rate must be completed to publish.
+- **Plans:** Spark is UGX 5,000 / 24 hours; Connect is UGX 15,000 / 7 days; Plus is UGX 30,000 / 30 days; Eluda Free is UGX 0 ongoing. These are recorded product decisions, not evidence of a live checkout or entitlement system.
+- **Meetups:** This is an intent category for people who want to meet in person quickly; it has no price, rate or money fields.
 - **Discovery/profile:** Discovery requires sign-in; profiles require at least two photos. Women's Hidden profiles are excluded from Discovery. Verification is not a guarantee of trustworthiness.
 - **Safety:** Reporting, blocking and unmatching are free safety controls. VIP/VVIP profile tiers and paywalled profile photos are not in the current product direction.
 

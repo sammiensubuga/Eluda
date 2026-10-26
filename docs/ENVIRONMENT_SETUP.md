@@ -7,9 +7,9 @@
 - A supported Node.js version for the current Next.js version.
 - The package manager matching the committed lockfile, if present.
 
-## Frontend
+## Local setup
 1. Clone the repository.
-2. Change directory to `frontend/`.
+2. Change to the repository root; the Next.js application and package files live there.
 3. Inspect the lockfile and package manager before installing dependencies.
 4. Install dependencies with the matching package manager.
 5. Run `npm run dev` (or the equivalent command for the lockfile's package manager).

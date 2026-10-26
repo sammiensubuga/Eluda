@@ -28,18 +28,18 @@ These are requirements for product design and future implementation, not proof t
 Current product decision:
 - Women can send unrestricted custom messages for free; they are not required to use preset icebreakers.
 - Men can initiate with up to 15 free preset icebreakers per day. Sending an icebreaker does not unlock a woman's reply.
-- Without an active Spark, Connect or Plus pass, the man must not be able to read the woman's message. Show exactly: `[Name] sent you a message. Upgrade to VIP to read it.`
-- With an active pass, he can read the message and reply freely while access remains active.
+- Without an active Spark, Connect or Plus Plan, a male user cannot read or reply to a woman's message. Show only a chat bubble with a lock icon; do not expose message text or a teaser. The disabled read-only input displays: `Eluda can't continue this chat on your current plan. Upgrade your plan to keep going.` with a `See Plans` button that opens the payment modal.
+- With an active Spark, Connect or Plus Plan, he can read the message and reply freely while access remains active.
 - If the message contains a WhatsApp number, it becomes visible as part of the unlocked message.
 
 Security requirements:
 - Enforce access checks server-side on every relevant read path, including APIs, realtime delivery, notification generation, previews, caches and reconnect/history requests.
 - Do not send locked message bodies, attachments or equivalent sensitive content to the client in HTML, API responses, client state, push notifications or other client-accessible payloads before authorization succeeds.
 - A blur, overlay, disabled button or other visual concealment is not a security control.
-- Do not rely on client-side pass state as proof of entitlement. The server must verify the active pass and its validity.
+- Do not rely on client-side Plan state as proof of entitlement. The server must verify the active pass and its validity.
 - When access expires, enforce the policy server-side on subsequent reads and replies; do not leave protected content available through cached or previously loaded routes. Define handling of content already lawfully viewed while a pass was active before implementation.
 - Log access/security events proportionately without unnecessarily duplicating sensitive message contents into logs.
-- Test unauthorized requests, stale sessions, expired passes, direct API calls, realtime events, notifications, caches and reconnect/history paths.
+- Test unauthorized requests, stale sessions, expired Plans, direct API calls, realtime events, notifications, caches and reconnect/history paths.
 
 ## Contact sharing and WhatsApp
 - Contact sharing must be a deliberate, informed user action; never share contacts automatically.
@@ -80,7 +80,7 @@ State what was verified, by what method and any limitations. Avoid broad badges 
 - Retention periods and deletion/backups behavior by data category.
 - Moderation staffing, escalation, appeals and response targets.
 - Exact block/unmatch behavior for existing messages and matches.
-- Handling of content already viewed during a valid pass after that pass expires.
+- Handling of content already viewed during a valid Plan after that Plan expires.
 - Data hosting locations, provider access and cross-border processing.
 - Security logging and retention policy.
 

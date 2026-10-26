@@ -22,7 +22,7 @@ Signed-in Discover → inspect profile → express interest or pass → mutual i
 Requirements:
 - Women's availability can be Available, Busy or Hidden; Hidden profiles are excluded from Discover.
 - Daily Picks is currently envisioned as approximately 3–5 recommended profiles. Its presentation and selection logic remain open.
-- For women publishing in Casual / Hookups, provide Short Time and Overnight rate fields; at least one rate must be completed before publishing.
+- Meetups is an intent category for people who want to meet in person quickly; it has no price, rate or money fields.
 - Verification indicators must not imply a guarantee of trustworthiness.
 
 Open decisions: discovery ranking, limits, undo behavior, visibility controls and how user preferences are applied.
@@ -45,26 +45,26 @@ Requirements:
 - Sending an icebreaker does not unlock the woman's reply.
 - Daily allowance counting, reset timezone, and handling of failed sends require implementation acceptance criteria.
 
-## Journey E — Male Blind Lock and pass unlock
-Woman sends a message to a man → server checks whether the man has an active Spark, Connect or Plus pass.
+## Journey E — Male Blind Lock and Plan unlock
+Woman sends a message to a man → server checks whether the man has an active Spark, Connect or Plus Plan.
 
-**If no active pass:**
-- Show the exact notice: `[Name] sent you a message. Upgrade to VIP to read it.`
+**If no active Plan:**
+- Show only a chat bubble with a lock icon; do not expose message text or a teaser. The disabled read-only input displays: `Eluda can't continue this chat on your current plan. Upgrade your plan to keep going.` and a `See Plans` button opens the payment modal.
 - Do not reveal the message body in HTML, client state, API responses, notifications or any other client-accessible payload.
-- Offer the approved pass information/upgrade path, without claiming a purchase succeeded.
+- Offer the approved Plan information/upgrade path, without claiming a purchase succeeded.
 
-**If an active pass is confirmed:**
-- Allow the man to read the message and reply freely while the pass remains active.
+**If an active Plan is confirmed:**
+- Allow the man to read the message and reply freely while the Plan remains active.
 - If the message contains a WhatsApp number, it becomes visible as part of the unlocked message.
-- If the pass expires, enforce the resulting access state server-side and explain the state clearly.
+- If the Plan expires, enforce the resulting access state server-side and explain the state clearly.
 
-Current pass decisions:
+Current Plan decisions:
 - Spark: UGX 5,000 / 24 hours.
 - Connect: UGX 15,000 / 7 days.
 - Plus: UGX 30,000 / 30 days.
 - Eluda Free: UGX 0 ongoing.
 
-These are product decisions, not proof of live payment, checkout or entitlement functionality. Payment provider, checkout, refunds, activation and expiry details require further approval. Chat access passes are not VIP/VVIP profile tiers; VIP/VVIP profile tiers and paywalled profile photos are not in the current product direction.
+These are product decisions, not proof of live payment, checkout or entitlement functionality. Payment provider, checkout, refunds, activation and expiry details require further approval. Chat Plans are distinct from VIP/VVIP profile tiers; VIP/VVIP profile tiers and paywalled profile photos are not in the current product direction.
 
 ## Journey F — Share contact details
 Conversation → user chooses to share contact details → explicit consent/confirmation → share only the selected information.
@@ -89,7 +89,7 @@ Do not promise immediate erasure until data systems, backups and applicable obli
 ## Journey I — Recovery and restricted states
 Login → recover account; expired session → re-authenticate; unavailable network → preserve safe user context; suspended account → explain available next steps without exposing sensitive moderation data.
 
-Include incomplete profile, empty Discover, no matches, message send failure, locked message, expired pass, failed/pending purchase if purchases are later approved, and session-expired states where relevant.
+Include incomplete profile, empty Discover, no matches, message send failure, locked message, expired Plan, failed/pending purchase if purchases are later approved, and session-expired states where relevant.
 
 ## Design requirement
 Map each journey to specific screens and loading, error, empty, success and restricted states in `docs/SCREEN_INVENTORY.md` and `UI_UX_SPEC.md`. Obtain owner approval for the journey and screen design before frontend implementation.

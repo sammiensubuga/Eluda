@@ -10,8 +10,8 @@
 - Require server-side checks for active chat-pass entitlement whenever a user attempts to read pass-gated messages. A client-side flag or previously cached entitlement is not sufficient.
 
 ## Message privacy and pass-gated access
-- When a male user has no active pass, do not return locked message bodies or other locked message content in HTML, rendered page data, API responses, hydration state, caches or any client-accessible payload.
-- The locked-message state may show only the approved notice: `[Name] sent you a message. Upgrade to VIP to read it.` Do not expose the message body through previews, notifications, metadata, logs delivered to clients or alternate endpoints.
+- When a male user has no active Plan, do not return locked message bodies or other locked message content in HTML, rendered page data, API responses, hydration state, caches or any client-accessible payload.
+- The locked-message state shows only a chat bubble with a lock icon. The disabled read-only input displays `Eluda can't continue this chat on your current plan. Upgrade your plan to keep going.` with a `See Plans` button that opens the payment modal. Do not expose the message body through previews, notifications, metadata, logs delivered to clients or alternate endpoints.
 - Check pass validity and the requesting user's conversation permissions on the server before returning message content; handle expiry and concurrent requests consistently.
 - Once a message is authorised to be read, any WhatsApp number contained in it must remain hidden until that same message is unlocked. Do not expose the number through separate fields, previews or APIs before authorization.
 - Enforce the approved free preset-icebreaker limit of up to 15 per day for male users server-side. Do not rely on client counters; prevent easy bypass by parallel requests, retries or account/session manipulation.
@@ -19,11 +19,11 @@
 - Do not assume how previously viewed messages behave after a pass expires until the product owner approves that rule. The implementation must follow the documented decision once resolved.
 
 ## Input and abuse controls
-- Validate all client-supplied data server-side, including profile fields, availability, casual rates, likes, messages, reports and account settings.
+- Validate all client-supplied data server-side, including profile fields, availability, Meetups category restrictions, likes, messages, reports and account settings.
 - Apply appropriate rate limits and abuse detection to authentication, likes, messages, reports, contact-sharing and other abuse-prone actions.
 - Protect against injection, cross-site scripting, cross-site request forgery where relevant, insecure direct object references, mass assignment and unsafe redirects.
 - Safely validate uploaded photos and restrict file type, size, storage access and processing.
-- Enforce product rules on the server, including minimum profile-photo requirements and required Short Time and/or Overnight rate fields for published Casual / Hookups profiles.
+- Enforce product rules on the server, including minimum profile-photo requirements and the Meetups category restrictions (no price, rate or money fields).
 
 ## Sensitive data
 - Keep secrets out of source control and client-side bundles.
