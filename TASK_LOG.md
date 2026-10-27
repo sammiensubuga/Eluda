@@ -28,3 +28,4 @@ This file records implementation work and its evidence. Keep entries concise and
 - **Preview/deployment evidence:** Not applicable until a preview is deployed and checked.
 - **Known limitations:** Repository-wide audit and document review remain outstanding.
 - **Reviewer decision:** Awaiting owner review.
+BLD-000: Builder smoke test, no product changes.
