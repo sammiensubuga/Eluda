@@ -1,15 +1,15 @@
 # ELUDA Product Brief
 
-**Document status:** Working product brief — latest owner messaging rules recorded  
-**Last updated:** 2026-10-25  
-**Product:** ELUDA  
+**Document status:** Working product brief — latest owner messaging rules recorded
+**Last updated:** 2026-10-26
+**Product:** ELUDA
 **Repository:** https://github.com/sammiensubuga/Eluda
 
 ## 1. Summary
 
 ELUDA is a privacy-first dating platform for adults across Uganda. Its mission is to help adults discover meaningful connections and communicate at their own pace. Users choose their relationship intentions.
 
-The current monetisation model is gender-specific chat access: female users can initiate and continue messaging for free, while male users can initiate with 15 preset icebreakers daily and must have an active paid pass to read incoming messages and reply. Female users can send custom messages freely; the male recipient sees only a locked-message notice until he has an active pass.
+The current monetisation model is gender-specific chat access: female users can initiate and continue messaging for free, while male users can send 15 preset icebreakers daily and need an active paid Plan (Spark, Connect or Plus) to read incoming messages or reply. A message sent to a man without an active Plan appears to him only as a locked chat bubble with a lock icon.
 
 These are intended product rules, not claims that the features or payment flows have been implemented.
 
@@ -52,36 +52,39 @@ These are planned capabilities. Their implementation status must be checked in t
 
 ## 5. Messaging and monetisation rules
 
-### Paid passes
+### Plans
 
-| Pass | Price | Duration |
+| Plan | Price | Duration |
 |---|---:|---|
-| Spark | UGX 5,000 | 24 hours |
-| Connect | UGX 15,000 | 7 days |
-| Plus | UGX 30,000 | 30 days |
+| Spark Plan | UGX 5,000 | 24 hours |
+| Connect Plan | UGX 15,000 | 7 days |
+| Plus Plan | UGX 30,000 | 30 days |
 
-Eluda Free is available at UGX 0 on an ongoing basis. An active Spark, Connect or Plus pass unlocks male message reading and replies for the pass duration.
+Eluda Free is available at UGX 0 on an ongoing basis. An active Spark, Connect or Plus Plan unlocks male message reading and replies for the plan duration. Payments are processed through LivePay, and plan activation is confirmed by webhook.
 
-### Female messaging — unrestricted and free
+### Female messaging: unrestricted and free
 
 - Female users can initiate contact and type custom messages freely.
 - They do not need preset icebreakers to initiate contact.
-- Female messaging is 100% free; no pass or payment is required to initiate, read or reply to messages.
+- Female messaging is 100% free; no Plan or payment is required to initiate, read or reply to messages.
 - The male 15-icebreaker daily limit does not apply to female users.
 
-### Male messaging — blind lock
+### Male messaging: blind lock
 
-- A male user without an active Spark, Connect or Plus pass can initiate contact using up to 15 free preset icebreakers per day.
-- If a female user sends him a message and he has no active pass, the conversation remains locked.
-- While locked, he must not be able to see the message text or contents. Show this exact notice: **“[Name] sent you a message. Upgrade to VIP to read it.”** Replace [Name] with the sender’s displayed name.
-- The lock applies to the actual message content, not merely to the reply composer.
-- Once he activates Spark, Connect or Plus, the lock is removed for the pass duration. He can read the woman’s message and reply freely.
-- If a woman included her WhatsApp number in the message, it is part of the message content and becomes visible after the lock is removed. Do not invent an additional number-masking rule in this messaging flow.
-- When the pass expires, male message-reading/reply access returns to the locked state according to the implemented expiry rules.
+- A male user without an active Plan can send up to 15 free preset icebreakers per day.
+- A male user without an active Plan cannot read a woman's message and cannot reply to it.
+- Locked message: if a woman messages a man who has no active Plan, the message is completely locked. No text and no teaser is shown. He sees only a chat bubble with a lock icon.
+- Locked input bar: the input bar at the bottom of the chat is disabled and read-only. It shows the text "Eluda can't continue this chat on your current plan. Upgrade your plan to keep going.", with a "See Plans" button next to it that opens the payment modal.
+- Once he activates a Spark, Connect or Plus Plan, the lock is removed for the plan duration. He can read the woman's messages and reply freely.
+- If a woman included her WhatsApp number in a message, it is part of the message content and becomes visible once the lock is removed. There is no number-masking rule and no contact-sharing button.
+
+### Read-only history
+
+If a user's Plan expires, they can still scroll up and read messages that were previously unlocked. All new incoming messages are completely locked.
 
 ### Implementation boundary
 
-Locked message contents must not be exposed in HTML, client state, API responses or other client-accessible payloads before an active pass is verified server-side. Hiding text visually is not sufficient. Server-side authorization and automated tests must enforce the lock.
+Locked message contents must not be exposed in HTML, client state, API responses or any other client-accessible payload before an active Plan is verified server-side. Hiding text visually is not sufficient. Server-side authorization and automated tests must enforce the lock.
 
 ### Removed from the current MVP direction
 
@@ -89,17 +92,13 @@ Locked message contents must not be exposed in HTML, client state, API responses
 - Blurred, locked or paywalled profile photos.
 - Twin Picks as a paid or game-like feature.
 - Paid priority placement and rewind.
-- Paid tiers for profile viewing or discovery advantages unless the owner explicitly reopens those decisions.
+- Free message reading, contact-sharing buttons and any other paid tiers for profile viewing or discovery advantages.
 
-Daily Picks may remain a normal Discover recommendation component; exact presentation and recommendation logic remain to be specified.
-
-## 6. Profile categories and Casual / Hookups rates
+## 6. Profile categories and Meetups
 
 - Profile/category selection follows gender selection during signup.
-- When a woman selects the **Casual / Hookups** category, her profile must include rate fields for **Short Time** and **Overnight**.
-- At least one of the two rate fields must be provided before the profile can be published in that category.
-- Women can set availability to **Available**, **Busy** or **Hidden**.
-- Profiles marked **Hidden** are excluded from Discovery.
+- Meetups is an intent category for people who want to meet in person quickly. It has no price fields, no rates and no money inputs of any kind.
+- Women can set availability to Available, Busy or Hidden. Profiles marked Hidden are excluded from Discovery.
 - A profile requires at least two photos.
 - Only signed-in users can access Discovery.
 
@@ -115,11 +114,23 @@ Daily Picks may remain a normal Discover recommendation component; exact present
 
 ## 8. Platform and technical direction
 
-**Selected platform direction:** Responsive web application, with PWA support planned for consideration.
+Selected stack: ELUDA is a mobile-first responsive web application built entirely on Next.js (App Router) with TypeScript and Tailwind CSS. Next.js serves both the user interface and the backend. Prisma is the ORM, Supabase provides the PostgreSQL database, and Vercel hosts the application. There is no separate backend service.
 
-Current repository evidence indicates a Next.js frontend in `frontend/`. Next.js + TypeScript + Tailwind CSS is the broader frontend direction; Python/Django and PostgreSQL remain proposed backend options. Authentication, storage, real-time messaging, hosting and production architecture require verification and approval.
+### Architecture rules
 
-PWA scope and timing are not yet specified. Native mobile applications are not part of the selected initial platform direction.
+- Backend in Next.js: Route Handlers serve API endpoints and webhooks. Server Actions handle mutations. A server-only data-access layer is the single place application data is read and written.
+- Prisma is the only application data path. The schema lives in `prisma/schema.prisma`, and schema changes are Prisma Migrate migrations committed to the repo. Applying any migration to the hosted Supabase database requires the owner's explicit approval.
+- Connections: the deployed app uses Supabase's pooled connection string (`DATABASE_URL`), and Prisma Migrate uses the direct connection (`DIRECT_URL`). Values live only in Vercel and local environment settings, never in the repo or in chat.
+- Authorization is enforced in server code. Prisma connects with Supabase's default database role, which does not apply Row Level Security. Every access rule, including ownership checks, Plan checks and the message lock, must therefore be implemented in the server layer and covered by automated tests.
+- RLS as a backstop: Row Level Security is enabled on every table in the exposed schema with no policies for the anon or authenticated roles (deny by default). This keeps Supabase's auto-generated data API from reading application tables with a public key.
+- Authentication: Supabase Auth, with session validation on the server for every protected route and action.
+- Photo storage: private profile photos in Supabase Storage. Bucket configuration and access policies must be verified before use.
+- Message lock: locked message content must never be selected into any API response, server-rendered output, client state or realtime channel before an active Plan is verified server-side. The realtime approach must be designed so locked content never reaches the client.
+- Payments: LivePay. A Route Handler receives the webhook, verifies its authenticity, activates Plans idempotently, and computes Plan access server-side from stored start and expiry times.
+- The legacy `backend/` and `frontend/` directories no longer exist. The Next.js application lives at the repository root.
+- PWA: app-like mobile navigation, installability, deliberate caching, offline and reconnecting states, and safe update behavior. Offline behavior must never claim a server-side operation succeeded, and private messages or account data must not remain accessible through caches after authorization expires.
+
+This is an architecture decision, not a claim that anything is built. Source files do not prove the hosted Supabase project matches any schema.
 
 ## 9. Visual direction
 
@@ -128,34 +139,39 @@ Provisional direction: deep plum, warm ivory, rose pink and restrained gold acce
 ## 10. Decisions and open questions
 
 ### Decisions recorded
-- Brand: ELUDA; audience: adults across Uganda (18+).
-- Users choose their relationship intentions.
-- Responsive web app; PWA support planned for consideration.
-- Spark: UGX 5,000 / 24 hours; Connect: UGX 15,000 / 7 days; Plus: UGX 30,000 / 30 days.
+
+- Brand: ELUDA. Audience: adults across Uganda (18+). Users choose their relationship intentions.
+- Stack: Next.js (App Router) for frontend and backend, Prisma ORM, Supabase PostgreSQL, Vercel. No separate backend service.
+- Plans: Spark Plan UGX 5,000 / 24 hours; Connect Plan UGX 15,000 / 7 days; Plus Plan UGX 30,000 / 30 days; Eluda Free at UGX 0. Payments through LivePay, activated by webhook.
 - Female users message freely, including custom messages, without paying.
-- Male users get 15 preset icebreakers daily and need an active pass to read female messages or reply.
-- Locked notice: “ [Name] sent you a message. Upgrade to VIP to read it.”
-- Male recipients can see message contents, including a WhatsApp number included in the message, after an active pass unlocks it.
-- Casual / Hookups profiles for women require Short Time and Overnight rate fields, with at least one populated.
+- Male users without an active Plan get 15 preset icebreakers daily and cannot read or reply to a woman's message.
+- Locked messages show only a chat bubble with a lock icon. The locked input bar shows the fixed upgrade text and a See Plans button that opens the payment modal.
+- After a Plan expires, previously unlocked messages stay readable; new incoming messages are locked.
+- Meetups is an intent category with no price, rate or money fields.
 - Women can set Available, Busy or Hidden; Hidden profiles do not appear in Discovery.
-- Minimum two profile photos; Discovery is for signed-in users.
-- Daily Picks are a normal Discover recommendation component, not paid Twin Picks.
-- VIP/VVIP profile tiers, restricted/blurred photos, priority placement and rewind are removed from the current MVP direction.
+- Minimum two profile photos. Discovery is for signed-in users only.
+- Daily Picks are a normal Discover recommendation component.
+- VIP/VVIP profile tiers, restricted or blurred photos, priority placement and rewind are removed.
 - Safety and privacy controls remain free.
+- Instant account deletion and webhook-driven payment activation are required.
+- The Next.js application lives at the repository root; the legacy backend directory has been removed.
 
 ### Open questions
+
 - Final visual identity and design tokens.
 - Exact relationship-intent options and discovery/matching rules.
 - Daily Picks presentation and recommendation logic.
 - Exact MVP scope, launch criteria and success metrics.
 - Verification method/provider and operational review process.
-- Backend, database, authentication, storage and real-time messaging architecture.
-- PWA scope and implementation timing.
-- Payment provider, purchase UX, refunds, pass activation/expiry and production payment integration.
-- Data-retention periods, moderation operations, languages and accessibility targets.
+- Realtime messaging approach that never exposes locked content.
+- Complete Prisma data model and the authorization matrix.
+- Private photo bucket configuration and access policy.
+- PWA caching, installability and notification support across target browsers.
+- Refunds and Plan stacking rules (what happens when a user buys a second Plan).
+- Data-retention periods, what instant deletion removes versus retains, moderation operations, languages and accessibility targets.
 
 ## 11. Current implementation status
 
-This brief records product direction; it does not certify that gender-specific message locking, pass enforcement, rate fields or payment flow exist. Verify the repository before implementation.
+This brief records product and architecture direction. It does not certify that message locking, Plan enforcement, Prisma schema, authentication, storage policies or payment flow exist. A repository inspection on 2026-10-26 found a Next.js application at the repository root and no Prisma schema or migration files. Verify the repository and the hosted Supabase project before implementation.
 
-**Review note:** This update records the owner’s exact gender-specific messaging rules and Casual / Hookups rate requirements. Other project documents have not been changed.
+**Review note:** This update records the final stack (Next.js + Prisma + Supabase + Vercel), the final Plans and blind-lock messaging rules, and the Meetups category. Other project documents were reconciled in the same change.

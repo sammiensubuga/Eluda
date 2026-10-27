@@ -1,16 +1,16 @@
 # ELUDA Project Status
 
-**Status:** Documentation baseline in progress  
-**Last updated:** 2026-10-25  
-**Working branch:** `feat/public-access-foundation`  
-**Production branch:** `main`  
+**Status:** Documentation baseline in progress
+**Last updated:** 2026-10-26
+**Working branch:** `feat/public-access-foundation`
+**Production branch:** `main`
 **Production URL:** https://eluda.vercel.app
 
 ## Summary
-ELUDA has a GitHub repository and a Next.js frontend under `frontend/`. A provisional public welcome page has previously been deployed to a Vercel preview. The documentation baseline is being reconciled with the latest product decisions. This status is a cautious baseline, not a complete repository, security or deployment audit.
+ELUDA has a GitHub repository and a Next.js application at the repository root. A provisional public welcome page has previously been deployed to a Vercel preview. The documentation baseline is being reconciled with the final stack, Plans, blind-lock messaging and Meetups rules. This status is a cautious baseline, not a complete repository, security or deployment audit.
 
 ## Documentation progress
-- `PRODUCT_BRIEF.md`: updated with the current product direction, gender-specific messaging rules, chat access passes, and Casual / Hookups rate fields. Saved in commit `6c2938c0cfa01d338382b20fda7dd3539e06c0ab`.
+- `PRODUCT_BRIEF.md`: updated to record the final stack, Plans, blind-lock messaging rules and Meetups category. Saved in commit `6c2938c0cfa01d338382b20fda7dd3539e06c0ab`.
 - `docs/DECISION_LOG.md`: updated to record the current approved product decisions, security constraints, implementation gates and open questions. Saved in commit `a79244c51582ad80c2dc68734c312e9ab2743780`.
 - `PROJECT_STATUS.md`: this update records the state of the documentation workflow; it does not indicate feature implementation or testing.
 - Other documentation files have not yet been reconciled against the latest Product Brief and Decision Log.
@@ -18,8 +18,8 @@ ELUDA has a GitHub repository and a Next.js frontend under `frontend/`. A provis
 ## Previously confirmed
 - Repository: `sammiensubuga/Eluda`.
 - Existing feature branch: `feat/public-access-foundation`.
-- Frontend package scripts include `dev`, `build`, `start` and `lint`.
-- `frontend/package.json` declares Next.js 16.4.3, React 19.3.0, Tailwind CSS 4 and TypeScript 5.
+- Root package scripts include `dev`, `build`, `start` and `lint`.
+- The previous frontend package declared Next.js 16.4.3, React 19.3.0, Tailwind CSS 4 and TypeScript 5; the application directory was subsequently moved to the repository root.
 - The public welcome page is provisional; registration and login routes were not confirmed as implemented in the prior review.
 - The product design and complete UI/UX specification are not yet complete.
 
