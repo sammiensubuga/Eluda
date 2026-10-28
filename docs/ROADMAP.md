@@ -24,7 +24,7 @@
 
 ## Phase 3 — Architecture and implementation readiness
 - [ ] Audit existing technical implementation.
-- [ ] Approve frontend/backend/database/authentication/storage decisions.
+- [ ] Document and verify the selected Next.js + Prisma + Supabase architecture, authentication approach and private storage configuration.
 - [ ] Define data model, API contracts and security requirements.
 - [ ] Define testing strategy, environments and release criteria.
 

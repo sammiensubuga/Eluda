@@ -1,25 +1,34 @@
 # ELUDA Project Status
 
-**Status:** Documentation baseline in progress  
-**Last updated:** 2026-10-25  
-**Working branch:** `feat/public-access-foundation`  
-**Production branch:** `main`  
+**Status:** Documentation baseline in progress
+**Last updated:** 2026-10-28
+**Working branch:** `feat/public-access-foundation`
+**Production branch:** `main`
 **Production URL:** https://eluda.vercel.app
 
 ## Summary
-ELUDA has a GitHub repository and a Next.js frontend under `frontend/`. A provisional public welcome page has previously been deployed to a Vercel preview. The documentation baseline is being reconciled with the latest product decisions. This status is a cautious baseline, not a complete repository, security or deployment audit.
+ELUDA has a GitHub repository and a Next.js application at the repository root. A provisional public welcome page has previously been deployed to a Vercel preview. The documentation baseline is being reconciled with the final stack, Plans, blind-lock messaging and Meetups rules. This status is a cautious baseline, not a complete repository, security or deployment audit.
 
 ## Documentation progress
-- `PRODUCT_BRIEF.md`: updated with the current product direction, gender-specific messaging rules, chat access passes, and Casual / Hookups rate fields. Saved in commit `6c2938c0cfa01d338382b20fda7dd3539e06c0ab`.
+- `PRODUCT_BRIEF.md`: updated to record the final stack, Plans, blind-lock messaging rules and Meetups category. Saved in commit `6c2938c0cfa01d338382b20fda7dd3539e06c0ab`.
 - `docs/DECISION_LOG.md`: updated to record the current approved product decisions, security constraints, implementation gates and open questions. Saved in commit `a79244c51582ad80c2dc68734c312e9ab2743780`.
 - `PROJECT_STATUS.md`: this update records the state of the documentation workflow; it does not indicate feature implementation or testing.
-- Other documentation files have not yet been reconciled against the latest Product Brief and Decision Log.
+- Documentation was reconciled to the final rules in PR #1 (merge commit `4ef54be`); the owner reported a review of all `.md` files with no stale terms found. This is not a repository, security or deployment audit.
+- `AGENTS.md`: Builder rules added below the existing Next.js agent-rules block (BLD-001).
+- `docs/ENGINEERING_WORKFLOW.md`: role names updated to Brain and Builder (BLD-001).
+- Status files: `TASK_LOG.md` records per-task evidence; `PROJECT_STATUS.md` records current state. There is no `PROGRESS.md`.
+- BLD-001 complete: PR #3 merged into `feat/public-access-foundation` (merge commit `9faea61`).
+- Branch layout (verified 2026-10-28): `main` (tip `efeb6f3`) still contains `frontend/` and `backend/` and has no root `app/`; the root Next.js app exists only on `feat/public-access-foundation`. Vercel's production branch is `main`. Previews of the root-layout branch build READY, which indicates the Vercel Root Directory is the repository root (inferred from deployments, not read from the settings page).
+- BLD-001b complete: PR #4 merged (merge commit `30085b0`); the Builder may merge a pull request under an Owner approval line in a Task Packet.
+- BLD-002 complete: PR #5 merged (merge commit `5801422`); the homepage logo uses the local file with `next/image`. Known remaining: the homepage "Log in" link points to `/login`, which does not exist yet; it is created in the Supabase Auth task.
+- Hosted Supabase project "Eluda" (read-only audit, 2026-10-28): empty `public` schema, no migrations, no edge functions, no storage buckets, no Auth users. Used as the development and test database; a separate production project is planned before launch.
+- Vercel env var names currently set (names only): `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, for production, preview and development. No database, payment or service-role variables exist yet. Vercel deployment protection currently requires Vercel login on all `*.vercel.app` URLs.
 
 ## Previously confirmed
 - Repository: `sammiensubuga/Eluda`.
 - Existing feature branch: `feat/public-access-foundation`.
-- Frontend package scripts include `dev`, `build`, `start` and `lint`.
-- `frontend/package.json` declares Next.js 16.4.3, React 19.3.0, Tailwind CSS 4 and TypeScript 5.
+- Root package scripts include `dev`, `build`, `start` and `lint`.
+- The previous frontend package declared Next.js 16.4.3, React 19.3.0, Tailwind CSS 4 and TypeScript 5; the application directory was subsequently moved to the repository root.
 - The public welcome page is provisional; registration and login routes were not confirmed as implemented in the prior review.
 - The product design and complete UI/UX specification are not yet complete.
 
