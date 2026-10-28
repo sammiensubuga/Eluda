@@ -63,12 +63,24 @@ This file records implementation work and its evidence. Keep entries concise and
 
 ## BLD-001b — Builder merge and approval rules
 - **Date:** 2026-10-28
-- **Status:** In progress
+- **Status:** Complete
 - **Owner/chat:** Brain (Task Packet); Builder (implementation)
 - **Scope:** Documentation only. Update merge and approval rules in AGENTS.md; update task log and project status.
 - **Files changed:** `AGENTS.md`, `TASK_LOG.md`, `PROJECT_STATUS.md`.
-- **Commit SHA:** See the pull request description.
+- **Commit SHA:** `dcc6f4e` (PR #4, merged as `30085b0`).
 - **Tests run and results:** Documentation-only change; no application tests claimed. Checks: `git diff --stat`, `git diff --check`.
-- **Preview/deployment evidence:** Pending; recorded in the pull request.
+- **Preview/deployment evidence:** Vercel previews READY for `dcc6f4e` and for merge commit `30085b0`. Docs-only change; no lint or build run.
 - **Known limitations:** None recorded.
+- **Reviewer decision:** Approved by Brain on 2026-10-28 after checking the diff on GitHub and the Vercel preview. Merged by the Builder under owner approval (BLD-001c).
+
+## BLD-002 — Homepage logo uses local file with next/image
+- **Date:** 2026-10-28
+- **Status:** In progress
+- **Owner/chat:** Brain (Task Packet); Builder (implementation)
+- **Scope:** Replace the remote <img> logo in `app/page.tsx` with `next/image` and the local `eluda_logo.png` (static import, `preload`, `sizes="44px"`). The homepage "Log in" link to `/login` is unchanged; `/login` is created in the Supabase Auth task.
+- **Files changed:** `app/page.tsx`, `TASK_LOG.md`, `PROJECT_STATUS.md`.
+- **Commit SHA:** See the pull request description.
+- **Tests run and results:** `npm run lint`: no problems (baseline had one `no-img-element` warning). `npx tsc --noEmit`: no output. `npm run build` (outside the sandbox): succeeded, exit code 0.
+- **Preview/deployment evidence:** Pending; recorded in the pull request.
+- **Known limitations:** No automated tests exist yet. Visual check is by screenshot only. The source logo is 1254x1254 px and 633,522 bytes; resizing the source file is a possible later cleanup.
 - **Reviewer decision:** Awaiting Brain and owner review.
