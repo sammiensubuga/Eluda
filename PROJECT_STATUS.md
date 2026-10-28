@@ -17,7 +17,9 @@ ELUDA has a GitHub repository and a Next.js application at the repository root. 
 - `AGENTS.md`: Builder rules added below the existing Next.js agent-rules block (BLD-001).
 - `docs/ENGINEERING_WORKFLOW.md`: role names updated to Brain and Builder (BLD-001).
 - Status files: `TASK_LOG.md` records per-task evidence; `PROJECT_STATUS.md` records current state. There is no `PROGRESS.md`.
-- Planned next task: BLD-002, homepage logo fix (local logo with `next/image`). Not started.
+- BLD-001 complete: PR #3 merged into `feat/public-access-foundation` (merge commit `9faea61`).
+- Branch layout (verified 2026-10-28): `main` (tip `efeb6f3`) still contains `frontend/` and `backend/` and has no root `app/`; the root Next.js app exists only on `feat/public-access-foundation`. Do not merge into `main` until the Vercel Root Directory is verified.
+- Planned next tasks: BLD-001b (merge and approval rules, in progress), then BLD-002 (homepage logo fix). Not started: BLD-002.
 
 ## Previously confirmed
 - Repository: `sammiensubuga/Eluda`.
