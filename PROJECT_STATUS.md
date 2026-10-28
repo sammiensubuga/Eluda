@@ -18,9 +18,11 @@ ELUDA has a GitHub repository and a Next.js application at the repository root. 
 - `docs/ENGINEERING_WORKFLOW.md`: role names updated to Brain and Builder (BLD-001).
 - Status files: `TASK_LOG.md` records per-task evidence; `PROJECT_STATUS.md` records current state. There is no `PROGRESS.md`.
 - BLD-001 complete: PR #3 merged into `feat/public-access-foundation` (merge commit `9faea61`).
-- Branch layout (verified 2026-10-28): `main` (tip `efeb6f3`) still contains `frontend/` and `backend/` and has no root `app/`; the root Next.js app exists only on `feat/public-access-foundation`. Do not merge into `main` until the Vercel Root Directory is verified.
+- Branch layout (verified 2026-10-28): `main` (tip `efeb6f3`) still contains `frontend/` and `backend/` and has no root `app/`; the root Next.js app exists only on `feat/public-access-foundation`. Vercel's production branch is `main`. Previews of the root-layout branch build READY, which indicates the Vercel Root Directory is the repository root (inferred from deployments, not read from the settings page).
 - BLD-001b complete: PR #4 merged (merge commit `30085b0`); the Builder may merge a pull request under an Owner approval line in a Task Packet.
-- BLD-002 (homepage logo uses the local file with `next/image`): in progress. Known remaining: the homepage "Log in" link points to `/login`, which does not exist yet; it is created in the Supabase Auth task.
+- BLD-002 complete: PR #5 merged (merge commit `5801422`); the homepage logo uses the local file with `next/image`. Known remaining: the homepage "Log in" link points to `/login`, which does not exist yet; it is created in the Supabase Auth task.
+- Hosted Supabase project "Eluda" (read-only audit, 2026-10-28): empty `public` schema, no migrations, no edge functions, no storage buckets, no Auth users. Used as the development and test database; a separate production project is planned before launch.
+- Vercel env var names currently set (names only): `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, for production, preview and development. No database, payment or service-role variables exist yet. Vercel deployment protection currently requires Vercel login on all `*.vercel.app` URLs.
 
 ## Previously confirmed
 - Repository: `sammiensubuga/Eluda`.
