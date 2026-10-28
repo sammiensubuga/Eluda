@@ -1,7 +1,7 @@
 # ELUDA Project Status
 
 **Status:** Documentation baseline in progress
-**Last updated:** 2026-10-26
+**Last updated:** 2026-10-28
 **Working branch:** `feat/public-access-foundation`
 **Production branch:** `main`
 **Production URL:** https://eluda.vercel.app
@@ -13,7 +13,11 @@ ELUDA has a GitHub repository and a Next.js application at the repository root. 
 - `PRODUCT_BRIEF.md`: updated to record the final stack, Plans, blind-lock messaging rules and Meetups category. Saved in commit `6c2938c0cfa01d338382b20fda7dd3539e06c0ab`.
 - `docs/DECISION_LOG.md`: updated to record the current approved product decisions, security constraints, implementation gates and open questions. Saved in commit `a79244c51582ad80c2dc68734c312e9ab2743780`.
 - `PROJECT_STATUS.md`: this update records the state of the documentation workflow; it does not indicate feature implementation or testing.
-- Other documentation files have not yet been reconciled against the latest Product Brief and Decision Log.
+- Documentation was reconciled to the final rules in PR #1 (merge commit `4ef54be`); the owner reported a review of all `.md` files with no stale terms found. This is not a repository, security or deployment audit.
+- `AGENTS.md`: Builder rules added below the existing Next.js agent-rules block (BLD-001).
+- `docs/ENGINEERING_WORKFLOW.md`: role names updated to Brain and Builder (BLD-001).
+- Status files: `TASK_LOG.md` records per-task evidence; `PROJECT_STATUS.md` records current state. There is no `PROGRESS.md`.
+- Planned next task: BLD-002, homepage logo fix (local logo with `next/image`). Not started.
 
 ## Previously confirmed
 - Repository: `sammiensubuga/Eluda`.

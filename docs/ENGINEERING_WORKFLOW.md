@@ -1,10 +1,10 @@
 # ELUDA Engineering Workflow
 
 ## Roles
-### ELUDA Product HQ
+### Brain
 Owns product planning, requirements, system analysis, UI/UX direction, task definition, acceptance criteria and implementation review.
 
-### ELUDA Code
+### Builder
 Inspects the repository, implements only approved tasks, runs available checks, commits to approved feature branches, verifies previews where possible and reports evidence.
 
 ### Product owner
