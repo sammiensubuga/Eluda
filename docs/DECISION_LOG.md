@@ -79,10 +79,10 @@ Statuses: **Approved**, **Proposed**, **Open**, **Superseded**. Only the product
 
 ## Open decisions and validation
 - Final brand identity and design tokens.
-- Exact relationship-intention options and discovery behavior.
+- Discovery behavior and matching rules (the relationship-intent options are decided; see the 2026-10-29 section below).
 - Daily Picks interface and selection logic.
 - Verification approach and review states.
-- Final backend, authentication, storage and real-time architecture.
+- Authentication sign-in method, storage configuration and final real-time details (the signal-then-fetch design is approved; see the 2026-10-29 section below).
 - PWA scope and timing.
 - Payment provider, checkout, Plan activation/expiry, refunds and compliance.
 - Moderation operations, data retention, account deletion workflow, accessibility and language support.
@@ -103,4 +103,18 @@ Statuses: **Approved**, **Proposed**, **Open**, **Superseded**. Only the product
 - **Availability and discovery:** Women can set Available, Busy or Hidden; Hidden profiles are excluded from Discovery. Profiles require at least two photos. Discovery is for signed-in users only. Daily Picks are part of ordinary Discover recommendations.
 - **Removed direction:** VIP/VVIP profile tiers, restricted or blurred photos, priority placement and rewind are removed. Reporting, blocking and unmatching remain free.
 - **Required capabilities:** Instant account deletion and webhook-driven payment activation are requirements, not claims of implementation.
-- **Open items:** Final visual identity and design tokens; relationship-intent options and discovery/matching rules; Daily Picks presentation and recommendation logic; MVP launch criteria and success metrics; verification provider and review process; realtime messaging design that never exposes locked content; complete Prisma data model and authorization matrix; private photo bucket configuration and access policy; PWA caching, installability and browser notification support; refunds and Plan stacking; retention/deletion details, moderation operations, languages and accessibility targets.
+- **Open items:** Final visual identity and design tokens; discovery and recommendation rules and Daily Picks presentation and logic; MVP launch criteria and success metrics; verification provider and review process (launch blocker: women must be verified before they can message men); authentication sign-in method; refunds; private photo bucket configuration and access policy; PWA caching, installability and browser notification support; retention and deletion details, moderation operations (including moderator access to message content, deferred), languages and accessibility targets; Supabase Realtime plan limits before launch.
+
+## Data model, realtime and messaging decisions (2026-10-29)
+- **Status:** Approved product and architecture direction; items marked provisional may be revisited; implementation status unverified. Full design: `docs/DATA_MODEL_AND_AUTHORIZATION.md`.
+- **Relationship intents:** exactly four (Meetups, Dating, Marriage, Make New Friends), stored as MEETUPS, DATING, MARRIAGE, FRIENDS. A profile holds one and can change it at any time. Meetups has no price, rate or money fields and no extra features.
+- **Opposite-gender only (MVP):** men see and message women, and women see and message men. No same-gender discovery or messaging and no orientation data. Gender is the gender chosen at signup and is not user-editable afterwards; corrections are made by the owner through a reviewed script.
+- **Likes and matches:** not a gate for messaging; built after messaging and LivePay; the `likes` table stays in the schema. Unmatch closes the conversation and removes the mutual like.
+- **Hidden:** a Hidden woman cannot receive new conversations from anyone; existing conversations keep working; she can start conversations herself.
+- **Presets:** only men without an active Plan send presets (15 per day, resetting at midnight Africa/Kampala) and they cannot send once the other person has written. Men with an active Plan send custom messages with no daily total cap, including to start conversations. Presets are constants in code; messages store only the preset key.
+- **Unlock:** activating a Plan unlocks every message waiting for that man; messages arriving during an active Plan unlock on arrival; each message stores an unlock time; unlocked messages stay readable after expiry; messages arriving after expiry stay locked.
+- **Notifications and list:** locked-message notifications carry no sender name and no text. In the signed-in conversation list a locked conversation shows the sender's name and photo plus a lock bubble, with no text, preview, preset key or message length.
+- **Real-time chat (MVP):** signal, then fetch, over private per-user Supabase Realtime channels. Signals carry only a conversation ID and an event type. The single RLS policy exception is a SELECT-only policy on `realtime.messages` for the user's own channel; clients cannot publish. The server-only Supabase key never uses a `NEXT_PUBLIC_` name; CI checks enforce this.
+- **Build order:** message lock with fetch-based bypass tests first, then real-time signals, then LivePay (which adds the entitlement-changed signal).
+- **Provisional:** a second Plan purchase starts when the current Plan ends; account deletion makes the account inaccessible instantly, then purges personal data and photos, with payment records kept but detached from personal data; moderator access to message content is deferred.
+- **Launch blockers (not blocking the MVP build):** verification for women before they can message men (method and provider open); data-protection obligations and the 18+ approach; Supabase Realtime plan limits.
