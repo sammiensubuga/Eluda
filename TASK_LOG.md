@@ -99,9 +99,57 @@ This file records implementation work and its evidence. Keep entries concise and
 
 ## BLD-003 — Docs close-out and audit facts
 - **Date:** 2026-10-28
-- **Status:** In progress
+- **Status:** Complete
 - **Owner/chat:** Brain (Task Packet); Builder (implementation)
 - **Scope:** Documentation only. Close the BLD-002 entry, record BLD-002m, and record read-only audit facts in `PROJECT_STATUS.md`.
+- **Files changed:** `TASK_LOG.md`, `PROJECT_STATUS.md`.
+- **Commit SHA:** `6d48616` (PR #6, merged as `1611d6c`).
+- **Tests run and results:** Documentation-only change; no application tests claimed. Checks: `git diff --stat`, `git diff --check`.
+- **Preview/deployment evidence:** Vercel previews READY for `6d48616` and for merge commit `1611d6c`. Docs-only change; no lint or build run.
+- **Known limitations:** None recorded.
+- **Reviewer decision:** Approved by Brain on 2026-10-28 after checking the diff on GitHub and the Vercel preview state. Merged by the Builder under owner approval (BLD-003m).
+
+## BLD-003m — Merge PR #6
+- **Date:** 2026-10-28
+- **Status:** Complete
+- **Owner/chat:** Brain (Task Packet); Builder (implementation)
+- **Scope:** Merge PR #6 into `feat/public-access-foundation` under explicit owner approval.
+- **Files changed:** None (merge commit `1611d6c` on GitHub).
+- **Commit SHA:** `1611d6c`
+- **Tests run and results:** None required. `git pull --ff-only` succeeded; working tree clean.
+- **Preview/deployment evidence:** Vercel preview READY for `1611d6c`.
+- **Known limitations:** None recorded.
+- **Reviewer decision:** Approved by Brain on 2026-10-28.
+
+## BLD-004 — Open PR #7 promoting the integration branch to main
+- **Date:** 2026-10-28
+- **Status:** Complete
+- **Owner/chat:** Brain (Task Packet); Builder (implementation)
+- **Scope:** Read-only branch facts and opening PR #7 (`feat/public-access-foundation` into `main`). No merge.
+- **Files changed:** None.
+- **Commit SHA:** Head `1611d6c`; `main` was at `efeb6f3` (an ancestor of the head; 13 commits ahead, 0 behind).
+- **Tests run and results:** None required. Secret-like file-name scan (names only) found no matches on either branch.
+- **Preview/deployment evidence:** Vercel preview READY for `1611d6c`.
+- **Known limitations:** The file-name scan is not a full secret scan of git history.
+- **Reviewer decision:** Approved by Brain on 2026-10-28 after checking PR #7 and its 53-file list on GitHub.
+
+## BLD-004m — Merge PR #7 into main
+- **Date:** 2026-10-28
+- **Status:** Complete
+- **Owner/chat:** Brain (Task Packet); Builder (implementation)
+- **Scope:** Merge PR #7 into `main` under explicit owner approval. The head branch was kept.
+- **Files changed:** None (merge commit `f60b47c` on `main`; parents `efeb6f3` and `1611d6c`).
+- **Commit SHA:** `f60b47c`
+- **Tests run and results:** None required. `git pull --ff-only` on `main` succeeded; working tree clean.
+- **Preview/deployment evidence:** Vercel production deployment READY for `f60b47c` (branch `main`). The Brain read its build log: root-level build, Next.js 16.4.3, compiled and type-checked without errors, routes `/` and `/_not-found`.
+- **Known limitations:** npm warns that `eslint@9.39.5` is deprecated and that the `unrs-resolver` install script is not covered by `allowScripts`; the build succeeds and nothing was changed.
+- **Reviewer decision:** Approved by Brain on 2026-10-28.
+
+## BLD-005 — Docs close-out for BLD-003 to BLD-004m
+- **Date:** 2026-10-28
+- **Status:** In progress
+- **Owner/chat:** Brain (Task Packet); Builder (implementation)
+- **Scope:** Documentation only. Close the BLD-003 entry, record BLD-003m, BLD-004 and BLD-004m, and update `PROJECT_STATUS.md`.
 - **Files changed:** `TASK_LOG.md`, `PROJECT_STATUS.md`.
 - **Commit SHA:** See the pull request description.
 - **Tests run and results:** Documentation-only change; no application tests claimed. Checks: `git diff --stat`, `git diff --check`.
