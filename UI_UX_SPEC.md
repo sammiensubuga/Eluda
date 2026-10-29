@@ -36,7 +36,7 @@ Proposed palette: deep plum, warm ivory, rose pink and restrained gold accents. 
 - Match confirmation
 - Matches list
 - Daily Picks presentation (approximately 3–5 recommended profiles is the current direction; presentation and selection logic remain open)
-- Relationship-intent selection and intent-specific profile fields; Meetups is an intent category and must not include price, rate or money fields.
+- Relationship-intent selection (exactly one of Meetups, Dating, Marriage or Make New Friends, changeable at any time) and any intent-specific profile fields the UX review approves; Meetups is an intent category and must not include price, rate or money fields.
 
 ### Messaging
 - Conversation list
@@ -85,6 +85,10 @@ This inventory is not a claim that these screens exist in code. The screen list 
 - With an active Spark, Connect or Plus Plan, the man can read the message and reply freely while access remains active.
 - If the unlocked message contains a WhatsApp number, it becomes visible as part of the unlocked message.
 - Locked message content must not be present in the page HTML, client state, API response or any client-accessible payload until server-side authorization succeeds. A blur, overlay or visual concealment alone is not security.
+- Conversation list: a locked conversation shows the sender's name and photo plus a lock bubble, with no text, preview, preset key or message length. Notifications for locked messages carry no sender name and no text.
+- Icebreaker picker (men without an active Plan only): shows the "Any" presets plus those matching the recipient's intent. The daily limit (15 per day, resetting at midnight Africa/Kampala) is enforced on the server.
+- Opposite-gender only: men see and message women, and women see and message men. There is no same-gender discovery or messaging, and no orientation data is collected.
+- Real-time states: the chat handles reconnecting and polling-fallback states without ever showing locked content, and refetches when a signal arrives or when the Plan ends.
 - Use the term Plan for Spark, Connect and Plus. VIP/VVIP profile tiers and paywalled profile photos are not part of the current product direction.
 - Plan prices recorded in the Product Brief are product decisions, not proof that checkout or Plan activation is implemented. Payment UI and integration remain behind the relevant approval gate.
 
