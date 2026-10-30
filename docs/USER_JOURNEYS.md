@@ -17,7 +17,7 @@ Requirements:
 Open decisions: supported sign-in methods, account verification method, required profile fields beyond confirmed requirements, and what happens when setup is incomplete.
 
 ## Journey B — Discover and connect
-Signed-in Discover → inspect profile → express interest or pass → mutual interest creates a match → match appears in matches list → open conversation.
+Signed-in Discover (men see women, women see men) → inspect profile → optionally express interest or pass → start a conversation. No like or match is required before messaging; likes and mutual matches are built after messaging and LivePay.
 
 Requirements:
 - Women's availability can be Available, Busy or Hidden; Hidden profiles are excluded from Discover.
@@ -35,7 +35,7 @@ Requirements:
 - Women can write custom messages freely; preset icebreakers are not required.
 - Message contents, including a WhatsApp number, are handled according to the recipient's access and privacy rules.
 
-The exact point at which a conversation can begin relative to matching remains to be finalized in the interaction design; do not silently invent a match requirement if the approved product flow differs.
+A conversation does not require a like or a match. A signed-in user can message a visible, unblocked profile of the opposite gender under the messaging rules in `PRODUCT_BRIEF.md` Section 5 and `docs/DATA_MODEL_AND_AUTHORIZATION.md`. A Hidden woman cannot receive new conversations from anyone; she can start conversations herself, and existing conversations keep working.
 
 ## Journey D — Men initiate with a preset icebreaker
 Man browses a profile → chooses one of the available preset icebreakers → sends it within the allowance of up to 15 free icebreakers per day → waits for a response.

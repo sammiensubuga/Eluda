@@ -1,7 +1,7 @@
 # ELUDA Project Status
 
 **Status:** Documentation baseline in progress
-**Last updated:** 2026-10-28
+**Last updated:** 2026-10-29
 **Working branch:** `feat/public-access-foundation`
 **Production branch:** `main`
 **Production URL:** https://eluda.vercel.app
@@ -26,7 +26,13 @@ ELUDA has a GitHub repository and a Next.js application at the repository root. 
 - BLD-003 complete: PR #6 merged (merge commit `1611d6c`). BLD-004 and BLD-004m complete: PR #7 merged into `main` (merge commit `f60b47c`).
 - Built routes (production build of `f60b47c`): `/` and `/_not-found` only. The homepage links "Log in" and "Create your account" point to `/login` and `/register`, which do not exist yet; they are created in the Supabase Auth task.
 - Build warnings (not addressed): npm reports `eslint@9.39.5` as deprecated and one install script (`unrs-resolver`) not covered by `allowScripts`. The build succeeds.
-- Next planned work: a data-model and authorization design document for owner approval, then the test harness and CI baseline, before any Prisma schema is written.
+- BLD-005 and BLD-006 series: PR #8 (merge commit `2681fc4`) and PR #9 (merge commit `b1a9c01`) merged. The data-model and authorization design is approved and committed as `docs/DATA_MODEL_AND_AUTHORIZATION.md` (design only; nothing is implemented). PRODUCT_BRIEF.md and docs/DECISION_LOG.md record the 2026-10-29 decisions.
+- Next planned work, in order: reconcile the remaining docs (BLD-006c), the test harness and CI baseline, the Prisma schema, Supabase Auth, profile and conversation basics, the entitlement model, the message lock with fetch-based bypass tests, real-time signals, LivePay, then likes and Discovery.
+
+## Launch blockers (not blocking the MVP build)
+1. Verification for women before they can message men (method and provider open). The main abuse risk is fake-female accounts messaging men to drive paid unlocks; gender immutability does not address it.
+2. Data-protection obligations and the 18+ approach.
+3. Supabase Realtime plan limits (concurrent connections and message volume).
 
 ## Previously confirmed
 - Repository: `sammiensubuga/Eluda`.
@@ -61,7 +67,7 @@ ELUDA has a GitHub repository and a Next.js application at the repository root. 
 7. Implement approved tasks in small changes and update this document with evidence.
 
 ## Next task
-**DOC-003:** Review `UI_UX_SPEC.md`, `docs/SCREEN_INVENTORY.md` and `docs/USER_JOURNEYS.md` for consistency with the current Product Brief and Decision Log. Reconcile one document at a time and show the proposed changes for review. After the documentation baseline is reviewed, conduct a read-only repository and deployment audit before assigning implementation work.
+**BLD-006c** (in progress): reconcile the remaining documents with the approved decisions. After it merges, the next task is the test harness and CI baseline.
 
 ## Update rules
 For every status update, distinguish:

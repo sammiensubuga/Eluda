@@ -146,13 +146,73 @@ This file records implementation work and its evidence. Keep entries concise and
 - **Reviewer decision:** Approved by Brain on 2026-10-28.
 
 ## BLD-005 — Docs close-out for BLD-003 to BLD-004m
-- **Date:** 2026-10-28
-- **Status:** In progress
+- **Date:** 2026-10-29
+- **Status:** Complete
 - **Owner/chat:** Brain (Task Packet); Builder (implementation)
 - **Scope:** Documentation only. Close the BLD-003 entry, record BLD-003m, BLD-004 and BLD-004m, and update `PROJECT_STATUS.md`.
 - **Files changed:** `TASK_LOG.md`, `PROJECT_STATUS.md`.
-- **Commit SHA:** See the pull request description.
+- **Commit SHA:** `7c1656c` (PR #8, merged as `2681fc4`).
 - **Tests run and results:** Documentation-only change; no application tests claimed. Checks: `git diff --stat`, `git diff --check`.
+- **Preview/deployment evidence:** Vercel previews READY for `7c1656c` and for merge commit `2681fc4`. Docs-only change; no lint or build run.
+- **Known limitations:** None recorded.
+- **Reviewer decision:** Approved by Brain on 2026-10-29 after checking the PR and the Vercel preview state. Merged by the Builder under owner approval (BLD-005m).
+
+## BLD-005m — Merge PR #8
+- **Date:** 2026-10-29
+- **Status:** Complete
+- **Owner/chat:** Brain (Task Packet); Builder (implementation)
+- **Scope:** Correct the commit SHA in PR #8's description and merge PR #8 into `feat/public-access-foundation` under explicit owner approval.
+- **Files changed:** None (merge commit `2681fc4` on GitHub).
+- **Commit SHA:** `2681fc4`
+- **Tests run and results:** None required. `git pull --ff-only` succeeded; working tree clean.
+- **Preview/deployment evidence:** Vercel preview READY for `2681fc4`.
+- **Known limitations:** None recorded.
+- **Reviewer decision:** Approved by Brain on 2026-10-29.
+
+## BLD-006a — Docs grep-and-report (read-only)
+- **Date:** 2026-10-29
+- **Status:** Complete
+- **Owner/chat:** Brain (Task Packet); Builder (implementation)
+- **Scope:** Read-only inspection of the product docs. Found stale lines in `SYSTEM_ARCHITECTURE.md`, `docs/USER_JOURNEYS.md`, `docs/SCREEN_INVENTORY.md` and the open-question lists. No files changed.
+- **Files changed:** None.
+- **Commit SHA:** Base `2681fc4`; no commit.
+- **Tests run and results:** None required.
+- **Preview/deployment evidence:** Not applicable.
+- **Known limitations:** None recorded.
+- **Reviewer decision:** Approved by Brain on 2026-10-29.
+
+## BLD-006b — Data-model design; brief and decision-log updates
+- **Date:** 2026-10-29
+- **Status:** Complete
+- **Owner/chat:** Brain (Task Packet); Builder (implementation)
+- **Scope:** Documentation only. Added `docs/DATA_MODEL_AND_AUTHORIZATION.md`; updated `PRODUCT_BRIEF.md` (not Section 5) and `docs/DECISION_LOG.md` with the 2026-10-29 owner decisions.
+- **Files changed:** `docs/DATA_MODEL_AND_AUTHORIZATION.md` (new), `PRODUCT_BRIEF.md`, `docs/DECISION_LOG.md`.
+- **Commit SHA:** `3676a5f` (PR #9, merged as `b1a9c01`).
+- **Tests run and results:** Documentation-only change; no application tests claimed. Checks: `git diff --stat`, `git diff --check`, hunk list, preset-row count (23).
+- **Preview/deployment evidence:** Vercel previews READY for `3676a5f` and for merge commit `b1a9c01`. Docs-only change; no lint or build run.
+- **Known limitations:** The new document has no trailing newline.
+- **Reviewer decision:** Approved by Brain on 2026-10-29.
+
+## BLD-006bm — Merge PR #9
+- **Date:** 2026-10-29
+- **Status:** Complete
+- **Owner/chat:** Brain (Task Packet); Builder (implementation)
+- **Scope:** Merge PR #9 into `feat/public-access-foundation` under explicit owner approval.
+- **Files changed:** None (merge commit `b1a9c01` on GitHub).
+- **Commit SHA:** `b1a9c01`
+- **Tests run and results:** None required. After merge, `git diff --stat 2681fc4 HEAD` showed 3 files, 167 insertions, 13 deletions.
+- **Preview/deployment evidence:** Vercel preview READY for `b1a9c01`.
+- **Known limitations:** The first attempt stopped at a sandbox permission error on `.git/FETCH_HEAD`; the local sync completed after rerunning git commands outside the sandbox.
+- **Reviewer decision:** Approved by Brain on 2026-10-29.
+
+## BLD-006c — Reconcile remaining docs with the approved decisions
+- **Date:** 2026-10-29
+- **Status:** In progress
+- **Owner/chat:** Brain (Task Packet); Builder (implementation)
+- **Scope:** Documentation only. Update `SYSTEM_ARCHITECTURE.md`, `UI_UX_SPEC.md`, `docs/SCREEN_INVENTORY.md`, `docs/USER_JOURNEYS.md` and `docs/SECURITY_REQUIREMENTS.md`; add the Launch blockers list to `PROJECT_STATUS.md`; update this log.
+- **Files changed:** `SYSTEM_ARCHITECTURE.md`, `UI_UX_SPEC.md`, `docs/SCREEN_INVENTORY.md`, `docs/USER_JOURNEYS.md`, `docs/SECURITY_REQUIREMENTS.md`, `PROJECT_STATUS.md`, `TASK_LOG.md`.
+- **Commit SHA:** See the pull request description.
+- **Tests run and results:** Documentation-only change; no application tests claimed. Checks: `git diff --stat`, `git diff --check`, stale-wording grep.
 - **Preview/deployment evidence:** Pending; recorded in the pull request.
 - **Known limitations:** None recorded.
 - **Reviewer decision:** Awaiting Brain and owner review.

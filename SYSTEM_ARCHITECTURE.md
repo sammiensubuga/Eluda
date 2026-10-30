@@ -14,7 +14,7 @@
 - **Database:** Supabase PostgreSQL. The deployed application uses the pooled `DATABASE_URL`; Prisma Migrate uses `DIRECT_URL`. Values stay in Vercel and local environment settings, never in the repository or chat.
 - **Authentication:** Supabase Auth, with server-side session validation for protected routes and actions.
 - **Hosting:** Vercel hosts the application.
-- **Real-time messaging:** The approach must ensure locked message content never reaches the client before active Plan authorization is verified server-side.
+- **Real-time messaging:** Signal, then fetch. Private per-user Supabase Realtime channels carry only a signal (conversation ID and event type) and never message content; the client then fetches through the normal authenticated endpoint, which applies the lock. See `docs/DATA_MODEL_AND_AUTHORIZATION.md`.
 - **Payments:** LivePay webhooks activate Plans idempotently after authenticity verification; access is computed server-side from stored start and expiry times.
 
 Applying any migration to the hosted Supabase database requires the owner's explicit approval. This is an architecture decision, not a claim that the components are implemented.
@@ -30,13 +30,13 @@ Applying any migration to the hosted Supabase database requires the owner's expl
 - Use migrations and documented backup/recovery procedures if a persistent database is introduced.
 
 ## 4. Authentication and sessions
-Provider and implementation are undecided. The approved design must cover registration, login, recovery, session expiry, logout, account suspension, and protection against account enumeration and abuse. Avoid selecting a provider until requirements, cost and operational needs are reviewed.
+Supabase Auth is the authentication provider (see `PRODUCT_BRIEF.md` Section 8). The sign-in method (email, phone or both) is not decided. The approved design must cover registration, login, recovery, session expiry, logout, account suspension, and protection against account enumeration and abuse.
 
 ## 5. Data model candidates
-Potential entities include User/Account, Profile, ProfilePhoto, Preference, Like, Match, Conversation, Message, VerificationRecord, Report, Block, Notification and ModerationAction. This is a conceptual list only; fields, relationships, retention and access policies belong in `docs/DATA_MODEL.md` after requirements review.
+The approved MVP data model and authorization matrix are in `docs/DATA_MODEL_AND_AUTHORIZATION.md`. Entities beyond the MVP (for example VerificationRecord, Notification and ModerationAction) will be added there after review. Nothing in that document is implemented.
 
 ## 6. Messaging and consent
-Messaging access should be limited to permitted participants. A WhatsApp number typed inside a message is part of that message's content and follows the message lock. The realtime messaging approach remains open and must ensure locked message content never reaches an unauthorized client.
+Messaging access is limited to permitted participants. A WhatsApp number typed inside a message is part of that message's content and follows the message lock. The real-time design is signal, then fetch (see `docs/DATA_MODEL_AND_AUTHORIZATION.md`), so locked message content never reaches an unauthorized client.
 
 ## 7. Deployment and change control
 - Feature work occurs on an approved feature branch.
