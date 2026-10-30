@@ -35,6 +35,8 @@ This repository is ELUDA, a dating platform for adults (18+) in Uganda. These ru
 ## Environment and checks
 - The app is at the repository root. Install with `npm ci`.
 - Lint and TypeScript checks can run in the sandbox.
+- Git commands that write to `.git` or use the network (fetch, switch, branch, commit, push, pull) run outside the sandbox so that Codex shows its approval prompt. Editing files and read-only git commands can run in the sandbox.
+- Before opening a pull request, run `npm run lint`, `npm run typecheck` and `npm run check:client-env` in the sandbox. Run `npm test` and the build outside the sandbox, with Sammie's approval and the same temp-folder settings as the build command above (the sandbox temp folder blocks the file renames Vite and Turbopack make). CI runs the same checks on every pull request.
 - The sandbox temp folder crashes Turbopack, so builds run outside the sandbox, with Sammie's approval, as:
   `$env:TEMP='C:\dev\.tmp-codex'; $env:TMP='C:\dev\.tmp-codex'; npm run build`
 - If a build fails in your environment, ask Sammie to run `npm run build` in PowerShell and relay the raw output.
@@ -53,6 +55,7 @@ This repository is ELUDA, a dating platform for adults (18+) in Uganda. These ru
 - Subscriptions are called Plans, never "Passes". VIP and VVIP profile tiers do not exist. See `PRODUCT_BRIEF.md` for names, prices and durations.
 - Locked message content must never reach the client (HTML, client state, API responses, realtime channels, notifications, caches) before an active Plan is verified server-side. Automated tests must try to bypass it.
 - Plan access is computed server-side from stored start and expiry. Payment activation is webhook-driven, verified and idempotent.
+- The server-only Supabase key never uses a `NEXT_PUBLIC_` name and never reaches the client bundle. Refer to env vars by name only.
 
 ## Reporting
 Every report must include: branch, commit SHA, `git diff --stat`, the raw output of every check run and which checks were not run, the PR link, the Vercel preview URL, and a screenshot for UI changes. Distinguish planned, implemented and tested. Do not claim something works unless you verified it.
