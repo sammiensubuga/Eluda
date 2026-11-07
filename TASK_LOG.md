@@ -207,12 +207,36 @@ This file records implementation work and its evidence. Keep entries concise and
 
 ## BLD-006c — Reconcile remaining docs with the approved decisions
 - **Date:** 2026-10-29
-- **Status:** In progress
+- **Status:** Complete
 - **Owner/chat:** Brain (Task Packet); Builder (implementation)
 - **Scope:** Documentation only. Update `SYSTEM_ARCHITECTURE.md`, `UI_UX_SPEC.md`, `docs/SCREEN_INVENTORY.md`, `docs/USER_JOURNEYS.md` and `docs/SECURITY_REQUIREMENTS.md`; add the Launch blockers list to `PROJECT_STATUS.md`; update this log.
 - **Files changed:** `SYSTEM_ARCHITECTURE.md`, `UI_UX_SPEC.md`, `docs/SCREEN_INVENTORY.md`, `docs/USER_JOURNEYS.md`, `docs/SECURITY_REQUIREMENTS.md`, `PROJECT_STATUS.md`, `TASK_LOG.md`.
-- **Commit SHA:** See the pull request description.
+- **Commit SHA:** `c5e5f0f` (PR #10, merged as `dcf803c`).
 - **Tests run and results:** Documentation-only change; no application tests claimed. Checks: `git diff --stat`, `git diff --check`, stale-wording grep.
-- **Preview/deployment evidence:** Pending; recorded in the pull request.
+- **Preview/deployment evidence:** Vercel previews READY for `c5e5f0f` and for merge commit `dcf803c`. Docs-only change; no lint or build run.
 - **Known limitations:** None recorded.
+- **Reviewer decision:** Approved by Brain on 2026-10-29 after checking the PR diff on GitHub and the Vercel preview state. Merged by the Builder under owner approval (BLD-006cm).
+
+## BLD-006cm — Merge PR #10
+- **Date:** 2026-10-30
+- **Status:** Complete
+- **Owner/chat:** Brain (Task Packet); Builder (implementation)
+- **Scope:** Merge PR #10 into `feat/public-access-foundation` under explicit owner approval.
+- **Files changed:** None (merge commit `dcf803c` on GitHub).
+- **Commit SHA:** `dcf803c`
+- **Tests run and results:** None required. `git pull --ff-only` succeeded; `git diff --stat b1a9c01 HEAD` showed 7 files, 91 insertions, 15 deletions.
+- **Preview/deployment evidence:** Vercel preview READY for `dcf803c`.
+- **Known limitations:** None recorded.
+- **Reviewer decision:** Approved by Brain on 2026-10-30.
+
+## BLD-007 — Test harness and CI baseline
+- **Date:** 2026-10-30
+- **Status:** In progress
+- **Owner/chat:** Brain (Task Packet); Builder (implementation)
+- **Scope:** Add Vitest, a client-env check script with tests, and a GitHub Actions workflow running lint, type-check, the client-env check, tests and build. Append sandbox and check rules to `AGENTS.md`. Update the log and status files.
+- **Files changed:** `.github/workflows/ci.yml`, `scripts/check-client-env.mjs`, `tests/check-client-env.test.mjs`, `vitest.config.mjs`, `package.json`, `package-lock.json`, `AGENTS.md`, `TASK_LOG.md`, `PROJECT_STATUS.md`.
+- **Commit SHA:** See the pull request description.
+- **Tests run and results:** `npm ci` passed with npm 11.19.0 on Node v24.21.0. `npm run lint`, `npm run typecheck` and `npm run check:client-env` passed in the sandbox (exit 0). `npm test` first failed inside the sandbox with an EPERM temp-folder rename; rerun outside the sandbox with the temp folder set: 1 file passed, 5 tests passed (exit 0). `npm run build` passed outside the sandbox (exit 0). The first CI run failed at the type-check step on a clean checkout (`app/page.tsx`: cannot find module `../eluda_logo.png`), because `next-env.d.ts`is generated and git-ignored; fixed by running `next typegen` before`tsc`. CI result after the fix: see the pull request.
+- **Preview/deployment evidence:** Pending; recorded in the pull request.
+- **Known limitations:** The CI bundle canary check (a secret value must not appear in `.next/static`) is added with the first server-only secret. No feature tests exist yet. Vitest is on the 4.x line (`^4.1.12`) because Vitest 5 requires `@types/node`22 or newer and the project uses`@types/node`20; revisit when`@types/node` is aligned with Node 24. CI warns that`actions/checkout@v4`and`actions/setup-node@v4` target Node 20; not addressed.
 - **Reviewer decision:** Awaiting Brain and owner review.
