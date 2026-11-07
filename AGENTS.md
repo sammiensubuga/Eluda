@@ -50,6 +50,7 @@ This repository is ELUDA, a dating platform for adults (18+) in Uganda. These ru
 - Schema changes are Prisma Migrate migrations committed to the repo. Never apply a migration to hosted Supabase without Sammie's explicit approval inside that task.
 - Prisma connects with a role that bypasses Supabase RLS. Every access rule (ownership, Plan checks, the message lock) must be enforced in server code and covered by automated tests.
 - Every table created by a migration must have RLS enabled in the same migration, with no public policies.
+- Prisma is pinned to the 7.x line (`7.10.1`); do not upgrade without a Task Packet. The app connects with `DATABASE_URL` (pooled) and Prisma CLI commands use `DIRECT_URL`. Never print either value. `lib/db.ts` is the only place Prisma Client is created.
 
 ## Product non-negotiables
 - Subscriptions are called Plans, never "Passes". VIP and VVIP profile tiers do not exist. See `PRODUCT_BRIEF.md` for names, prices and durations.

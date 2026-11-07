@@ -1,0 +1,27 @@
+// ELUDA data model. Design: docs/DATA_MODEL_AND_AUTHORIZATION.md
+// Every table created from this schema must have Row Level Security enabled in the same migration.
+
+generator client {
+  provider = "prisma-client"
+  output   = "./generated"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Gender {
+  FEMALE
+  MALE
+}
+
+model User {
+  id          String    @id @db.Uuid
+  gender      Gender
+  dateOfBirth DateTime  @map("date_of_birth") @db.Date
+  displayName String    @map("display_name")
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt   DateTime? @map("deleted_at") @db.Timestamptz(6)
+
+  @@map("users")
+}
