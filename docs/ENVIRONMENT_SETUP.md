@@ -29,3 +29,16 @@ The backend framework and local database setup have not yet been confirmed. Add 
 
 ## Verification
 This document is a starting point. Confirm prerequisites, scripts and environment variables against the current repository before treating these steps as fully tested.
+
+## Database environment variables (names only)
+
+Local values live in an uncommitted `.env` file and in Vercel environment settings. Never commit them or paste them into chat.
+
+| Name | Used by | Value to use |
+|---|---|---|
+| `DATABASE_URL` | The running app (Prisma Client through `@prisma/adapter-pg`, created in `lib/db.ts`) | The Supabase Supavisor transaction-mode pooled connection string (port 6543, with `?pgbouncer=true`) for the dedicated `prisma` database role |
+| `DIRECT_URL` | Prisma CLI commands that touch a database (migrate, db pull), through `prisma.config.ts` | The Supabase Supavisor session-mode connection string (port 5432) for the same role. The direct connection string works only on IPv6 networks or with the IPv4 add-on |
+
+`prisma generate`, installs, CI and builds do not need these variables: `prisma.config.ts` falls back to an empty URL. Prisma commands that need a database fail until `DIRECT_URL` is set.
+
+Prisma is pinned to 7.10.1 (stable). The `latest` npm tag currently points to an 8.0 release candidate; do not upgrade without a Task Packet. The generated client is written to `prisma/generated` (git-ignored) by `prisma generate`, which runs on `npm install` and `npm ci`.
