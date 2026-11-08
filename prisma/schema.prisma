@@ -13,6 +13,47 @@ datasource db {
 enum Gender {
   FEMALE
   MALE
+
+  @@map("gender")
+}
+
+enum Intent {
+  MEETUPS
+  DATING
+  MARRIAGE
+  FRIENDS
+
+  @@map("intent")
+}
+
+enum Availability {
+  AVAILABLE
+  BUSY
+  HIDDEN
+
+  @@map("availability")
+}
+
+enum ConversationStatus {
+  OPEN
+  CLOSED
+
+  @@map("conversation_status")
+}
+
+enum MessageKind {
+  PRESET
+  CUSTOM
+
+  @@map("message_kind")
+}
+
+enum UnlockReason {
+  NOT_REQUIRED
+  ACTIVE_PLAN_AT_ARRIVAL
+  PLAN_ACTIVATION
+
+  @@map("unlock_reason")
 }
 
 model User {
@@ -23,5 +64,114 @@ model User {
   createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   deletedAt   DateTime? @map("deleted_at") @db.Timestamptz(6)
 
+  profile               Profile?
+  photos                ProfilePhoto[]
+  conversationsAsA      Conversation[]         @relation("ConversationUserA")
+  conversationsAsB      Conversation[]         @relation("ConversationUserB")
+  messagesSent          Message[]              @relation("MessageSender")
+  messagesReceived      Message[]              @relation("MessageRecipient")
+  unlocks               MessageUnlock[]
+  icebreakerDailyCounts IcebreakerDailyCount[]
+
   @@map("users")
+}
+
+model Profile {
+  userId       String        @id @map("user_id") @db.Uuid
+  intent       Intent
+  availability Availability?
+  bio          String?
+  publishedAt  DateTime?     @map("published_at") @db.Timestamptz(6)
+  updatedAt    DateTime      @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("profiles")
+}
+
+model ProfilePhoto {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  storagePath String   @unique @map("storage_path")
+  position    Int
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, position])
+  @@index([userId])
+  @@map("profile_photos")
+}
+
+model Conversation {
+  id        String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userAId   String             @map("user_a_id") @db.Uuid
+  userBId   String             @map("user_b_id") @db.Uuid
+  status    ConversationStatus @default(OPEN)
+  closedAt  DateTime?          @map("closed_at") @db.Timestamptz(6)
+  lastSeq   Int                @default(0) @map("last_seq")
+  createdAt DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  userA    User      @relation("ConversationUserA", fields: [userAId], references: [id], onDelete: Cascade)
+  userB    User      @relation("ConversationUserB", fields: [userBId], references: [id], onDelete: Cascade)
+  messages Message[]
+
+  @@unique([userAId, userBId])
+  @@index([userBId])
+  @@map("conversations")
+}
+
+model Message {
+  id             String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  conversationId String      @map("conversation_id") @db.Uuid
+  seq            Int
+  senderId       String      @map("sender_id") @db.Uuid
+  recipientId    String      @map("recipient_id") @db.Uuid
+  kind           MessageKind
+  presetKey      String?     @map("preset_key")
+  sentAt         DateTime    @default(now()) @map("sent_at") @db.Timestamptz(6)
+
+  conversation Conversation    @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender       User            @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)
+  recipient    User            @relation("MessageRecipient", fields: [recipientId], references: [id], onDelete: Cascade)
+  content      MessageContent?
+  unlock       MessageUnlock?
+
+  @@unique([conversationId, seq])
+  @@index([recipientId, sentAt])
+  @@index([senderId])
+  @@map("messages")
+}
+
+model MessageContent {
+  messageId String @id @map("message_id") @db.Uuid
+  body      String
+
+  message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@map("message_contents")
+}
+
+model MessageUnlock {
+  messageId   String       @id @map("message_id") @db.Uuid
+  recipientId String       @map("recipient_id") @db.Uuid
+  unlockedAt  DateTime     @default(now()) @map("unlocked_at") @db.Timestamptz(6)
+  reason      UnlockReason
+
+  message   Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  recipient User    @relation(fields: [recipientId], references: [id], onDelete: Cascade)
+
+  @@index([recipientId, unlockedAt])
+  @@map("message_unlocks")
+}
+
+model IcebreakerDailyCount {
+  userId String   @map("user_id") @db.Uuid
+  day    DateTime @db.Date
+  count  Int      @default(0)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, day])
+  @@map("icebreaker_daily_counts")
 }

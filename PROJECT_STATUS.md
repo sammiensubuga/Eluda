@@ -29,7 +29,9 @@ ELUDA has a GitHub repository and a Next.js application at the repository root. 
 - BLD-005 and BLD-006 series: PR #8 (merge commit `2681fc4`) and PR #9 (merge commit `b1a9c01`) merged. The data-model and authorization design is approved and committed as `docs/DATA_MODEL_AND_AUTHORIZATION.md` (design only; nothing is implemented). PRODUCT_BRIEF.md and docs/DECISION_LOG.md record the 2026-10-29 decisions.
 - BLD-006c complete: PR #10 merged into `feat/public-access-foundation` (merge commit `dcf803c`); the remaining docs now match the approved decisions.
 - BLD-007 complete: PR #11 merged (merge commit `0d18a54`). CI (GitHub Actions) runs lint, type-check, the client-env check, tests and build on every pull request and on pushes to `main` and `feat/public-access-foundation`. The first CI run caught a missing generated-types problem: the `typecheck` script now runs `next typegen` first.
-- Next planned work, in order: Prisma setup (BLD-008), the MVP Prisma schema and migrations written locally (BLD-009 and BLD-010), applying the migrations to the Eluda dev database with a dedicated `prisma` role (BLD-011, owner approval), Supabase Auth, profile and conversation basics, the entitlement model, the message lock with fetch-based bypass tests, real-time signals, LivePay, then likes and Discovery.
+- BLD-008 complete: PR #12 merged (merge commit `19b4fd2`). Prisma 7.10.1 with the PostgreSQL adapter is set up; `prisma generate` runs on install; `lib/db.ts` is the only place Prisma Client is created and nothing imports it yet.
+- npm audit (2026-11-07): 8 moderate advisories, all in the ESLint toolchain (`eslint-config-next` to `typescript-eslint` to `minimatch`); `npm audit --omit=dev` reports 0. The suggested forced fix would downgrade `eslint-config-next` and is not applied. Revisit when `eslint-config-next` ships a fixed dependency chain.
+- Next planned work, in order: the core schema and migration (BLD-009), the second schema batch (payments, entitlements, webhook events, likes, blocks, reports; BLD-010), applying the migrations to the Eluda dev database with a dedicated `prisma` role (BLD-011, owner approval), Supabase Auth, profile and conversation basics, the entitlement model, the message lock with fetch-based bypass tests, real-time signals, LivePay, then likes and Discovery.
 
 ## Launch blockers (not blocking the MVP build)
 1. Verification for women before they can message men (method and provider open). The main abuse risk is fake-female accounts messaging men to drive paid unlocks; gender immutability does not address it.
@@ -69,7 +71,7 @@ ELUDA has a GitHub repository and a Next.js application at the repository root. 
 7. Implement approved tasks in small changes and update this document with evidence.
 
 ## Next task
-**BLD-008** (in progress): Prisma 7 setup (pinned 7.10.1, driver adapter, config, server-only client module). After it merges, the next task is the MVP schema and migrations, written locally (BLD-009).
+**BLD-009** (in progress): the identity and messaging tables as Prisma models, with the migration SQL and Row Level Security written locally and not applied. After it merges, the next task is the second schema batch (BLD-010).
 
 ## Update rules
 For every status update, distinguish:
