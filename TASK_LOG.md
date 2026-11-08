@@ -236,9 +236,9 @@ This file records implementation work and its evidence. Keep entries concise and
 - **Scope:** Add Vitest, a client-env check script with tests, and a GitHub Actions workflow running lint, type-check, the client-env check, tests and build. Append sandbox and check rules to `AGENTS.md`. Update the log and status files.
 - **Files changed:** `.github/workflows/ci.yml`, `scripts/check-client-env.mjs`, `tests/check-client-env.test.mjs`, `vitest.config.mjs`, `package.json`, `package-lock.json`, `AGENTS.md`, `TASK_LOG.md`, `PROJECT_STATUS.md`.
 - **Commit SHA:** `238bef6` and `d923823` (PR #11, merged as `0d18a54`).
-- **Tests run and results:** `npm ci` passed with npm 11.19.0 on Node v24.21.0. `npm run lint`, `npm run typecheck` and `npm run check:client-env` passed in the sandbox (exit 0). `npm test` first failed inside the sandbox with an EPERM temp-folder rename; rerun outside the sandbox with the temp folder set: 1 file passed, 5 tests passed (exit 0). `npm run build` passed outside the sandbox (exit 0). The first CI run failed at the type-check step on a clean checkout (`app/page.tsx`: cannot find module `../eluda_logo.png`), because `next-env.d.ts`is generated and git-ignored; fixed by running `next typegen` before`tsc`. CI result after the fix: see the pull request.
+- **Tests run and results:** `npm ci` passed with npm 11.19.0 on Node v24.21.0. `npm run lint`, `npm run typecheck` and `npm run check:client-env` passed in the sandbox (exit 0). `npm test` first failed inside the sandbox with an EPERM temp-folder rename; rerun outside the sandbox with the temp folder set: 1 file passed, 5 tests passed (exit 0). `npm run build` passed outside the sandbox (exit 0). The first CI run failed at the type-check step on a clean checkout (`app/page.tsx`: cannot find module `../eluda_logo.png`), because `next-env.d.ts` is generated and git-ignored; fixed by running `next typegen` before `tsc`. CI result after the fix: success on `d923823` and on merge commit `0d18a54`.
 - **Preview/deployment evidence:** CI (GitHub Actions) succeeded on `d923823` and on merge commit `0d18a54`; Vercel preview READY for `d923823`.
-- **Known limitations:** The CI bundle canary check (a secret value must not appear in `.next/static`) is added with the first server-only secret. No feature tests exist yet. Vitest is on the 4.x line (`^4.1.12`) because Vitest 5 requires `@types/node`22 or newer and the project uses`@types/node`20; revisit when`@types/node` is aligned with Node 24. CI warns that`actions/checkout@v4`and`actions/setup-node@v4` target Node 20; not addressed.
+- **Known limitations:** The CI bundle canary check (a secret value must not appear in `.next/static`) is added with the first server-only secret. No feature tests exist yet. Vitest is on the 4.x line (`^4.1.12`) because Vitest 5 requires `@types/node` 22 or newer and the project uses `@types/node` 20; revisit when `@types/node` is aligned with Node 24. CI warns that `actions/checkout@v4` and `actions/setup-node@v4` target Node 20; not addressed.
 - **Reviewer decision:** Approved by Brain on 2026-11-07 after CI succeeded on the PR head and on the merged branch. Merged by the Builder under owner approval (BLD-007m).
 
 ## BLD-007m — Merge PR #11
@@ -255,12 +255,36 @@ This file records implementation work and its evidence. Keep entries concise and
 
 ## BLD-008 — Prisma 7 setup
 - **Date:** 2026-11-07
-- **Status:** In progress
+- **Status:** Complete
 - **Owner/chat:** Brain (Task Packet); Builder (implementation)
 - **Scope:** Install Prisma 7.10.1 with the PostgreSQL driver adapter, add `prisma.config.ts`, a minimal schema (Gender enum and User model), a server-only `lib/db.ts`, `prisma generate` on install, and docs. No database connection, no migration.
 - **Files changed:** `package.json`, `package-lock.json`, `prisma/schema.prisma`, `prisma.config.ts`, `lib/db.ts`, `.gitignore`, `eslint.config.mjs`, `AGENTS.md`, `docs/ENVIRONMENT_SETUP.md`, `TASK_LOG.md`, `PROJECT_STATUS.md`.
-- **Commit SHA:** See the pull request description.
+- **Commit SHA:** `0606335` (PR #12, merged as `19b4fd2`).
 - **Tests run and results:** `npm ci` passed with npm 11.19.0 on Node v24.21.0; `postinstall` ran `prisma generate` and generated Prisma Client 7.10.1. `npm run lint`, `npm run typecheck` and `npm run check:client-env` passed in the sandbox (exit 0). `npm test` passed outside the sandbox (1 file, 5 tests, exit 0). `npm run build` passed outside the sandbox (exit 0). No database connection or migration command was run.
+- **Preview/deployment evidence:** CI (GitHub Actions) succeeded on `0606335`; Vercel preview READY for `0606335`. The Builder reported CI success on merge commit `19b4fd2`.
+- **Known limitations:** The schema had only the `User` model at this point; the full MVP schema follows in later tasks. The `latest` npm tag for Prisma is an 8.0 release candidate, so 7.10.1 is pinned. `lib/db.ts` is not used by any code yet. `npm audit` reports 8 moderate advisories, all in the ESLint toolchain (`eslint-config-next`, `typescript-eslint`, `minimatch`); `npm audit --omit=dev` reports 0. The suggested forced fix would downgrade `eslint-config-next` and is not applied. `prisma` is listed under `dependencies`; it may move to `devDependencies` later.
+- **Reviewer decision:** Awaiting Brain and owner review.
+
+## BLD-008m — Merge PR #12
+- **Date:** 2026-11-07
+- **Status:** Complete
+- **Owner/chat:** Brain (Task Packet); Builder (implementation)
+- **Scope:** Merge PR #12 into `feat/public-access-foundation` under explicit owner approval.
+- **Files changed:** None (merge commit `19b4fd2` on GitHub).
+- **Commit SHA:** `19b4fd2`
+- **Tests run and results:** None required locally. `git pull --ff-only` succeeded; `git diff --stat 0d18a54 HEAD` showed 11 files, 1726 insertions, 51 deletions.
+- **Preview/deployment evidence:** The Builder reported the CI run on `19b4fd2` as successful.
+- **Known limitations:** None recorded.
+- **Reviewer decision:** Approved by Brain on 2026-11-07.
+
+## BLD-009 — Core identity and messaging tables, migration SQL and RLS test
+- **Date:** 2026-11-07
+- **Status:** In progress
+- **Owner/chat:** Brain (Task Packet); Builder (implementation)
+- **Scope:** Add eight Prisma models (users, profiles, profile_photos, conversations, messages, message_contents, message_unlocks, icebreaker_daily_counts), the migration SQL with Row Level Security, privilege revokes and CHECK constraints, and a test that fails if a migration creates a table without RLS. Nothing is applied to any database.
+- **Files changed:** `prisma/schema.prisma`, `prisma/migrations/20261107120000_core_identity_messaging/migration.sql`, `prisma/migrations/migration_lock.toml`, `tests/migrations-rls.test.mjs`, `docs/DATA_MODEL_AND_AUTHORIZATION.md`, `TASK_LOG.md`, `PROJECT_STATUS.md`.
+- **Commit SHA:** See the pull request description.
+- **Tests run and results:** `npx prisma validate` passed; `npm run db:generate` passed (Prisma Client 7.10.1). `npm ci` passed with npm 11.19.0 on Node v24.21.0 (exit 0); `npm run lint`, `npm run typecheck`, and `npm run check:client-env` passed (exit 0). `npm test` passed outside sandbox with temp folder set (2 files, 14 tests, exit 0). `npm run build` passed outside sandbox (exit 0).
 - **Preview/deployment evidence:** Pending; recorded in the pull request.
-- **Known limitations:** The schema has only the `User` model; the full MVP schema and migrations follow in later tasks. The `latest` npm tag for Prisma is an 8.0 release candidate, so 7.10.1 is pinned. `lib/db.ts` is not used by any code yet.
+- **Known limitations:** The migration has not been applied to any database and has not been executed against Postgres; its SQL has only been checked statically. Maximum message and bio lengths are undecided.
 - **Reviewer decision:** Awaiting Brain and owner review.

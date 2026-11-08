@@ -119,3 +119,14 @@ Stored as constants in code with a stable key and the intents each applies to ("
 | MEE_02 | Meetups | Hello! I'm not one for long chatting. Coffee sometime if we click? |
 | MEE_03 | Meetups | Hey! Would you be up for meeting in person soon? |
 | MEE_04 | Meetups | Hi! I'd rather meet than text for days. What area are you in? |
+
+## 10. Implementation notes (BLD-009)
+
+- `prisma/schema.prisma` now holds the identity and messaging tables: `users`, `profiles`, `profile_photos`, `conversations`, `messages`, `message_contents`, `message_unlocks` and `icebreaker_daily_counts`. The migration SQL is committed but has not been applied to any database. Payments, entitlements, webhook events, likes, blocks and reports follow in a later migration.
+- Ids default to `gen_random_uuid()` except `users.id`, which is the Supabase Auth user id.
+- Row Level Security is enabled and `anon` and `authenticated` privileges are revoked in the same migration. An automated test (`tests/migrations-rls.test.mjs`) fails if any migration creates a table without both.
+- Database CHECK constraints: users are 18 or older; photo positions are not negative; the two conversation participants are stored ordered (`user_a_id < user_b_id`); `messages.seq` is positive; sender and recipient differ; a PRESET message has a `preset_key` and a CUSTOM message has none; message bodies are not empty; the daily icebreaker count is between 0 and 15.
+- Deleting a user deletes their profile, photos, conversations, messages, unlock records and counters (cascade). Revisit this when retention rules are decided.
+- Not decided yet: a maximum message length, a maximum bio length, and a format check for preset keys. Rules that span more than one table (for example that a message's sender and recipient are the two participants of its conversation, or that they are of opposite gender) are enforced in server code and tested.
+- Prisma's generated `CREATE SCHEMA IF NOT EXISTS "public"` statement was removed from the migration on purpose: the schema exists on Supabase, and the statement may need database-level CREATE privilege that the dedicated `prisma` role does not have.
+- There is no foreign key from `users.id` to Supabase's `auth.users`; the link is by value only. Whether to add one, and the extra database privilege it would need, is decided in the Supabase Auth task.
