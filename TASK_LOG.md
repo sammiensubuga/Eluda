@@ -279,12 +279,36 @@ This file records implementation work and its evidence. Keep entries concise and
 
 ## BLD-009 — Core identity and messaging tables, migration SQL and RLS test
 - **Date:** 2026-11-07
-- **Status:** In progress
+- **Status:** Complete
 - **Owner/chat:** Brain (Task Packet); Builder (implementation)
 - **Scope:** Add eight Prisma models (users, profiles, profile_photos, conversations, messages, message_contents, message_unlocks, icebreaker_daily_counts), the migration SQL with Row Level Security, privilege revokes and CHECK constraints, and a test that fails if a migration creates a table without RLS. Nothing is applied to any database.
 - **Files changed:** `prisma/schema.prisma`, `prisma/migrations/20261107120000_core_identity_messaging/migration.sql`, `prisma/migrations/migration_lock.toml`, `tests/migrations-rls.test.mjs`, `docs/DATA_MODEL_AND_AUTHORIZATION.md`, `TASK_LOG.md`, `PROJECT_STATUS.md`.
-- **Commit SHA:** See the pull request description.
+- **Commit SHA:** `e804044` (PR #13, merged as `00478df`).
 - **Tests run and results:** `npx prisma validate` passed; `npm run db:generate` passed (Prisma Client 7.10.1). `npm ci` passed with npm 11.19.0 on Node v24.21.0 (exit 0); `npm run lint`, `npm run typecheck`, and `npm run check:client-env` passed (exit 0). `npm test` passed outside sandbox with temp folder set (2 files, 14 tests, exit 0). `npm run build` passed outside sandbox (exit 0).
+- **Preview/deployment evidence:** CI succeeded on `e804044` (run 6) and on merge commit `00478df` (run 7); Vercel preview READY for `e804044`.
+- **Known limitations:** Applied only to a scratch Postgres 16 by the Brain (the migration ran cleanly and every CHECK, unique, RLS and cascade behaviour was verified); not applied to Supabase. The `users.id` to `auth.users` link is by value only. Maximum message and bio lengths are undecided. Prisma's generated `CREATE SCHEMA` statement was removed on purpose.
+- **Reviewer decision:** Approved by Brain on 2026-11-08 after reading the full migration SQL, checking the PR diff and CI, and dry-running the SQL on a scratch Postgres. Merged by the Builder under owner approval (BLD-009m).
+
+## BLD-009m — Merge PR #13
+- **Date:** 2026-11-08
+- **Status:** Complete
+- **Owner/chat:** Brain (Task Packet); Builder (implementation)
+- **Scope:** Merge PR #13 into `feat/public-access-foundation` under explicit owner approval.
+- **Files changed:** None (merge commit `00478df` on GitHub).
+- **Commit SHA:** `00478df`
+- **Tests run and results:** None required locally. `git pull --ff-only` succeeded; `git diff --stat 19b4fd2 HEAD` showed 7 files, 443 insertions, 8 deletions.
+- **Preview/deployment evidence:** CI run 7 succeeded on `00478df`; Vercel check success.
+- **Known limitations:** None recorded.
+- **Reviewer decision:** Approved by Brain on 2026-11-08.
+
+## BLD-010 — Second batch of tables, migration SQL and RLS
+- **Date:** 2026-11-14
+- **Status:** In progress
+- **Owner/chat:** Brain (Task Packet); Builder (implementation)
+- **Scope:** Add `likes`, `blocks`, `reports`, `payments`, `plan_entitlements` and `webhook_events` as Prisma models, with the second migration (Row Level Security, privilege revokes, CHECK constraints). Nothing is applied to any database.
+- **Files changed:** `prisma/schema.prisma`, `prisma/migrations/20261114120000_likes_blocks_reports_payments/migration.sql`, `docs/DATA_MODEL_AND_AUTHORIZATION.md`, `TASK_LOG.md`, `PROJECT_STATUS.md`.
+- **Commit SHA:** See the pull request description.
+- **Tests run and results:** From a clean state: `npm ci` (postinstall ran `prisma generate`), lint, typecheck and the client-env check passed in the sandbox; `npm test` passed outside the sandbox (2 files, 20 tests); `npm run build` passed outside the sandbox. `prisma validate` and client generation passed with no database variable set. The migration file was produced with `prisma migrate diff --from-schema` (previous schema from git) `--to-schema ... --script --output`; no database was contacted.
 - **Preview/deployment evidence:** Pending; recorded in the pull request.
-- **Known limitations:** The migration has not been applied to any database and has not been executed against Postgres; its SQL has only been checked statically. Maximum message and bio lengths are undecided.
+- **Known limitations:** The migration has not been applied to any database. Report reasons are free text until the reasons list is decided. NylonPay integration details (webhook handling, phone-number prompt, sandbox keys) are not built yet; the payment provider changed from LivePay to NylonPay on 2026-11-09.
 - **Reviewer decision:** Awaiting Brain and owner review.
