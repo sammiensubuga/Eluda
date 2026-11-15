@@ -17,7 +17,7 @@ Requirements:
 Open decisions: supported sign-in methods, account verification method, required profile fields beyond confirmed requirements, and what happens when setup is incomplete.
 
 ## Journey B — Discover and connect
-Signed-in Discover (men see women, women see men) → inspect profile → optionally express interest or pass → start a conversation. No like or match is required before messaging; likes and mutual matches are built after messaging and LivePay.
+Signed-in Discover (men see women, women see men) → inspect profile → optionally express interest or pass → start a conversation. No like or match is required before messaging; likes and mutual matches are built after messaging and NylonPay.
 
 Requirements:
 - Women's availability can be Available, Busy or Hidden; Hidden profiles are excluded from Discover.

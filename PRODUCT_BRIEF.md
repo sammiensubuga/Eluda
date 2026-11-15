@@ -53,7 +53,7 @@ These are planned capabilities. Their implementation status must be checked in t
 ### MVP connection rules
 
 - Opposite-gender only: men see and message women, and women see and message men. There is no same-gender discovery or messaging, and no orientation data is collected. Gender for all rules is the gender chosen at signup; it cannot be edited afterwards (corrections are made by the owner through a reviewed script, not a feature).
-- Likes and mutual matches are not required before messaging. They are an interest signal and a match badge, built after messaging and LivePay. Unmatch closes the conversation and removes the mutual like.
+- Likes and mutual matches are not required before messaging. They are an interest signal and a match badge, built after messaging and NylonPay. Unmatch closes the conversation and removes the mutual like.
 
 ## 5. Messaging and monetisation rules
 
@@ -65,7 +65,7 @@ These are planned capabilities. Their implementation status must be checked in t
 | Connect Plan | UGX 15,000 | 7 days |
 | Plus Plan | UGX 30,000 | 30 days |
 
-Eluda Free is available at UGX 0 on an ongoing basis. An active Spark, Connect or Plus Plan unlocks male message reading and replies for the plan duration. Payments are processed through LivePay, and plan activation is confirmed by webhook.
+Eluda Free is available at UGX 0 on an ongoing basis. An active Spark, Connect or Plus Plan unlocks male message reading and replies for the plan duration. Payments are processed through NylonPay, and plan activation is confirmed by webhook.
 
 ### Female messaging: unrestricted and free
 
@@ -135,7 +135,7 @@ Selected stack: ELUDA is a mobile-first responsive web application built entirel
 - Message lock: locked message content must never be selected into any API response, server-rendered output, client state or realtime channel before an active Plan is verified server-side. The realtime approach must be designed so locked content never reaches the client.
 - Real-time chat (in the MVP): signal, then fetch. Private per-user Supabase Realtime channels carry only a signal (conversation ID and event type: message-arrived or entitlement-changed) and never a message body, preset key, sender name or any content-derived data. After a signal the client fetches through the normal authenticated endpoint, which applies the lock. Signals are sent server-side from a route handler after the database transaction commits. Reconnect catch-up uses a per-conversation sequence cursor plus a server-issued sync token, with a polling fallback. Full design: `docs/DATA_MODEL_AND_AUTHORIZATION.md`.
 - Secrets: the server-only Supabase key never uses a `NEXT_PUBLIC_` name and never reaches the client bundle. Docs name env vars only, never values. Automated checks must fail the build if a server-only env var name appears in client code or a secret value appears in the client bundle.
-- Payments: LivePay. A Route Handler receives the webhook, verifies its authenticity, activates Plans idempotently, and computes Plan access server-side from stored start and expiry times.
+- Payments: NylonPay. A Route Handler receives the webhook, verifies its authenticity, activates Plans idempotently, and computes Plan access server-side from stored start and expiry times.
 - The legacy `backend/` and `frontend/` directories no longer exist. The Next.js application lives at the repository root.
 - PWA: app-like mobile navigation, installability, deliberate caching, offline and reconnecting states, and safe update behavior. Offline behavior must never claim a server-side operation succeeded, and private messages or account data must not remain accessible through caches after authorization expires.
 
@@ -151,7 +151,7 @@ Provisional direction: deep plum, warm ivory, rose pink and restrained gold acce
 
 - Brand: ELUDA. Audience: adults across Uganda (18+). Users choose their relationship intentions.
 - Stack: Next.js (App Router) for frontend and backend, Prisma ORM, Supabase PostgreSQL, Vercel. No separate backend service.
-- Plans: Spark Plan UGX 5,000 / 24 hours; Connect Plan UGX 15,000 / 7 days; Plus Plan UGX 30,000 / 30 days; Eluda Free at UGX 0. Payments through LivePay, activated by webhook.
+- Plans: Spark Plan UGX 5,000 / 24 hours; Connect Plan UGX 15,000 / 7 days; Plus Plan UGX 30,000 / 30 days; Eluda Free at UGX 0. Payments through NylonPay, activated by webhook.
 - Female users message freely, including custom messages, without paying.
 - Male users without an active Plan get 15 preset icebreakers daily and cannot read or reply to a woman's message.
 - Locked messages show only a chat bubble with a lock icon. The locked input bar shows the fixed upgrade text and a See Plans button that opens the payment modal.
@@ -166,7 +166,7 @@ Provisional direction: deep plum, warm ivory, rose pink and restrained gold acce
 - The Next.js application lives at the repository root; the legacy backend directory has been removed.
 - Relationship intents: exactly four (Meetups, Dating, Marriage, Make New Friends); a profile holds one and can change it at any time.
 - Opposite-gender only for the MVP: men see and message women, and women see and message men. No same-gender discovery or messaging, no orientation data. Gender is the gender chosen at signup and is not user-editable afterwards.
-- Likes and mutual matches are not a gate for messaging and are built after messaging and LivePay. Unmatch closes the conversation and removes the mutual like.
+- Likes and mutual matches are not a gate for messaging and are built after messaging and NylonPay. Unmatch closes the conversation and removes the mutual like.
 - A Hidden woman cannot receive new conversations from anyone; existing conversations keep working and she can start conversations herself.
 - Presets are for men without an active Plan only: 15 per day, resetting at midnight Africa/Kampala, and they cannot send once the other person has written. Men with an active Plan send custom messages with no daily total cap, including to start conversations. Presets are constants in code and messages store only the preset key.
 - Activating a Plan unlocks every message waiting for that man; messages arriving during an active Plan unlock on arrival; each message stores an unlock time.
@@ -186,11 +186,11 @@ Provisional direction: deep plum, warm ivory, rose pink and restrained gold acce
 - Prisma schema implementation: the data model and authorization matrix are approved as a design in `docs/DATA_MODEL_AND_AUTHORIZATION.md`; nothing is implemented.
 - Private photo bucket configuration and access policy.
 - PWA caching, installability and notification support across target browsers.
-- Refunds. Plan stacking is provisional: a second purchase starts when the current Plan ends; revisit in the LivePay task.
+- Refunds. Plan stacking is provisional: a second purchase starts when the current Plan ends; revisit in the NylonPay task.
 - Data-retention periods, moderation operations (moderator access to message content is deferred), languages and accessibility targets. Account deletion is provisional: the account becomes inaccessible instantly, then personal data and photos are purged; payment records are kept but detached from personal data.
 
 ## 11. Current implementation status
 
-This brief records product and architecture direction. It does not certify that message locking, Plan enforcement, Prisma schema, authentication, storage policies or payment flow exist. A repository inspection on 2026-10-26 found a Next.js application at the repository root and no Prisma schema or migration files. Verify the repository and the hosted Supabase project before implementation.
+This brief records product and architecture direction. It does not certify that message locking, Plan enforcement, Prisma schema, authentication, storage policies or payment flow exist. A repository inspection on 2026-10-26 found a Next.js application at the repository root and no Prisma schema or migration files. Since then, Prisma 7.10.1 has been set up and the data model is written as Prisma models with migration SQL (BLD-008 to BLD-010). The migrations have not been applied to any database, and no authentication, messaging, entitlement or payment code exists yet. Verify the repository and the hosted Supabase project before implementation.
 
 **Review note:** This update records the final stack (Next.js + Prisma + Supabase + Vercel), the final Plans and blind-lock messaging rules, and the Meetups category. The 2026-10-29 update adds the four relationship intents, the opposite-gender rule, the Hidden-woman rule, the real-time signal-then-fetch design and the approved data-model decisions. Other project documents were reconciled in the same change.

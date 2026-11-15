@@ -303,12 +303,24 @@ This file records implementation work and its evidence. Keep entries concise and
 
 ## BLD-010 — Second batch of tables, migration SQL and RLS
 - **Date:** 2026-11-14
-- **Status:** In progress
+- **Status:** Complete
 - **Owner/chat:** Brain (Task Packet); Builder (implementation)
 - **Scope:** Add `likes`, `blocks`, `reports`, `payments`, `plan_entitlements` and `webhook_events` as Prisma models, with the second migration (Row Level Security, privilege revokes, CHECK constraints). Nothing is applied to any database.
 - **Files changed:** `prisma/schema.prisma`, `prisma/migrations/20261114120000_likes_blocks_reports_payments/migration.sql`, `docs/DATA_MODEL_AND_AUTHORIZATION.md`, `TASK_LOG.md`, `PROJECT_STATUS.md`.
-- **Commit SHA:** See the pull request description.
+- **Commit SHA:** `cec1472` (PR #14, merged as `dc2bde2`).
 - **Tests run and results:** From a clean state: `npm ci` (postinstall ran `prisma generate`), lint, typecheck and the client-env check passed in the sandbox; `npm test` passed outside the sandbox (2 files, 20 tests); `npm run build` passed outside the sandbox. `prisma validate` and client generation passed with no database variable set. The migration file was produced with `prisma migrate diff --from-schema` (previous schema from git) `--to-schema ... --script --output`; no database was contacted.
-- **Preview/deployment evidence:** Pending; recorded in the pull request.
+- **Preview/deployment evidence:** CI succeeded on `cec1472` (run 8); Vercel preview READY for `cec1472`.
 - **Known limitations:** The migration has not been applied to any database. Report reasons are free text until the reasons list is decided. NylonPay integration details (webhook handling, phone-number prompt, sandbox keys) are not built yet; the payment provider changed from LivePay to NylonPay on 2026-11-09.
+- **Reviewer decision:** Merged by the Builder under owner approval (BLD-010m).
+
+## BLD-010n — Replace LivePay with NylonPay and close out BLD-010
+- **Date:** 2026-11-16
+- **Status:** In progress
+- **Owner/chat:** Brain (Task Packet); Builder (documentation update)
+- **Scope:** Replace current-provider references to LivePay with NylonPay, record the provider decision, correct the brief's implementation status, and close BLD-010.
+- **Files changed:** `PRODUCT_BRIEF.md`, `SYSTEM_ARCHITECTURE.md`, `docs/DATA_MODEL_AND_AUTHORIZATION.md`, `docs/SCREEN_INVENTORY.md`, `docs/USER_JOURNEYS.md`, `docs/DECISION_LOG.md`, `PROJECT_STATUS.md`, `TASK_LOG.md`.
+- **Commit SHA:** See the pull request description.
+- **Tests run and results:** Documentation-only. Checks: `git diff --check`, `git diff --stat`, stale-wording grep.
+- **Preview/deployment evidence:** Pending; recorded in the pull request.
+- **Known limitations:** None recorded.
 - **Reviewer decision:** Awaiting Brain and owner review.

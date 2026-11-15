@@ -15,7 +15,7 @@
 - **Authentication:** Supabase Auth, with server-side session validation for protected routes and actions.
 - **Hosting:** Vercel hosts the application.
 - **Real-time messaging:** Signal, then fetch. Private per-user Supabase Realtime channels carry only a signal (conversation ID and event type) and never message content; the client then fetches through the normal authenticated endpoint, which applies the lock. See `docs/DATA_MODEL_AND_AUTHORIZATION.md`.
-- **Payments:** LivePay webhooks activate Plans idempotently after authenticity verification; access is computed server-side from stored start and expiry times.
+- **Payments:** NylonPay webhooks activate Plans idempotently after authenticity verification; access is computed server-side from stored start and expiry times.
 
 Applying any migration to the hosted Supabase database requires the owner's explicit approval. This is an architecture decision, not a claim that the components are implemented.
 
