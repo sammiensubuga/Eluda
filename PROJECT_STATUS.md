@@ -1,7 +1,7 @@
 # ELUDA Project Status
 
 **Status:** Documentation baseline in progress
-**Last updated:** 2026-11-07
+**Last updated:** 2026-11-14
 **Working branch:** `feat/public-access-foundation`
 **Production branch:** `main`
 **Production URL:** https://eluda.vercel.app
@@ -31,7 +31,9 @@ ELUDA has a GitHub repository and a Next.js application at the repository root. 
 - BLD-007 complete: PR #11 merged (merge commit `0d18a54`). CI (GitHub Actions) runs lint, type-check, the client-env check, tests and build on every pull request and on pushes to `main` and `feat/public-access-foundation`. The first CI run caught a missing generated-types problem: the `typecheck` script now runs `next typegen` first.
 - BLD-008 complete: PR #12 merged (merge commit `19b4fd2`). Prisma 7.10.1 with the PostgreSQL adapter is set up; `prisma generate` runs on install; `lib/db.ts` is the only place Prisma Client is created and nothing imports it yet.
 - npm audit (2026-11-07): 8 moderate advisories, all in the ESLint toolchain (`eslint-config-next` to `typescript-eslint` to `minimatch`); `npm audit --omit=dev` reports 0. The suggested forced fix would downgrade `eslint-config-next` and is not applied. Revisit when `eslint-config-next` ships a fixed dependency chain.
-- Next planned work, in order: the core schema and migration (BLD-009), the second schema batch (payments, entitlements, webhook events, likes, blocks, reports; BLD-010), applying the migrations to the Eluda dev database with a dedicated `prisma` role (BLD-011, owner approval), Supabase Auth, profile and conversation basics, the entitlement model, the message lock with fetch-based bypass tests, real-time signals, LivePay, then likes and Discovery.
+- BLD-009 complete: PR #13 merged (merge commit `00478df`). Eight tables as Prisma models, with migration SQL, Row Level Security, revoked public-role access and CHECK constraints, plus a CI test that fails if a migration creates a table without RLS. Not applied to any database. The Brain applied the SQL to a scratch Postgres 16 and verified every constraint, unique rule, RLS setting and the cascade behaviour (not Supabase itself).
+- Payment provider decision (2026-11-09): NylonPay replaces LivePay. Other documents in this repository may still say LivePay until the documentation update that follows BLD-010.
+- Next planned work, in order: the second schema batch (BLD-010), the NylonPay documentation update, applying the migrations to the Eluda dev database with a dedicated `prisma` role (BLD-011, owner approval), Supabase Auth, profile and conversation basics, the entitlement model, the message lock with fetch-based bypass tests, real-time signals, NylonPay payments, then likes and Discovery.
 
 ## Launch blockers (not blocking the MVP build)
 1. Verification for women before they can message men (method and provider open). The main abuse risk is fake-female accounts messaging men to drive paid unlocks; gender immutability does not address it.
@@ -71,7 +73,7 @@ ELUDA has a GitHub repository and a Next.js application at the repository root. 
 7. Implement approved tasks in small changes and update this document with evidence.
 
 ## Next task
-**BLD-009** (in progress): the identity and messaging tables as Prisma models, with the migration SQL and Row Level Security written locally and not applied. After it merges, the next task is the second schema batch (BLD-010).
+**BLD-010** (in progress): the second batch of tables (likes, blocks, reports, payments, plan entitlements, webhook events) as Prisma models, with migration SQL and Row Level Security written locally and not applied. After it merges, the next task is the NylonPay documentation update, then applying the migrations to the Eluda dev database (BLD-011, owner approval).
 
 ## Update rules
 For every status update, distinguish:

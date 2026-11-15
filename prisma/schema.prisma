@@ -56,6 +56,30 @@ enum UnlockReason {
   @@map("unlock_reason")
 }
 
+enum PlanCode {
+  SPARK
+  CONNECT
+  PLUS
+
+  @@map("plan_code")
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+  EXPIRED
+
+  @@map("payment_status")
+}
+
+enum ReportStatus {
+  OPEN
+  CLOSED
+
+  @@map("report_status")
+}
+
 model User {
   id          String    @id @db.Uuid
   gender      Gender
@@ -72,6 +96,14 @@ model User {
   messagesReceived      Message[]              @relation("MessageRecipient")
   unlocks               MessageUnlock[]
   icebreakerDailyCounts IcebreakerDailyCount[]
+  likesGiven            Like[]                 @relation("LikeLiker")
+  likesReceived         Like[]                 @relation("LikeLiked")
+  blocksMade            Block[]                @relation("BlockBlocker")
+  blocksReceived        Block[]                @relation("BlockBlocked")
+  reportsMade           Report[]               @relation("ReportReporter")
+  reportsReceived       Report[]               @relation("ReportReported")
+  payments              Payment[]
+  planEntitlements      PlanEntitlement[]
 
   @@map("users")
 }
@@ -115,6 +147,7 @@ model Conversation {
   userA    User      @relation("ConversationUserA", fields: [userAId], references: [id], onDelete: Cascade)
   userB    User      @relation("ConversationUserB", fields: [userBId], references: [id], onDelete: Cascade)
   messages Message[]
+  reports  Report[]
 
   @@unique([userAId, userBId])
   @@index([userBId])
@@ -136,6 +169,7 @@ model Message {
   recipient    User            @relation("MessageRecipient", fields: [recipientId], references: [id], onDelete: Cascade)
   content      MessageContent?
   unlock       MessageUnlock?
+  reports      Report[]
 
   @@unique([conversationId, seq])
   @@index([recipientId, sentAt])
@@ -174,4 +208,95 @@ model IcebreakerDailyCount {
 
   @@id([userId, day])
   @@map("icebreaker_daily_counts")
+}
+
+model Like {
+  likerId   String   @map("liker_id") @db.Uuid
+  likedId   String   @map("liked_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  liker User @relation("LikeLiker", fields: [likerId], references: [id], onDelete: Cascade)
+  liked User @relation("LikeLiked", fields: [likedId], references: [id], onDelete: Cascade)
+
+  @@id([likerId, likedId])
+  @@index([likedId])
+  @@map("likes")
+}
+
+model Block {
+  blockerId String   @map("blocker_id") @db.Uuid
+  blockedId String   @map("blocked_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  blocker User @relation("BlockBlocker", fields: [blockerId], references: [id], onDelete: Cascade)
+  blocked User @relation("BlockBlocked", fields: [blockedId], references: [id], onDelete: Cascade)
+
+  @@id([blockerId, blockedId])
+  @@index([blockedId])
+  @@map("blocks")
+}
+
+model Report {
+  id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  reporterId     String?      @map("reporter_id") @db.Uuid
+  reportedUserId String?      @map("reported_user_id") @db.Uuid
+  conversationId String?      @map("conversation_id") @db.Uuid
+  messageId      String?      @map("message_id") @db.Uuid
+  reason         String
+  note           String?
+  status         ReportStatus @default(OPEN)
+  createdAt      DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  reporter     User?         @relation("ReportReporter", fields: [reporterId], references: [id], onDelete: SetNull)
+  reportedUser User?         @relation("ReportReported", fields: [reportedUserId], references: [id], onDelete: SetNull)
+  conversation Conversation? @relation(fields: [conversationId], references: [id], onDelete: SetNull)
+  message      Message?      @relation(fields: [messageId], references: [id], onDelete: SetNull)
+
+  @@index([reportedUserId])
+  @@index([status, createdAt])
+  @@map("reports")
+}
+
+model Payment {
+  id                    String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId                String?       @map("user_id") @db.Uuid
+  planCode              PlanCode      @map("plan_code")
+  amountUgx             Int           @map("amount_ugx")
+  reference             String        @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  providerTransactionId String?       @unique @map("provider_transaction_id")
+  status                PaymentStatus @default(PENDING)
+  createdAt             DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  confirmedAt           DateTime?     @map("confirmed_at") @db.Timestamptz(6)
+
+  user        User?            @relation(fields: [userId], references: [id], onDelete: SetNull)
+  entitlement PlanEntitlement?
+
+  @@index([userId, createdAt])
+  @@map("payments")
+}
+
+model PlanEntitlement {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  paymentId String   @unique @map("payment_id") @db.Uuid
+  planCode  PlanCode @map("plan_code")
+  startsAt  DateTime @map("starts_at") @db.Timestamptz(6)
+  endsAt    DateTime @map("ends_at") @db.Timestamptz(6)
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  payment Payment @relation(fields: [paymentId], references: [id], onDelete: Restrict)
+
+  @@index([userId, endsAt])
+  @@map("plan_entitlements")
+}
+
+model WebhookEvent {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  provider    String
+  eventId     String    @map("event_id")
+  receivedAt  DateTime  @default(now()) @map("received_at") @db.Timestamptz(6)
+  processedAt DateTime? @map("processed_at") @db.Timestamptz(6)
+
+  @@unique([provider, eventId])
+  @@map("webhook_events")
 }
