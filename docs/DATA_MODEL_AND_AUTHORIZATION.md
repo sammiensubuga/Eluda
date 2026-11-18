@@ -20,13 +20,13 @@ Men see and message women, and women see and message men. Discovery, Daily Picks
 | `users` | id, gender (FEMALE/MALE), date_of_birth, display_name, deleted_at | 18+ check |
 | `profiles` | user_id, intent (MEETUPS/DATING/MARRIAGE/FRIENDS), availability (AVAILABLE/BUSY/HIDDEN, women only), bio, published_at | one intent, changeable; `published_at` requires at least 2 photos |
 | `profile_photos` | id, user_id, storage_path, position | private bucket, signed URLs only |
-| `likes` | liker_id, liked_id, created_at | built after messaging and LivePay; not a messaging gate |
+| `likes` | liker_id, liked_id, created_at | built after messaging and NylonPay; not a messaging gate |
 | `conversations` | id, user_a_id, user_b_id (ordered), status, closed_at, last_seq | unique per pair |
 | `messages` | id, conversation_id, seq, sender_id, recipient_id, kind (PRESET/CUSTOM), preset_key, sent_at | no body column; unique (conversation_id, seq) |
 | `message_contents` | message_id, body | CUSTOM messages only |
 | `message_unlocks` | message_id (unique), recipient_id, unlocked_at, reason | reason: NOT_REQUIRED, ACTIVE_PLAN_AT_ARRIVAL, PLAN_ACTIVATION |
 | `icebreaker_daily_counts` | user_id, day (Africa/Kampala), count | atomic upsert, maximum 15 |
-| `payments` | id, user_id (nullable), plan_code, amount_ugx, provider_reference (unique), status | LivePay |
+| `payments` | id, user_id (nullable), plan_code, amount_ugx, provider_reference (unique), status | NylonPay |
 | `plan_entitlements` | id, payment_id (unique), user_id, plan_code, starts_at, ends_at | active Plan: starts_at <= now < ends_at |
 | `webhook_events` | provider, event_id (unique), received_at, processed_at | idempotency |
 | `blocks`, `reports` | blocker/blocked; reporter/reported, conversation, message, reason, status | free safety controls |
@@ -84,10 +84,10 @@ Men see and message women, and women see and message men. Discovery, Daily Picks
 - Payments: a replayed webhook creates no second entitlement.
 
 ## 9. Provisional and deferred decisions
-- Plan stacking: a second purchase starts when the current Plan ends (revisit in the LivePay task).
+- Plan stacking: a second purchase starts when the current Plan ends (revisit in the NylonPay task).
 - Account deletion: the account becomes inaccessible instantly, then personal data and photos are purged; payment records are kept but detached from personal data (`user_id` set to null).
 - Moderation access to message content is deferred.
-- Likes and matches are not a gate for messaging. They are built after messaging and LivePay, and the `likes` table stays in the schema.
+- Likes and matches are not a gate for messaging. They are built after messaging and NylonPay, and the `likes` table stays in the schema.
 - The authentication sign-in method (email, phone or both) is not decided.
 - Launch blockers (not blocking the MVP build): verification for women before they can message men; data-protection obligations and the 18+ approach; Supabase Realtime plan limits.
 

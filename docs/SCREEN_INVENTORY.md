@@ -20,7 +20,7 @@ Priority labels are working planning proposals, not final delivery commitments. 
 | DISC-02 | Profile details | P0 | Planned |
 | DISC-03 | Daily Picks (approximately 3–5 recommended profiles; detailed behavior open) | P1 | Planned |
 | LIKE-01 | Likes | P1 | Planned |
-| MATCH-01 | Match confirmation and list (built after messaging and LivePay; not required before messaging) | P1 | Planned |
+| MATCH-01 | Match confirmation and list (built after messaging and NylonPay; not required before messaging) | P1 | Planned |
 | CHAT-01 | Conversation list | P0 | Planned |
 | CHAT-02 | Private conversation and unlocked message state | P0 | Planned |
 | CHAT-03 | Male Blind Lock: locked message notice and inaccessible message content | P0 | Planned |

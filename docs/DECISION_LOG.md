@@ -118,3 +118,8 @@ Statuses: **Approved**, **Proposed**, **Open**, **Superseded**. Only the product
 - **Build order:** message lock with fetch-based bypass tests first, then real-time signals, then LivePay (which adds the entitlement-changed signal).
 - **Provisional:** a second Plan purchase starts when the current Plan ends; account deletion makes the account inaccessible instantly, then purges personal data and photos, with payment records kept but detached from personal data; moderator access to message content is deferred.
 - **Launch blockers (not blocking the MVP build):** verification for women before they can message men (method and provider open); data-protection obligations and the 18+ approach; Supabase Realtime plan limits.
+
+## Payment provider: NylonPay (2026-11-09)
+- **Decision:** NylonPay replaces LivePay as the payment provider. This supersedes the LivePay references in the "Final stack and product rules (2026-10-26)" section.
+- **Plan activation:** Stays webhook-driven, idempotent and computed server-side.
+- **Implementation:** NylonPay integration details (webhook handling, phone-number prompt, sandbox keys) are defined in the payments task.
