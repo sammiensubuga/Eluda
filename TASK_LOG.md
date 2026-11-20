@@ -336,3 +336,15 @@ This file records implementation work and its evidence. Keep entries concise and
 - **Preview/deployment evidence:** No Vercel deployment for the migration itself. Preview and CI for this docs change: see PR #16.
 - **Known limitations:** The Brain verified the hosted database read-only on 2026-11-20 through the Supabase connector: 14 application tables plus `_prisma_migrations`, Row Level Security on for all 14 application tables with no policies, no grants to `anon`, `authenticated` or `public`, and both migrations recorded as finished. CHECK constraints, unique rules and foreign keys were not re-checked on the hosted database (verified earlier on a scratch Postgres 16 in BLD-009). No data exists. `_prisma_migrations` has Row Level Security off and no API-role grants; revisit at the security review. `npm run build` in the Builder's environment stopped at an interactive Next.js 16.4.3 security-upgrade prompt that the sandbox cannot answer. Sammie ran `npm run build` himself, chose Skip, and it completed with 4 of 4 static pages. Upgrading Next.js from 16.4.3 to 16.4.6 is planned as a separate task.
 - **Reviewer decision:** Owner approved one `prisma migrate deploy` against the Eluda dev database in this task packet.
+
+## BLD-012 — Upgrade Next.js and eslint-config-next to 16.4.6
+- **Date:** 2026-11-20
+- **Status:** Complete
+- **Owner/chat:** Brain (Task Packet); Builder (verification and documentation); Sammie (install, npm ci and owner approval)
+- **Scope:** Upgrade only `next` and `eslint-config-next` from 16.4.3 to exact version 16.4.6.
+- **Files changed:** `package.json`, `package-lock.json`, `TASK_LOG.md`, `PROJECT_STATUS.md`.
+- **Commit SHA:** Pending.
+- **Tests run and results:** Sammie ran the exact-version install and `npm ci` in PowerShell. Lint, typecheck, client-env check, tests (2 files, 20 tests) and build passed. Audit no longer listed Next.js; the expected effect chain remains (npm audit exit 1).
+- **Known limitations:** The Builder's install stalled with no output; Sammie ran the install and a full `npm ci` in PowerShell. An interrupted `npm ci` had emptied `node_modules`. The effect chain remains and is accepted by the owner for now. npm printed an install-scripts warning for `@prisma/engines`, `prisma` and `unrs-resolver`; no action taken.
+- **Preview/deployment evidence:** Pending PR and Vercel preview.
+- **Reviewer decision:** Awaiting review.
