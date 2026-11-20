@@ -19,7 +19,7 @@ This file records implementation work and its evidence. Keep entries concise and
 
 ## DOC-001 — Establish documentation baseline
 - **Date:** 2026-10-25
-- **Status:** In progress
+- **Status:** Complete
 - **Owner/chat:** ELUDA Product HQ; engineering execution pending verification
 - **Scope:** Add core project documentation and a clear status baseline on the existing feature branch.
 - **Files changed:** Pending commit evidence.
@@ -343,8 +343,20 @@ This file records implementation work and its evidence. Keep entries concise and
 - **Owner/chat:** Brain (Task Packet); Builder (verification and documentation); Sammie (install, npm ci and owner approval)
 - **Scope:** Upgrade only `next` and `eslint-config-next` from 16.4.3 to exact version 16.4.6.
 - **Files changed:** `package.json`, `package-lock.json`, `TASK_LOG.md`, `PROJECT_STATUS.md`.
-- **Commit SHA:** Pending.
+- **Commit SHA:** `e9b15cb` (merged as `8ae25f9` in PR #17).
 - **Tests run and results:** Sammie ran the exact-version install and `npm ci` in PowerShell. Lint, typecheck, client-env check, tests (2 files, 20 tests) and build passed. Audit no longer listed Next.js; the expected effect chain remains (npm audit exit 1).
 - **Known limitations:** The Builder's install stalled with no output; Sammie ran the install and a full `npm ci` in PowerShell. An interrupted `npm ci` had emptied `node_modules`. The effect chain remains and is accepted by the owner for now. npm printed an install-scripts warning for `@prisma/engines`, `prisma` and `unrs-resolver`; no action taken.
+- **Preview/deployment evidence:** CI succeeded and the Vercel preview was READY for `e9b15cb`; Vercel READY for merge commit `8ae25f9`.
+- **Reviewer decision:** Merged (PR #17, merge commit `8ae25f9`).
+
+## BLD-013 — Supabase Auth with email and password
+- **Date:** 2026-11-21
+- **Status:** In progress
+- **Owner/chat:** Brain (Task Packet); Builder (implementation); Sammie (owner approval)
+- **Scope:** Add email/password authentication with required email confirmation, cookie-based Supabase sessions, recovery, and a protected Discover placeholder.
+- **Files changed:** Supabase and auth helpers, `proxy.ts`, auth pages/actions/confirmation route, tests, `TASK_LOG.md`, `PROJECT_STATUS.md`, and the two auth decision documents; package files contain only Sammie's prior dependency install.
+- **Commit SHA:** Pending PR.
+- **Tests run and results:** `npm run lint`, `npm run typecheck`, `npm run check:client-env`, `npm test` (3 files, 45 tests) and `npm run build` passed. `npm audit --omit=dev` reported only the known `effect` advisory chain through `@prisma/config` and `prisma` (exit 1). Installed versions: `@supabase/ssr` 0.12.7 and `@supabase/supabase-js` 2.119.2.
 - **Preview/deployment evidence:** Pending PR and Vercel preview.
+- **Known limitations:** End-to-end sign-up, email confirmation and sign-in were not tested locally because the browser could not open the local preview; Sammie tests on the Vercel preview. Production email requires a verified domain and transactional email provider before launch. No profile data, onboarding or Discovery recommendations are implemented. The known `effect` advisory chain remains; no Prisma downgrade was applied.
 - **Reviewer decision:** Awaiting review.

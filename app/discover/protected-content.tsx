@@ -1,0 +1,22 @@
+import { redirect } from "next/navigation";
+
+import { signOut } from "../../lib/auth/actions";
+import { getCurrentUser } from "../../lib/auth/current-user";
+
+export async function ProtectedDiscoverContent() {
+  const user = await getCurrentUser();
+  if (!user) {
+    redirect("/sign-in");
+  }
+
+  return (
+    <main className="flex min-h-screen items-center justify-center bg-[#fbf6f0] px-5 text-[#28142b]">
+      <section className="w-full max-w-lg rounded-3xl border border-[#eadde3] bg-white p-8 text-center shadow-xl shadow-[#4a2148]/5">
+        <h1 className="text-2xl font-semibold">You are signed in</h1>
+        <form action={signOut} className="mt-7">
+          <button className="min-h-11 rounded-full border border-[#4a2148]/20 px-5 text-sm font-semibold text-[#4a2148] hover:bg-[#fbf6f0]" type="submit">Sign out</button>
+        </form>
+      </section>
+    </main>
+  );
+}

@@ -123,3 +123,6 @@ Statuses: **Approved**, **Proposed**, **Open**, **Superseded**. Only the product
 - **Decision:** NylonPay replaces LivePay as the payment provider. This supersedes the LivePay references in the "Final stack and product rules (2026-10-26)" section.
 - **Plan activation:** Stays webhook-driven, idempotent and computed server-side.
 - **Implementation:** NylonPay integration details (webhook handling, phone-number prompt, sandbox keys) are defined in the payments task.
+
+## Authentication (2026-11-20)
+Authentication: email and password with required email confirmation (2026-11-20). Phone sign-in is deferred and undecided. Anonymous sign-ins, social logins and manual linking are off.

@@ -1,7 +1,7 @@
 # ELUDA Project Status
 
 **Status:** Documentation baseline in progress
-**Last updated:** 2026-11-20
+**Last updated:** 2026-11-21
 **Working branch:** `feat/public-access-foundation`
 **Production branch:** `main`
 **Production URL:** https://eluda.vercel.app
@@ -36,9 +36,12 @@ ELUDA has a GitHub repository and a Next.js application at the repository root. 
 - Payment provider decision (2026-11-09): NylonPay replaces LivePay. Documentation updated to NylonPay in BLD-010n.
 - BLD-011 complete: both migrations applied to the Eluda dev database on 2026-11-20 (read-only check by the Brain: 14 application tables, Row Level Security on for all of them, no policies, no grants to anon, authenticated or public).
 - BLD-012 complete: Next.js and eslint-config-next upgraded from 16.4.3 to 16.4.6; lint, typecheck, client-env, tests and build passed, and the audit no longer lists Next.js. The owner accepted the remaining Prisma effect advisory chain for now.
+- BLD-013 implemented and tested: email/password sign-up, sign-in, sign-out, email confirmation, password reset and update use Supabase cookie sessions; `/discover` validates the signed-in user and shows only a placeholder.
 - Next planned work, in order: Supabase Auth (owner screenshots needed), profile and conversation basics, the entitlement model, the message lock with fetch-based bypass tests, real-time signals, NylonPay payments, then likes and Discovery.
 
 ## Launch blockers (not blocking the MVP build)
+Production email: Gmail SMTP is for development only. Before launch, buy a domain and send through a transactional email provider (Resend is the candidate) from a verified domain.
+
 1. Verification for women before they can message men (method and provider open). The main abuse risk is fake-female accounts messaging men to drive paid unlocks; gender immutability does not address it.
 2. Data-protection obligations and the 18+ approach.
 3. Supabase Realtime plan limits (concurrent connections and message volume).
