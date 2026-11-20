@@ -19,7 +19,7 @@ This file records implementation work and its evidence. Keep entries concise and
 
 ## DOC-001 — Establish documentation baseline
 - **Date:** 2026-10-25
-- **Status:** Complete
+- **Status:** In progress
 - **Owner/chat:** ELUDA Product HQ; engineering execution pending verification
 - **Scope:** Add core project documentation and a clear status baseline on the existing feature branch.
 - **Files changed:** Pending commit evidence.
@@ -355,8 +355,8 @@ This file records implementation work and its evidence. Keep entries concise and
 - **Owner/chat:** Brain (Task Packet); Builder (implementation); Sammie (owner approval)
 - **Scope:** Add email/password authentication with required email confirmation, cookie-based Supabase sessions, recovery, and a protected Discover placeholder.
 - **Files changed:** Supabase and auth helpers, `proxy.ts`, auth pages/actions/confirmation route, tests, `TASK_LOG.md`, `PROJECT_STATUS.md`, and the two auth decision documents; package files contain only Sammie's prior dependency install.
-- **Commit SHA:** Pending PR.
+- **Commit SHA:** a90245e (PR #18); fix commit see PR #18
 - **Tests run and results:** `npm run lint`, `npm run typecheck`, `npm run check:client-env`, `npm test` (3 files, 45 tests) and `npm run build` passed. `npm audit --omit=dev` reported only the known `effect` advisory chain through `@prisma/config` and `prisma` (exit 1). Installed versions: `@supabase/ssr` 0.12.7 and `@supabase/supabase-js` 2.119.2.
-- **Preview/deployment evidence:** Pending PR and Vercel preview.
-- **Known limitations:** End-to-end sign-up, email confirmation and sign-in were not tested locally because the browser could not open the local preview; Sammie tests on the Vercel preview. Production email requires a verified domain and transactional email provider before launch. No profile data, onboarding or Discovery recommendations are implemented. The known `effect` advisory chain remains; no Prisma downgrade was applied.
+- **Preview/deployment evidence:** CI succeeded on a90245e; Vercel preview READY (eluda-lj7yvm3qp-sammiesamz61-8614s-projects.vercel.app).
+- **Known limitations:** End-to-end sign-up, email confirmation and sign-in were not tested locally because the browser could not open the local preview; Sammie tests on the Vercel preview. Production email requires a verified domain and transactional email provider before launch. No profile data, onboarding or Discovery recommendations are implemented. The known `effect` advisory chain remains; no Prisma downgrade was applied. A failed email link redirects to /sign-in?error=confirmation but the sign-in page does not yet show a message. Session cookies are httpOnly, so the realtime task must decide how the browser obtains a token. The password minimum must also be set in the Supabase dashboard (owner action), because the publishable key lets anyone call Supabase Auth directly. The owner's end-to-end test on the preview is pending; Status stays In progress until it passes.
 - **Reviewer decision:** Awaiting review.
