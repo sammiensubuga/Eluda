@@ -34,8 +34,8 @@ ELUDA has a GitHub repository and a Next.js application at the repository root. 
 - BLD-009 complete: PR #13 merged (merge commit `00478df`). Eight tables as Prisma models, with migration SQL, Row Level Security, revoked public-role access and CHECK constraints, plus a CI test that fails if a migration creates a table without RLS. Not applied to any database. The Brain applied the SQL to a scratch Postgres 16 and verified every constraint, unique rule, RLS setting and the cascade behaviour (not Supabase itself).
 - BLD-010 complete: PR #14 merged (merge commit dc2bde2); the second batch of tables as Prisma models with migration SQL and Row Level Security; not applied to any database.
 - Payment provider decision (2026-11-09): NylonPay replaces LivePay. Documentation updated to NylonPay in BLD-010n.
-- BLD-011 complete: both migrations applied to the Eluda dev database.
-- Next planned work: Supabase Auth (planned, owner screenshots needed).
+- BLD-011 complete: both migrations applied to the Eluda dev database on 2026-11-20 (read-only check by the Brain: 14 application tables, Row Level Security on for all of them, no policies, no grants to anon, authenticated or public).
+- Next planned work, in order: Supabase Auth (owner screenshots needed), profile and conversation basics, the entitlement model, the message lock with fetch-based bypass tests, real-time signals, NylonPay payments, then likes and Discovery. A small Next.js security upgrade (16.4.3 to 16.4.6) is planned as its own task before or alongside Auth.
 
 ## Launch blockers (not blocking the MVP build)
 1. Verification for women before they can message men (method and provider open). The main abuse risk is fake-female accounts messaging men to drive paid unlocks; gender immutability does not address it.

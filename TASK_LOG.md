@@ -321,18 +321,18 @@ This file records implementation work and its evidence. Keep entries concise and
 - **Files changed:** `PRODUCT_BRIEF.md`, `SYSTEM_ARCHITECTURE.md`, `docs/DATA_MODEL_AND_AUTHORIZATION.md`, `docs/SCREEN_INVENTORY.md`, `docs/USER_JOURNEYS.md`, `docs/DECISION_LOG.md`, `PROJECT_STATUS.md`, `TASK_LOG.md`.
 - **Commit SHA:** `eeeaf77` (merge commit).
 - **Tests run and results:** Documentation-only. Checks: `git diff --check`, `git diff --stat`, stale-wording grep.
-- **Preview/deployment evidence:** Pending; recorded in the pull request.
+- **Preview/deployment evidence:** CI succeeded and the Vercel preview was READY for `4615ecd` (PR #15); Vercel preview READY for merge commit `eeeaf77`.
 - **Known limitations:** None recorded.
 - **Reviewer decision:** Merged by the Builder with git under owner approval (BLD-010o-b).
 
 ## BLD-011 — Apply the two existing migrations to the Eluda dev database
 - **Date:** 2026-11-20
 - **Status:** Complete
-- **Owner/chat:** Sammie (Task Packet and owner approval); Builder (execution)
+- **Owner/chat:** Brain (Task Packet); Builder (execution); Sammie (owner approval)
 - **Scope:** Apply exactly `20261107120000_core_identity_messaging` and `20261114120000_likes_blocks_reports_payments` to the Eluda dev Supabase database with `prisma migrate deploy`; no schema or code changes.
 - **Files changed:** `TASK_LOG.md`, `PROJECT_STATUS.md`.
-- **Commit SHA:** Pending.
+- **Commit SHA:** See PR #16.
 - **Tests run and results:** Before deploy, `prisma migrate status` reported 2 pending migrations. `prisma migrate deploy` applied both. After deploy, `prisma migrate status` reported “Database schema is up to date.” Lint, typecheck and client-env checks passed; `npm test` passed (2 files, 20 tests).
-- **Preview/deployment evidence:** No Vercel deployment was run; database migration only.
-- **Known limitations:** Sammie verifies tables, RLS and constraints in the Supabase dashboard; no data exists. `npm run build` stopped with a Next.js SecurityFatalError notice recommending an upgrade; not a code change; to be triaged separately.
+- **Preview/deployment evidence:** No Vercel deployment for the migration itself. Preview and CI for this docs change: see PR #16.
+- **Known limitations:** The Brain verified the hosted database read-only on 2026-11-20 through the Supabase connector: 14 application tables plus `_prisma_migrations`, Row Level Security on for all 14 application tables with no policies, no grants to `anon`, `authenticated` or `public`, and both migrations recorded as finished. CHECK constraints, unique rules and foreign keys were not re-checked on the hosted database (verified earlier on a scratch Postgres 16 in BLD-009). No data exists. `_prisma_migrations` has Row Level Security off and no API-role grants; revisit at the security review. `npm run build` in the Builder's environment stopped at an interactive Next.js 16.4.3 security-upgrade prompt that the sandbox cannot answer. Sammie ran `npm run build` himself, chose Skip, and it completed with 4 of 4 static pages. Upgrading Next.js from 16.4.3 to 16.4.6 is planned as a separate task.
 - **Reviewer decision:** Owner approved one `prisma migrate deploy` against the Eluda dev database in this task packet.
