@@ -315,12 +315,24 @@ This file records implementation work and its evidence. Keep entries concise and
 
 ## BLD-010n — Replace LivePay with NylonPay and close out BLD-010
 - **Date:** 2026-11-16
-- **Status:** In progress
+- **Status:** Complete
 - **Owner/chat:** Brain (Task Packet); Builder (documentation update)
 - **Scope:** Replace current-provider references to LivePay with NylonPay, record the provider decision, correct the brief's implementation status, and close BLD-010.
 - **Files changed:** `PRODUCT_BRIEF.md`, `SYSTEM_ARCHITECTURE.md`, `docs/DATA_MODEL_AND_AUTHORIZATION.md`, `docs/SCREEN_INVENTORY.md`, `docs/USER_JOURNEYS.md`, `docs/DECISION_LOG.md`, `PROJECT_STATUS.md`, `TASK_LOG.md`.
-- **Commit SHA:** See the pull request description.
+- **Commit SHA:** `eeeaf77` (merge commit).
 - **Tests run and results:** Documentation-only. Checks: `git diff --check`, `git diff --stat`, stale-wording grep.
 - **Preview/deployment evidence:** Pending; recorded in the pull request.
 - **Known limitations:** None recorded.
-- **Reviewer decision:** Awaiting Brain and owner review.
+- **Reviewer decision:** Merged by the Builder with git under owner approval (BLD-010o-b).
+
+## BLD-011 — Apply the two existing migrations to the Eluda dev database
+- **Date:** 2026-11-20
+- **Status:** Complete
+- **Owner/chat:** Sammie (Task Packet and owner approval); Builder (execution)
+- **Scope:** Apply exactly `20261107120000_core_identity_messaging` and `20261114120000_likes_blocks_reports_payments` to the Eluda dev Supabase database with `prisma migrate deploy`; no schema or code changes.
+- **Files changed:** `TASK_LOG.md`, `PROJECT_STATUS.md`.
+- **Commit SHA:** Pending.
+- **Tests run and results:** Before deploy, `prisma migrate status` reported 2 pending migrations. `prisma migrate deploy` applied both. After deploy, `prisma migrate status` reported “Database schema is up to date.” Lint, typecheck and client-env checks passed; `npm test` passed (2 files, 20 tests).
+- **Preview/deployment evidence:** No Vercel deployment was run; database migration only.
+- **Known limitations:** Sammie verifies tables, RLS and constraints in the Supabase dashboard; no data exists. `npm run build` stopped with a Next.js SecurityFatalError notice recommending an upgrade; not a code change; to be triaged separately.
+- **Reviewer decision:** Owner approved one `prisma migrate deploy` against the Eluda dev database in this task packet.
