@@ -391,8 +391,8 @@ This file records implementation work and its evidence. Keep entries concise and
 - **Owner/chat:** Brain (Task Packet); Builder (implementation); Sammie (owner approval)
 - **Scope:** Accept recent token-hash OTP/recovery sessions for password updates, add bounded AMR validation tests, and correct the end-to-end reset evidence.
 - **Files changed:** `lib/auth/actions.ts`, `lib/auth/recovery-session.ts`, `tests/auth.test.ts`, `TASK_LOG.md`, `PROJECT_STATUS.md`.
-- **Commit SHA:** Pending.
-- **Tests run and results:** `npm run lint`, `npm run typecheck`, and `npm run check:client-env` passed. `npm test` passed (3 files, 64 tests). `npm run build` passed and generated all 10 static pages. `git diff --check` passed; staged secret-pattern scan found no matches.
-- **Preview/deployment evidence:** Owner's end-to-end retest of password reset is pending.
+- **Commit SHA:** `e419c2c440b1ff41862bb058f649e82c80e6b571` (PR #18).
+- **Tests run and results:** `npm run lint`, `npm run typecheck`, and `npm run check:client-env` passed. `npm test` passed (3 files, 64 tests). `npm run build` passed and generated all 10 static pages. `git diff --check` passed; staged secret-pattern scan found no matches. GitHub Actions CI run 22 passed.
+- **Preview/deployment evidence:** Vercel preview READY for commit `e419c2c`: https://eluda-git-feat-auth-email-signin-sammiesamz61-8614s-projects.vercel.app. Owner's end-to-end retest of password reset is pending.
 - **Known limitations:** The AMR method name is taken from Supabase's server source; it remains to be verified by the owner's retest. Reset-link scanners can consume single-use links.
 - **Reviewer decision:** Awaiting owner's end-to-end retest.
