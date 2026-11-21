@@ -13,10 +13,12 @@ function signInRedirect(request: NextRequest, failed: boolean) {
 
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);
-  const next = sanitizeNextPath(url.searchParams.get("next"));
+  const type = url.searchParams.get("type");
+  const next = typeIsRecovery(type)
+    ? "/reset-password"
+    : sanitizeNextPath(url.searchParams.get("next"));
   const code = url.searchParams.get("code");
   const tokenHash = url.searchParams.get("token_hash");
-  const type = url.searchParams.get("type");
 
   if (!next || (type !== null && !isAllowedEmailOtpType(type))) {
     return signInRedirect(request, true);
@@ -38,4 +40,8 @@ export async function GET(request: NextRequest) {
   } catch {
     return signInRedirect(request, true);
   }
+}
+
+function typeIsRecovery(type: string | null): boolean {
+  return type === "recovery";
 }

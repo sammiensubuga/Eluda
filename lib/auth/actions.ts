@@ -21,6 +21,15 @@ const PASSWORD_RESET_CONFIRMATION: AuthActionState = {
   message: "If an account exists for that email, a password reset link is on its way.",
 };
 
+const RESEND_CONFIRMATION: AuthActionState = {
+  status: "success",
+  message: "If a confirmation is pending for this address, we’ve sent a new link.",
+};
+
+function withEmail(state: AuthActionState, email: string): AuthActionState {
+  return { ...state, email };
+}
+
 function readText(formData: FormData, name: string): string {
   const value = formData.get(name);
   return typeof value === "string" ? value.trim() : "";
@@ -62,18 +71,23 @@ export async function signUp(
 ): Promise<AuthActionState> {
   const email = readText(formData, "email").toLowerCase();
   const password = readText(formData, "password");
+  const confirmPassword = readText(formData, "confirmPassword");
 
   if (!isValidEmail(email)) {
-    return { status: "error", message: "Enter a valid email address." };
+    return { status: "error", message: "Enter a valid email address.", email };
+  }
+
+  if (password !== confirmPassword) {
+    return { status: "error", message: "Passwords do not match.", email };
   }
 
   if (password.length < 10) {
-    return { status: "error", message: "Password must be at least 10 characters." };
+    return { status: "error", message: "Password must be at least 10 characters.", email };
   }
 
   const origin = await getAppOrigin();
   if (!origin) {
-    return SIGN_UP_CONFIRMATION;
+    return withEmail(SIGN_UP_CONFIRMATION, email);
   }
 
   try {
@@ -87,7 +101,7 @@ export async function signUp(
     // Keep the confirmation response identical for existing and new addresses.
   }
 
-  return SIGN_UP_CONFIRMATION;
+  return withEmail(SIGN_UP_CONFIRMATION, email);
 }
 
 export async function signIn(
@@ -98,17 +112,17 @@ export async function signIn(
   const password = readText(formData, "password");
 
   if (!isValidEmail(email) || password.length === 0) {
-    return SIGN_IN_FAILURE;
+    return withEmail(SIGN_IN_FAILURE, email);
   }
 
   try {
     const supabase = await createSupabaseServerClient();
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error || !data.user || !data.session) {
-      return SIGN_IN_FAILURE;
+      return withEmail(SIGN_IN_FAILURE, email);
     }
   } catch {
-    return SIGN_IN_FAILURE;
+    return withEmail(SIGN_IN_FAILURE, email);
   }
 
   redirect("/discover");
@@ -131,24 +145,50 @@ export async function requestPasswordReset(
 ): Promise<AuthActionState> {
   const email = readText(formData, "email").toLowerCase();
   if (!isValidEmail(email)) {
-    return PASSWORD_RESET_CONFIRMATION;
+    return withEmail(PASSWORD_RESET_CONFIRMATION, email);
   }
 
   const origin = await getAppOrigin();
   if (!origin) {
-    return PASSWORD_RESET_CONFIRMATION;
+    return withEmail(PASSWORD_RESET_CONFIRMATION, email);
   }
 
   try {
     const supabase = await createSupabaseServerClient();
-    await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: confirmationUrl(origin, "/reset-password"),
-    });
+    await supabase.auth.resetPasswordForEmail(email, { redirectTo: confirmationUrl(origin) });
   } catch {
     // Always return the same message whether or not the address has an account.
   }
 
-  return PASSWORD_RESET_CONFIRMATION;
+  return withEmail(PASSWORD_RESET_CONFIRMATION, email);
+}
+
+export async function resendConfirmation(
+  _previousState: AuthActionState,
+  formData: FormData,
+): Promise<AuthActionState> {
+  const email = readText(formData, "email").toLowerCase();
+  if (!isValidEmail(email)) {
+    return withEmail(RESEND_CONFIRMATION, email);
+  }
+
+  const origin = await getAppOrigin();
+  if (!origin) {
+    return withEmail(RESEND_CONFIRMATION, email);
+  }
+
+  try {
+    const supabase = await createSupabaseServerClient();
+    await supabase.auth.resend({
+      type: "signup",
+      email,
+      options: { emailRedirectTo: confirmationUrl(origin) },
+    });
+  } catch {
+    // Keep the same response for pending, unknown and failed addresses.
+  }
+
+  return withEmail(RESEND_CONFIRMATION, email);
 }
 
 export async function updatePassword(
@@ -156,15 +196,27 @@ export async function updatePassword(
   formData: FormData,
 ): Promise<AuthActionState> {
   const password = readText(formData, "password");
+  const confirmPassword = readText(formData, "confirmPassword");
+  const email = readText(formData, "email").toLowerCase();
+  if (password !== confirmPassword) {
+    return { status: "error", message: "Passwords do not match.", email };
+  }
+
   if (password.length < 10) {
-    return { status: "error", message: "Password must be at least 10 characters." };
+    return { status: "error", message: "Password must be at least 10 characters.", email };
+  }
+
+  let supabase;
+  try {
+    supabase = await createSupabaseServerClient();
+  } catch {
+    return { status: "error", message: "Your password could not be updated. Try again.", email };
   }
 
   try {
-    const supabase = await createSupabaseServerClient();
     const { data: userData, error: userError } = await supabase.auth.getUser();
     if (userError || !userData.user) {
-      return { status: "error", message: "Use a valid password reset link to continue." };
+      return { status: "error", message: "Use a valid password reset link to continue.", email };
     }
 
     const { data: claimsData, error: claimsError } = await supabase.auth.getClaims();
@@ -180,16 +232,25 @@ export async function updatePassword(
       );
 
     if (claimsError || !isRecoverySession) {
-      return { status: "error", message: "Use a valid password reset link to continue." };
+      return { status: "error", message: "Use a valid password reset link to continue.", email };
     }
 
     const { error } = await supabase.auth.updateUser({ password });
     if (error) {
-      return { status: "error", message: "Your password could not be updated. Try again." };
+      return { status: "error", message: "Your password could not be updated. Try again.", email };
     }
   } catch {
-    return { status: "error", message: "Your password could not be updated. Try again." };
+    return { status: "error", message: "Your password could not be updated. Try again.", email };
   }
 
-  return { status: "success", message: "Your password has been updated." };
+  try {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      return { status: "error", message: "Your password could not be updated. Try again.", email };
+    }
+  } catch {
+    return { status: "error", message: "Your password could not be updated. Try again.", email };
+  }
+
+  redirect("/sign-in?notice=password-updated");
 }
