@@ -174,7 +174,7 @@ export function AuthForm({ kind }: { kind: AuthFormKind }) {
       <section className="mt-8" aria-label="Password reset email sent">
         <h2 ref={successHeading} className="text-2xl font-semibold tracking-tight" tabIndex={-1}>Check your email</h2>
         <p className="mt-3 text-sm leading-6 text-[#6f5b6d]" role="status">
-          If an account exists for <strong>{confirmedEmail}</strong>, we’ve sent a link to reset your password.
+          If an account exists for <strong>{confirmedEmail}</strong>, we’ve sent a link to reset your password. It can take a minute to arrive.
         </p>
         <p className="mt-6 text-center text-sm text-[#806e7e]">
           <Link className="font-semibold text-[#63345d] underline underline-offset-4" href="/sign-in">Back to sign in</Link>

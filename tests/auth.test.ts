@@ -228,6 +228,24 @@ describe("password update action", () => {
     expect(mocks.auth.updateUser.mock.invocationCallOrder[0]).toBeLessThan(mocks.auth.signOut.mock.invocationCallOrder[0]);
     expect(mocks.auth.signOut.mock.invocationCallOrder[0]).toBeLessThan(mocks.redirect.mock.invocationCallOrder.at(-1)!);
   });
+
+  it.each([
+    ["returns an error", () => mocks.auth.signOut.mockResolvedValue({ error: new Error("sign-out failed") })],
+    ["throws", () => mocks.auth.signOut.mockRejectedValue(new Error("sign-out failed"))],
+  ])("redirects after password update when signOut %s", async (_case, setSignOutFailure) => {
+    mocks.auth.getUser.mockResolvedValue({ data: { user: { id: "recovery-user" } }, error: null });
+    mocks.auth.getClaims.mockResolvedValue({ data: { claims: { amr: [{ method: "recovery" }] } }, error: null });
+    mocks.auth.updateUser.mockResolvedValue({ error: null });
+    setSignOutFailure();
+
+    const result = await updatePassword(
+      { status: "idle", message: "" },
+      form({ password: "long-enough-password", confirmPassword: "long-enough-password" }),
+    ).catch((error: unknown) => error);
+
+    expect(result).toMatchObject({ message: "NEXT_REDIRECT:/sign-in?notice=password-updated" });
+    expect(result).not.toMatchObject({ message: "Your password could not be updated. Try again." });
+  });
 });
 
 describe("sign-in notices", () => {

@@ -244,12 +244,9 @@ export async function updatePassword(
   }
 
   try {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      return { status: "error", message: "Your password could not be updated. Try again.", email };
-    }
+    await supabase.auth.signOut();
   } catch {
-    return { status: "error", message: "Your password could not be updated. Try again.", email };
+    // The password has already changed; sign-out is best effort.
   }
 
   redirect("/sign-in?notice=password-updated");
