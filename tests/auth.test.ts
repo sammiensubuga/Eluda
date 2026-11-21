@@ -34,6 +34,7 @@ import { signIn, signUp, requestPasswordReset, resendConfirmation, updatePasswor
 import { getCurrentUser } from "../lib/auth/current-user";
 import { sanitizeNextPath } from "../lib/auth/confirm-redirect";
 import { getAuthNotice } from "../lib/auth/action-state";
+import { isRecentLinkSession } from "../lib/auth/recovery-session";
 import { ProtectedDiscoverContent } from "../app/discover/protected-content";
 
 function form(fields: Record<string, string>) {
@@ -214,9 +215,9 @@ describe("password update action", () => {
     expect(mocks.auth.updateUser).not.toHaveBeenCalled();
   });
 
-  it("updates then signs out a recovery session before redirecting", async () => {
+  it("updates then signs out a recent OTP link session before redirecting", async () => {
     mocks.auth.getUser.mockResolvedValue({ data: { user: { id: "recovery-user" } }, error: null });
-    mocks.auth.getClaims.mockResolvedValue({ data: { claims: { amr: [{ method: "recovery" }] } }, error: null });
+    mocks.auth.getClaims.mockResolvedValue({ data: { claims: { amr: [{ method: "otp", timestamp: Math.floor(Date.now() / 1000) - 60 }] } }, error: null });
     mocks.auth.updateUser.mockResolvedValue({ error: null });
     mocks.auth.signOut.mockResolvedValue({ error: null });
     await expect(updatePassword(
@@ -234,7 +235,7 @@ describe("password update action", () => {
     ["throws", () => mocks.auth.signOut.mockRejectedValue(new Error("sign-out failed"))],
   ])("redirects after password update when signOut %s", async (_case, setSignOutFailure) => {
     mocks.auth.getUser.mockResolvedValue({ data: { user: { id: "recovery-user" } }, error: null });
-    mocks.auth.getClaims.mockResolvedValue({ data: { claims: { amr: [{ method: "recovery" }] } }, error: null });
+    mocks.auth.getClaims.mockResolvedValue({ data: { claims: { amr: [{ method: "otp", timestamp: Math.floor(Date.now() / 1000) - 60 }] } }, error: null });
     mocks.auth.updateUser.mockResolvedValue({ error: null });
     setSignOutFailure();
 
@@ -245,6 +246,46 @@ describe("password update action", () => {
 
     expect(result).toMatchObject({ message: "NEXT_REDIRECT:/sign-in?notice=password-updated" });
     expect(result).not.toMatchObject({ message: "Your password could not be updated. Try again." });
+  });
+
+  it("refuses a password-only session with the generic reset-link message", async () => {
+    mocks.auth.getUser.mockResolvedValue({ data: { user: { id: "recovery-user" } }, error: null });
+    mocks.auth.getClaims.mockResolvedValue({ data: { claims: { amr: [{ method: "password", timestamp: Math.floor(Date.now() / 1000) }] } }, error: null });
+
+    await expect(updatePassword(
+      { status: "idle", message: "" },
+      form({ password: "long-enough-password", confirmPassword: "long-enough-password" }),
+    )).resolves.toMatchObject({ status: "error", message: "Use a valid password reset link to continue." });
+    expect(mocks.auth.updateUser).not.toHaveBeenCalled();
+  });
+
+  it("refuses a stale OTP session", async () => {
+    mocks.auth.getUser.mockResolvedValue({ data: { user: { id: "recovery-user" } }, error: null });
+    mocks.auth.getClaims.mockResolvedValue({ data: { claims: { amr: [{ method: "otp", timestamp: Math.floor(Date.now() / 1000) - 960 }] } }, error: null });
+
+    await expect(updatePassword(
+      { status: "idle", message: "" },
+      form({ password: "long-enough-password", confirmPassword: "long-enough-password" }),
+    )).resolves.toMatchObject({ status: "error", message: "Use a valid password reset link to continue." });
+    expect(mocks.auth.updateUser).not.toHaveBeenCalled();
+  });
+});
+
+describe("recent recovery-link session validation", () => {
+  const now = 1_000_000;
+
+  it.each([
+    ["otp", [{ method: "otp", timestamp: now - 60 }], true],
+    ["recovery", [{ method: "recovery", timestamp: now - 60 }], true],
+    ["stale otp", [{ method: "otp", timestamp: now - 16 * 60 }], false],
+    ["password only", [{ method: "password", timestamp: now }], false],
+    ["missing timestamp", [{ method: "otp" }], false],
+    ["string timestamp", [{ method: "otp", timestamp: String(now) }], false],
+    ["far future timestamp", [{ method: "otp", timestamp: now + 10 * 60 }], false],
+    ["non-array", { method: "otp", timestamp: now }, false],
+    ["undefined", undefined, false],
+  ])("returns the expected result for %s", (_label, amr, expected) => {
+    expect(isRecentLinkSession(amr, now)).toBe(expected);
   });
 });
 

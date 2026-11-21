@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 
 import type { AuthActionState } from "./action-state";
 import { createSupabaseServerClient } from "../supabase/server";
+import { isRecentLinkSession } from "./recovery-session";
 
 const SIGN_IN_FAILURE: AuthActionState = {
   status: "error",
@@ -216,22 +217,27 @@ export async function updatePassword(
   try {
     const { data: userData, error: userError } = await supabase.auth.getUser();
     if (userError || !userData.user) {
+      console.warn({ reason: "no_user" });
       return { status: "error", message: "Use a valid password reset link to continue.", email };
     }
 
     const { data: claimsData, error: claimsError } = await supabase.auth.getClaims();
     const amr = (claimsData?.claims as { amr?: unknown } | undefined)?.amr;
-    const isRecoverySession =
-      Array.isArray(amr) &&
-      amr.some(
-        (method) =>
-          typeof method === "object" &&
-          method !== null &&
-          "method" in method &&
-          method.method === "recovery",
-      );
 
-    if (claimsError || !isRecoverySession) {
+    if (claimsError) {
+      console.warn({ reason: "claims_error" });
+      return { status: "error", message: "Use a valid password reset link to continue.", email };
+    }
+
+    if (!isRecentLinkSession(amr, Math.floor(Date.now() / 1000))) {
+      const methods = Array.isArray(amr)
+        ? amr.flatMap((entry: unknown) => {
+            if (typeof entry !== "object" || entry === null) return [];
+            const method = (entry as { method?: unknown }).method;
+            return typeof method === "string" ? [method] : [];
+          })
+        : [];
+      console.warn({ reason: "not_recent_link_session", methods });
       return { status: "error", message: "Use a valid password reset link to continue.", email };
     }
 
