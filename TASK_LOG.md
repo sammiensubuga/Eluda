@@ -379,8 +379,8 @@ This file records implementation work and its evidence. Keep entries concise and
 - **Owner/chat:** Brain (Task Packet); Builder (implementation); Sammie (owner approval)
 - **Scope:** Make the final password-reset and sign-out fixes, add the repo email template source, and close out BLD-013/BLD-013d using the owner's Vercel preview report.
 - **Files changed:** `app/auth-forms.tsx`, `lib/auth/actions.ts`, `tests/auth.test.ts`, `docs/EMAIL_TEMPLATES.md`, `TASK_LOG.md`, `PROJECT_STATUS.md`.
-- **Commit SHA:** Pending.
-- **Tests run and results:** `npm run lint`, `npm run typecheck`, and `npm run check:client-env` passed. `npm test` passed (3 files, 53 tests). `npm run build` passed and generated all 10 static pages. `git diff --check` pending final review.
-- **Preview/deployment evidence:** Owner reported the end-to-end results recorded above. Updated PR #18 preview URL and state pending this push.
+- **Commit SHA:** `eb2680321132c16c646af761b7e5d901962c8ea5` (PR #18).
+- **Tests run and results:** `npm run lint`, `npm run typecheck`, and `npm run check:client-env` passed. `npm test` passed (3 files, 53 tests). `npm run build` passed and generated all 10 static pages. `git diff --check HEAD^ HEAD` passed; staged secret-pattern scan had no matches. GitHub Actions CI run 20 passed.
+- **Preview/deployment evidence:** Owner reported the end-to-end results recorded above. PR #18 Vercel preview READY: https://eluda-git-feat-auth-email-signin-sammiesamz61-8614s-projects.vercel.app
 - **Known limitations:** Email links are single-use and are consumed when opened; some corporate email scanners open links in advance and can use them up, which would need a Continue-button page if testers report it. Gmail SMTP is for development only. The Supabase minimum password length is an owner dashboard action that is not yet confirmed as done.
 - **Reviewer decision:** Awaiting Brain review of BLD-013e.
