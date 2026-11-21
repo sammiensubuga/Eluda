@@ -343,8 +343,44 @@ This file records implementation work and its evidence. Keep entries concise and
 - **Owner/chat:** Brain (Task Packet); Builder (verification and documentation); Sammie (install, npm ci and owner approval)
 - **Scope:** Upgrade only `next` and `eslint-config-next` from 16.4.3 to exact version 16.4.6.
 - **Files changed:** `package.json`, `package-lock.json`, `TASK_LOG.md`, `PROJECT_STATUS.md`.
-- **Commit SHA:** Pending.
+- **Commit SHA:** `e9b15cb` (merged as `8ae25f9` in PR #17).
 - **Tests run and results:** Sammie ran the exact-version install and `npm ci` in PowerShell. Lint, typecheck, client-env check, tests (2 files, 20 tests) and build passed. Audit no longer listed Next.js; the expected effect chain remains (npm audit exit 1).
 - **Known limitations:** The Builder's install stalled with no output; Sammie ran the install and a full `npm ci` in PowerShell. An interrupted `npm ci` had emptied `node_modules`. The effect chain remains and is accepted by the owner for now. npm printed an install-scripts warning for `@prisma/engines`, `prisma` and `unrs-resolver`; no action taken.
+- **Preview/deployment evidence:** CI succeeded and the Vercel preview was READY for `e9b15cb`; Vercel READY for merge commit `8ae25f9`.
+- **Reviewer decision:** Merged (PR #17, merge commit `8ae25f9`).
+
+## BLD-013 — Supabase Auth with email and password
+- **Date:** 2026-11-21
+- **Status:** Complete
+- **Owner/chat:** Brain (Task Packet); Builder (implementation); Sammie (owner approval)
+- **Scope:** Add email/password authentication with required email confirmation, cookie-based Supabase sessions, recovery, and a protected Discover placeholder.
+- **Files changed:** Supabase and auth helpers, `proxy.ts`, auth pages/actions/confirmation route, tests, `TASK_LOG.md`, `PROJECT_STATUS.md`, and the two auth decision documents; package files contain only Sammie's prior dependency install.
+- **Commit SHA:** a90245e (PR #18); fix commit see PR #18
+- **Tests run and results:** `npm run lint`, `npm run typecheck`, `npm run check:client-env`, `npm test` (3 files, 45 tests) and `npm run build` passed. `npm audit --omit=dev` reported only the known `effect` advisory chain through `@prisma/config` and `prisma` (exit 1). Installed versions: `@supabase/ssr` 0.12.7 and `@supabase/supabase-js` 2.119.2.
+- **Preview/deployment evidence:** CI succeeded on a90245e; Vercel preview READY (eluda-lj7yvm3qp-sammiesamz61-8614s-projects.vercel.app).
+- **Known limitations:** Owner end-to-end test on the Vercel preview on 2026-11-21: the owner reported that sign-up with the check-your-email screen and resend, email confirmation, sign-in, the wrong-password message, reuse of a used confirmation link, forgot-password, password reset with redirect to sign-in, and sign-in with the new password all worked. Cross-device link opening was not explicitly confirmed. Production email requires a verified domain and transactional email provider before launch. No profile data, onboarding or Discovery recommendations are implemented. The known `effect` advisory chain remains; no Prisma downgrade was applied. Session cookies are httpOnly, so the realtime task must decide how the browser obtains a token. The Supabase minimum password length is an owner dashboard action not yet confirmed as done.
+- **Reviewer decision:** Awaiting Brain review of BLD-013e.
+
+## BLD-013d — Auth flow screens and fixes
+- **Date:** 2026-11-21
+- **Status:** Complete
+- **Owner/chat:** Brain (Task Packet); Builder (implementation); Sammie (owner approval)
+- **Scope:** Improve email/password form state and feedback, add confirmation/resend and reset success panels, fixed sign-in notices, recovery redirect handling, password confirmation and visibility toggles.
+- **Files changed:** `app/auth-forms.tsx`, `app/auth-page.tsx`, `app/sign-in/page.tsx`, `lib/auth/actions.ts`, `lib/auth/action-state.ts`, `app/auth/confirm/route.ts`, `tests/auth.test.ts`, `TASK_LOG.md`, `PROJECT_STATUS.md`.
+- **Commit SHA:** Pending.
+- **Tests run and results:** `npm run lint`, `npm run typecheck`, `npm run check:client-env`, `npm test` (3 files, 51 tests) and `npm run build` passed. Tests cover normalized email state without password echoes, generic resend responses, recovery callback handling, password mismatch and recovery-session logout/redirect, fixed notices, and the existing auth/security checks.
 - **Preview/deployment evidence:** Pending PR and Vercel preview.
-- **Reviewer decision:** Awaiting review.
+- **Known limitations:** Owner end-to-end test on the Vercel preview on 2026-11-21: the owner reported that sign-up with the check-your-email screen and resend, email confirmation, sign-in, the wrong-password message, reuse of a used confirmation link, forgot-password, password reset with redirect to sign-in, and sign-in with the new password all worked. Cross-device link opening was not explicitly confirmed. Custom email templates are in the Supabase dashboard and are recorded in `docs/EMAIL_TEMPLATES.md`; production email requires a verified domain and transactional provider before launch.
+- **Reviewer decision:** Awaiting Brain review of BLD-013e.
+
+## BLD-013e — Final auth fixes, email templates and close-out
+- **Date:** 2026-11-21
+- **Status:** Complete
+- **Owner/chat:** Brain (Task Packet); Builder (implementation); Sammie (owner approval)
+- **Scope:** Make the final password-reset and sign-out fixes, add the repo email template source, and close out BLD-013/BLD-013d using the owner's Vercel preview report.
+- **Files changed:** `app/auth-forms.tsx`, `lib/auth/actions.ts`, `tests/auth.test.ts`, `docs/EMAIL_TEMPLATES.md`, `TASK_LOG.md`, `PROJECT_STATUS.md`.
+- **Commit SHA:** `eb2680321132c16c646af761b7e5d901962c8ea5` (PR #18).
+- **Tests run and results:** `npm run lint`, `npm run typecheck`, and `npm run check:client-env` passed. `npm test` passed (3 files, 53 tests). `npm run build` passed and generated all 10 static pages. `git diff --check HEAD^ HEAD` passed; staged secret-pattern scan had no matches. GitHub Actions CI run 20 passed.
+- **Preview/deployment evidence:** Owner reported the end-to-end results recorded above. PR #18 Vercel preview READY: https://eluda-git-feat-auth-email-signin-sammiesamz61-8614s-projects.vercel.app
+- **Known limitations:** Email links are single-use and are consumed when opened; some corporate email scanners open links in advance and can use them up, which would need a Continue-button page if testers report it. Gmail SMTP is for development only. The Supabase minimum password length is an owner dashboard action that is not yet confirmed as done.
+- **Reviewer decision:** Awaiting Brain review of BLD-013e.
