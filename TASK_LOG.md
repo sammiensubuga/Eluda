@@ -355,10 +355,10 @@ This file records implementation work and its evidence. Keep entries concise and
 - **Owner/chat:** Brain (Task Packet); Builder (implementation); Sammie (owner approval)
 - **Scope:** Add email/password authentication with required email confirmation, cookie-based Supabase sessions, recovery, and a protected Discover placeholder.
 - **Files changed:** Supabase and auth helpers, `proxy.ts`, auth pages/actions/confirmation route, tests, `TASK_LOG.md`, `PROJECT_STATUS.md`, and the two auth decision documents; package files contain only Sammie's prior dependency install.
-- **Commit SHA:** a90245e (PR #18); fix commit see PR #18
+- **Commit SHA:** Merged in PR #18, merge commit 468650c, on 2026-11-22.
 - **Tests run and results:** `npm run lint`, `npm run typecheck`, `npm run check:client-env`, `npm test` (3 files, 45 tests) and `npm run build` passed. `npm audit --omit=dev` reported only the known `effect` advisory chain through `@prisma/config` and `prisma` (exit 1). Installed versions: `@supabase/ssr` 0.12.7 and `@supabase/supabase-js` 2.119.2.
 - **Preview/deployment evidence:** CI succeeded on a90245e; Vercel preview READY (eluda-lj7yvm3qp-sammiesamz61-8614s-projects.vercel.app).
-- **Known limitations:** Owner end-to-end test on the Vercel preview on 2026-11-21: the owner reported that sign-up with the check-your-email screen and resend, email confirmation, sign-in, the wrong-password message, and reuse of a used confirmation link all worked. Password reset was reported failing on the preview on 2026-11-21 after the custom email templates were pasted: the update was refused by the recovery-session check, which expected an amr method that the token-hash flow does not issue. Fixed in BLD-013f; the owner's retest is pending. Cross-device link opening was not explicitly confirmed. Production email requires a verified domain and transactional email provider before launch. No profile data, onboarding or Discovery recommendations are implemented. The known `effect` advisory chain remains; no Prisma downgrade was applied. Session cookies are httpOnly, so the realtime task must decide how the browser obtains a token. The Supabase minimum password length is an owner dashboard action not yet confirmed as done.
+- **Known limitations:** Owner end-to-end test on the Vercel preview on 2026-11-21: the owner reported that sign-up with the check-your-email screen and resend, email confirmation, sign-in, the wrong-password message, and reuse of a used confirmation link all worked. Owner retest reported on 2026-11-22: password reset now works with the custom templates, and opening /reset-password in a normal signed-in session is refused with 'Use a valid password reset link to continue.' Cross-device link opening was not explicitly confirmed. Production email requires a verified domain and transactional email provider before launch. No profile data, onboarding or Discovery recommendations are implemented. The known `effect` advisory chain remains; no Prisma downgrade was applied. Session cookies are httpOnly, so the realtime task must decide how the browser obtains a token. The owner reported setting the Supabase minimum password length to 10.
 - **Reviewer decision:** Awaiting Brain review of BLD-013e.
 
 ## BLD-013d — Auth flow screens and fixes
@@ -387,12 +387,24 @@ This file records implementation work and its evidence. Keep entries concise and
 
 ## BLD-013f — Accept recent email-link sessions for password updates
 - **Date:** 2026-11-21
-- **Status:** In progress
+- **Status:** Complete
 - **Owner/chat:** Brain (Task Packet); Builder (implementation); Sammie (owner approval)
 - **Scope:** Accept recent token-hash OTP/recovery sessions for password updates, add bounded AMR validation tests, and correct the end-to-end reset evidence.
 - **Files changed:** `lib/auth/actions.ts`, `lib/auth/recovery-session.ts`, `tests/auth.test.ts`, `TASK_LOG.md`, `PROJECT_STATUS.md`.
 - **Commit SHA:** `e419c2c440b1ff41862bb058f649e82c80e6b571` (PR #18).
 - **Tests run and results:** `npm run lint`, `npm run typecheck`, and `npm run check:client-env` passed. `npm test` passed (3 files, 64 tests). `npm run build` passed and generated all 10 static pages. `git diff --check` passed; staged secret-pattern scan found no matches. GitHub Actions CI run 22 passed.
-- **Preview/deployment evidence:** Vercel preview READY for commit `e419c2c`: https://eluda-git-feat-auth-email-signin-sammiesamz61-8614s-projects.vercel.app. Owner's end-to-end retest of password reset is pending.
-- **Known limitations:** The AMR method name is taken from Supabase's server source; it remains to be verified by the owner's retest. Reset-link scanners can consume single-use links.
-- **Reviewer decision:** Awaiting owner's end-to-end retest.
+- **Preview/deployment evidence:** Vercel preview READY for commit `e419c2c`: https://eluda-git-feat-auth-email-signin-sammiesamz61-8614s-projects.vercel.app. Owner retest reported on 2026-11-22: password reset now works with the custom templates, and opening /reset-password in a normal signed-in session is refused with 'Use a valid password reset link to continue.'
+- **Known limitations:** Cross-device link opening was not explicitly confirmed. Reset-link scanners can consume single-use links.
+- **Reviewer decision:** Owner retest complete; merged in PR #18 on 2026-11-22.
+
+## BLD-014 — Inline field-level auth form feedback
+- **Date:** 2026-11-22
+- **Status:** In progress
+- **Owner/chat:** Brain (Task Packet); Builder (implementation); Sammie (owner approval)
+- **Scope:** Add server-validated inline field errors and accessible form-level feedback to the auth forms; record BLD-013 owner retest results.
+- **Files changed:** `app/auth-forms.tsx`, `lib/auth/action-state.ts`, `lib/auth/actions.ts`, `tests/auth.test.ts`, `TASK_LOG.md`, `PROJECT_STATUS.md`.
+- **Commit SHA:** `58b98d0cffae75f8395363ade7392388cd362a34` (PR #19).
+- **Tests run and results:** `npm run lint`, `npm run typecheck`, and `npm run check:client-env` passed. `npm test` passed (3 files, 71 tests). `npm run build` passed and generated all 10 static pages. `git diff --check` passed. UI rendering is not covered by automated component tests because the existing tooling does not include a component renderer.
+- **Preview/deployment evidence:** PR #19: https://github.com/sammiensubuga/Eluda/pull/19. GitHub Actions CI run 25 succeeded. Vercel preview READY for `58b98d0`: https://eluda-hy0d4akr1-sammiesamz61-8614s-projects.vercel.app. Owner preview check pending.
+- **Known limitations:** UI rendering is not covered by automated component tests because the existing test tooling has no component renderer; owner preview check is pending.
+- **Reviewer decision:** Pending owner preview check.

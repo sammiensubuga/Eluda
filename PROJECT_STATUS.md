@@ -1,7 +1,7 @@
 # ELUDA Project Status
 
 **Status:** Documentation baseline in progress
-**Last updated:** 2026-11-21
+**Last updated:** 2026-11-22
 **Working branch:** `feat/public-access-foundation`
 **Production branch:** `main`
 **Production URL:** https://eluda.vercel.app
@@ -36,7 +36,8 @@ ELUDA has a GitHub repository and a Next.js application at the repository root. 
 - Payment provider decision (2026-11-09): NylonPay replaces LivePay. Documentation updated to NylonPay in BLD-010n.
 - BLD-011 complete: both migrations applied to the Eluda dev database on 2026-11-20 (read-only check by the Brain: 14 application tables, Row Level Security on for all of them, no policies, no grants to anon, authenticated or public).
 - BLD-012 complete: Next.js and eslint-config-next upgraded from 16.4.3 to 16.4.6; lint, typecheck, client-env, tests and build passed, and the audit no longer lists Next.js. The owner accepted the remaining Prisma effect advisory chain for now.
-- BLD-013: email and password authentication is implemented and unit-tested (64 tests across 3 files in the final BLD-013f run); the owner tested the sign-up, confirmation and sign-in flows end to end on the Vercel preview. The password-reset fix is unit-tested. Password reset was reported failing on the preview on 2026-11-21 after the custom email templates were pasted: the update was refused by the recovery-session check, which expected an amr method that the token-hash flow does not issue. Fixed in BLD-013f; the owner's retest is pending. The custom email templates are in the Supabase dashboard (source of truth `docs/EMAIL_TEMPLATES.md`); the Supabase minimum password length (10) is an owner action not yet confirmed.
+- BLD-013: email and password authentication is implemented and unit-tested (64 tests across 3 files in the final BLD-013f run), and the owner tested the flows end to end on the preview including password reset. The custom email templates are in the Supabase dashboard (source of truth `docs/EMAIL_TEMPLATES.md`); the Supabase minimum password length is 10 (owner-reported).
+- BLD-014: server validation now returns field-level errors for auth forms and the UI displays inline field and form feedback; action tests cover the validation and generic responses. The owner's preview check is pending.
 - Next planned work, in order: onboarding and profile basics (the Eluda users row with gender, date of birth and the 18+ check), conversation basics, the entitlement model, the message lock with fetch-based bypass tests, real-time signals, NylonPay payments, then likes and Discovery.
 
 ## Launch blockers (not blocking the MVP build)

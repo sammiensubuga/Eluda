@@ -101,6 +101,59 @@ describe("confirmation redirect sanitizer", () => {
 });
 
 describe("generic auth action responses", () => {
+  it("returns all sign-up field errors together without returning passwords", async () => {
+    const result = await signUp(
+      { status: "idle", message: "" },
+      form({ email: "bad address", password: "short", confirmPassword: "different" }),
+    );
+
+    expect(result).toEqual({
+      status: "error",
+      message: "",
+      email: "bad address",
+      fieldErrors: {
+        email: "Enter a valid email address.",
+        password: "Use at least 10 characters.",
+        confirmPassword: "Passwords do not match.",
+      },
+    });
+    expect(JSON.stringify(result)).not.toContain("short");
+    expect(JSON.stringify(result)).not.toContain("different");
+  });
+
+  it("returns the empty sign-up messages for all required fields", async () => {
+    const result = await signUp({ status: "idle", message: "" }, form({}));
+    expect(result).toEqual({
+      status: "error",
+      message: "",
+      email: "",
+      fieldErrors: {
+        email: "Enter your email address.",
+        password: "Enter a password.",
+        confirmPassword: "Confirm your password.",
+      },
+    });
+  });
+
+  it("returns sign-in field errors for empty and malformed values", async () => {
+    const empty = await signIn({ status: "idle", message: "" }, form({}));
+    expect(empty).toMatchObject({
+      status: "error",
+      message: "",
+      email: "",
+      fieldErrors: { email: "Enter your email address.", password: "Enter your password." },
+    });
+
+    const malformed = await signIn(
+      { status: "idle", message: "" },
+      form({ email: "invalid", password: "" }),
+    );
+    expect(malformed.fieldErrors).toEqual({
+      email: "Enter a valid email address.",
+      password: "Enter your password.",
+    });
+  });
+
   it("uses the same sign-in failure message for wrong password and unknown email", async () => {
     const input = form({ email: "person@example.test", password: "a-long-password" });
     mocks.auth.signInWithPassword
@@ -111,6 +164,7 @@ describe("generic auth action responses", () => {
     expect(wrongPassword).toEqual(unknownEmail);
     expect(wrongPassword.message).toBe("Email or password is incorrect.");
     expect(wrongPassword.email).toBe("person@example.test");
+    expect(wrongPassword.fieldErrors).toBeUndefined();
     expect(JSON.stringify(wrongPassword)).not.toContain("a-long-password");
   });
 
@@ -143,6 +197,20 @@ describe("generic auth action responses", () => {
       redirectTo: "https://eluda.example/auth/confirm",
     });
     expect(new URL(mocks.auth.resetPasswordForEmail.mock.calls[1][1].redirectTo).search).toBe("");
+  });
+
+  it.each([
+    ["empty", "", "Enter your email address."],
+    ["malformed", "not-an-email", "Enter a valid email address."],
+  ])("returns an email field error for a %s reset address", async (_label, email, message) => {
+    const result = await requestPasswordReset({ status: "idle", message: "" }, form({ email }));
+    expect(result).toEqual({
+      status: "error",
+      message: "",
+      email,
+      fieldErrors: { email: message },
+    });
+    expect(mocks.auth.resetPasswordForEmail).not.toHaveBeenCalled();
   });
 
   it("returns an identical generic resend result for provider success, error and throw", async () => {
@@ -206,12 +274,29 @@ describe("auth confirmation handler", () => {
 });
 
 describe("password update action", () => {
-  it("rejects mismatched passwords without updating the user", async () => {
+  it("returns the password confirmation field error without updating the user", async () => {
     const result = await updatePassword(
       { status: "idle", message: "" },
       form({ password: "long-enough-password", confirmPassword: "different-password" }),
     );
-    expect(result.message).toBe("Passwords do not match.");
+    expect(result).toMatchObject({
+      status: "error",
+      message: "",
+      fieldErrors: { confirmPassword: "Passwords do not match." },
+    });
+    expect(mocks.auth.updateUser).not.toHaveBeenCalled();
+  });
+
+  it("returns the short-password field error without updating the user", async () => {
+    const result = await updatePassword(
+      { status: "idle", message: "" },
+      form({ password: "short", confirmPassword: "short" }),
+    );
+    expect(result).toMatchObject({
+      status: "error",
+      message: "",
+      fieldErrors: { password: "Use at least 10 characters." },
+    });
     expect(mocks.auth.updateUser).not.toHaveBeenCalled();
   });
 
@@ -268,6 +353,21 @@ describe("password update action", () => {
       form({ password: "long-enough-password", confirmPassword: "long-enough-password" }),
     )).resolves.toMatchObject({ status: "error", message: "Use a valid password reset link to continue." });
     expect(mocks.auth.updateUser).not.toHaveBeenCalled();
+  });
+
+  it("keeps update failures form-level", async () => {
+    mocks.auth.getUser.mockResolvedValue({ data: { user: { id: "recovery-user" } }, error: null });
+    mocks.auth.getClaims.mockResolvedValue({ data: { claims: { amr: [{ method: "otp", timestamp: Math.floor(Date.now() / 1000) - 60 }] } }, error: null });
+    mocks.auth.updateUser.mockResolvedValue({ error: new Error("provider detail") });
+
+    const result = await updatePassword(
+      { status: "idle", message: "" },
+      form({ password: "long-enough-password", confirmPassword: "long-enough-password" }),
+    );
+
+    expect(result).toMatchObject({ status: "error", message: "Your password could not be updated. Try again." });
+    expect(result.fieldErrors).toBeUndefined();
+    expect(mocks.auth.updateUser).toHaveBeenCalledOnce();
   });
 });
 

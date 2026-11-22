@@ -74,16 +74,16 @@ export async function signUp(
   const password = readText(formData, "password");
   const confirmPassword = readText(formData, "confirmPassword");
 
-  if (!isValidEmail(email)) {
-    return { status: "error", message: "Enter a valid email address.", email };
-  }
+  const fieldErrors: NonNullable<AuthActionState["fieldErrors"]> = {};
+  if (!email) fieldErrors.email = "Enter your email address.";
+  else if (!isValidEmail(email)) fieldErrors.email = "Enter a valid email address.";
+  if (!password) fieldErrors.password = "Enter a password.";
+  else if (password.length < 10) fieldErrors.password = "Use at least 10 characters.";
+  if (!confirmPassword) fieldErrors.confirmPassword = "Confirm your password.";
+  else if (password !== confirmPassword) fieldErrors.confirmPassword = "Passwords do not match.";
 
-  if (password !== confirmPassword) {
-    return { status: "error", message: "Passwords do not match.", email };
-  }
-
-  if (password.length < 10) {
-    return { status: "error", message: "Password must be at least 10 characters.", email };
+  if (Object.keys(fieldErrors).length > 0) {
+    return { status: "error", message: "", email, fieldErrors };
   }
 
   const origin = await getAppOrigin();
@@ -112,8 +112,13 @@ export async function signIn(
   const email = readText(formData, "email").toLowerCase();
   const password = readText(formData, "password");
 
-  if (!isValidEmail(email) || password.length === 0) {
-    return withEmail(SIGN_IN_FAILURE, email);
+  const fieldErrors: NonNullable<AuthActionState["fieldErrors"]> = {};
+  if (!email) fieldErrors.email = "Enter your email address.";
+  else if (!isValidEmail(email)) fieldErrors.email = "Enter a valid email address.";
+  if (!password) fieldErrors.password = "Enter your password.";
+
+  if (Object.keys(fieldErrors).length > 0) {
+    return { status: "error", message: "", email, fieldErrors };
   }
 
   try {
@@ -145,8 +150,13 @@ export async function requestPasswordReset(
   formData: FormData,
 ): Promise<AuthActionState> {
   const email = readText(formData, "email").toLowerCase();
-  if (!isValidEmail(email)) {
-    return withEmail(PASSWORD_RESET_CONFIRMATION, email);
+  if (!email || !isValidEmail(email)) {
+    return {
+      status: "error",
+      message: "",
+      email,
+      fieldErrors: { email: email ? "Enter a valid email address." : "Enter your email address." },
+    };
   }
 
   const origin = await getAppOrigin();
@@ -199,12 +209,14 @@ export async function updatePassword(
   const password = readText(formData, "password");
   const confirmPassword = readText(formData, "confirmPassword");
   const email = readText(formData, "email").toLowerCase();
-  if (password !== confirmPassword) {
-    return { status: "error", message: "Passwords do not match.", email };
-  }
+  const fieldErrors: NonNullable<AuthActionState["fieldErrors"]> = {};
+  if (!password) fieldErrors.password = "Enter a new password.";
+  else if (password.length < 10) fieldErrors.password = "Use at least 10 characters.";
+  if (!confirmPassword) fieldErrors.confirmPassword = "Confirm your new password.";
+  else if (password !== confirmPassword) fieldErrors.confirmPassword = "Passwords do not match.";
 
-  if (password.length < 10) {
-    return { status: "error", message: "Password must be at least 10 characters.", email };
+  if (Object.keys(fieldErrors).length > 0) {
+    return { status: "error", message: "", email, fieldErrors };
   }
 
   let supabase;

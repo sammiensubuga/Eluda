@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useActionState, useEffect, useRef, useState } from "react";
+import type { ReactNode, Ref } from "react";
 import { useSearchParams } from "next/navigation";
 
 import {
@@ -15,22 +16,53 @@ import { getAuthNotice, INITIAL_AUTH_ACTION_STATE } from "../lib/auth/action-sta
 import type { AuthActionState } from "../lib/auth/action-state";
 
 type AuthFormKind = "sign-up" | "sign-in" | "forgot-password" | "reset-password";
+type AuthField = keyof NonNullable<AuthActionState["fieldErrors"]>;
+type NoticeStatus = "error" | "success";
 
-function Feedback({ status, message }: { status: "error" | "success"; message: string }) {
-  if (!message) return null;
-
-  const error = status === "error";
+function InlineMessage({
+  status,
+  children,
+  className = "",
+  id,
+}: {
+  status: NoticeStatus;
+  children: ReactNode;
+  className?: string;
+  id?: string;
+}) {
+  const isError = status === "error";
   return (
-    <div
-      className={`mt-4 rounded-xl border px-4 py-3 text-sm leading-6 ${
-        error
-          ? "border-rose-300 bg-rose-50 text-rose-900"
-          : "border-[#c6ddcf] bg-[#f0f7f2] text-[#28523a]"
-      }`}
-      role={error ? "alert" : "status"}
+    <p
+      id={id}
+      className={`flex items-start gap-2 text-sm leading-5 ${isError ? "text-[#b42318]" : "text-[#17663a]"} ${className}`}
+      role={isError ? "alert" : "status"}
     >
-      {message}
-    </div>
+      {isError ? (
+        <svg aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0" fill="none" viewBox="0 0 20 20" stroke="currentColor" strokeWidth="1.8">
+          <circle cx="10" cy="10" r="7.2" />
+          <path strokeLinecap="round" d="M10 6.2v4.4m0 3.2h.01" />
+        </svg>
+      ) : (
+        <svg aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0" fill="none" viewBox="0 0 20 20" stroke="currentColor" strokeWidth="1.8">
+          <circle cx="10" cy="10" r="7.2" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="m6.5 10.2 2.3 2.3 4.8-5" />
+        </svg>
+      )}
+      <span>{children}</span>
+    </p>
+  );
+}
+
+function FieldError({ id, message }: { id: string; message?: string }) {
+  if (!message) return null;
+  return (
+    <p id={id} className="mt-1.5 flex items-start gap-2 text-sm leading-5 text-[#b42318]">
+      <svg aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0" fill="none" viewBox="0 0 20 20" stroke="currentColor" strokeWidth="1.8">
+        <circle cx="10" cy="10" r="7.2" />
+        <path strokeLinecap="round" d="M10 6.2v4.4m0 3.2h.01" />
+      </svg>
+      <span>{message}</span>
+    </p>
   );
 }
 
@@ -39,14 +71,29 @@ function PasswordField({
   label,
   name,
   autoComplete,
+  error,
+  invalid = false,
+  describedBy,
+  inputRef,
+  onChange,
 }: {
   id: string;
   label: string;
   name: string;
   autoComplete: string;
+  error?: string;
+  invalid?: boolean;
+  describedBy?: string;
+  inputRef: Ref<HTMLInputElement>;
+  onChange: () => void;
 }) {
   const [visible, setVisible] = useState(false);
   const buttonLabel = visible ? "Hide password" : "Show password";
+  const errorId = `${id}-error`;
+  const hintId = `${id}-hint`;
+  const hasHint = autoComplete === "new-password" && name === "password";
+  const descriptions = [error ? errorId : null, describedBy, hasHint ? hintId : null].filter(Boolean).join(" ");
+  const hasError = Boolean(error || invalid);
 
   return (
     <div>
@@ -55,11 +102,15 @@ function PasswordField({
       </label>
       <div className="relative mt-2">
         <input
+          ref={inputRef}
           autoComplete={autoComplete}
-          className="min-h-12 w-full rounded-xl border border-[#dfd1d9] bg-white px-4 pr-14 text-base text-[#28142b] outline-none transition focus:border-[#9a527d] focus:ring-4 focus:ring-[#b87aa5]/20"
+          aria-describedby={descriptions || undefined}
+          aria-invalid={hasError}
+          className={`min-h-12 w-full rounded-xl border bg-white px-4 pr-14 text-base text-[#28142b] outline-none transition placeholder:text-[#9a8998] focus:ring-4 focus:ring-[#b87aa5]/20 ${hasError ? "border-[#b42318] focus:border-[#b42318]" : "border-[#dfd1d9] focus:border-[#9a527d]"}`}
           id={id}
           minLength={autoComplete === "new-password" ? 10 : undefined}
           name={name}
+          onChange={onChange}
           required
           type={visible ? "text" : "password"}
         />
@@ -82,9 +133,8 @@ function PasswordField({
           )}
         </button>
       </div>
-      {autoComplete === "new-password" && name === "password" && (
-        <span className="mt-1 block text-xs font-normal text-[#806e7e]">Use at least 10 characters.</span>
-      )}
+      <FieldError id={errorId} message={error} />
+      {hasHint && <span id={hintId} className="mt-1 block text-xs font-normal text-[#806e7e]">Use at least 10 characters.</span>}
     </div>
   );
 }
@@ -103,17 +153,39 @@ export function AuthForm({ kind }: { kind: AuthFormKind }) {
   const [email, setEmail] = useState("");
   const [dismissedState, setDismissedState] = useState<AuthActionState | null>(null);
   const [countdown, setCountdown] = useState(60);
+  const [clearedFieldState, setClearedFieldState] = useState<{
+    state: AuthActionState;
+    fields: Partial<Record<AuthField, boolean>>;
+  } | null>(null);
+  const [dismissedFormErrorState, setDismissedFormErrorState] = useState<AuthActionState | null>(null);
+  const emailInput = useRef<HTMLInputElement>(null);
+  const passwordInput = useRef<HTMLInputElement>(null);
+  const confirmPasswordInput = useRef<HTMLInputElement>(null);
   const successHeading = useRef<HTMLHeadingElement>(null);
   const isPasswordReset = kind === "reset-password";
   const isSignUp = kind === "sign-up";
   const isSignIn = kind === "sign-in";
   const isForgotPassword = kind === "forgot-password";
+  const clearedFields = clearedFieldState?.state === state ? clearedFieldState.fields : {};
   const showSuccessPanel =
     (isSignUp || isForgotPassword) &&
     state.status === "success" &&
     state.email !== undefined &&
     state !== dismissedState;
-  const showActionFeedback = state !== dismissedState;
+  const fieldError = (field: AuthField) =>
+    state.status === "error" && !clearedFields[field] ? state.fieldErrors?.[field] : undefined;
+  const signInFailure =
+    isSignIn && state.status === "error" && !state.fieldErrors && Boolean(state.message) && dismissedFormErrorState !== state;
+  const resetFormError =
+    isPasswordReset && state.status === "error" && Boolean(state.message) && dismissedFormErrorState !== state;
+
+  useEffect(() => {
+    if (state.status !== "error") return;
+    if (state.fieldErrors?.email) emailInput.current?.focus();
+    else if (state.fieldErrors?.password) passwordInput.current?.focus();
+    else if (state.fieldErrors?.confirmPassword) confirmPasswordInput.current?.focus();
+    else if (isSignIn && state.message) passwordInput.current?.focus();
+  }, [state, isSignIn]);
 
   useEffect(() => {
     if (showSuccessPanel) successHeading.current?.focus();
@@ -127,6 +199,21 @@ export function AuthForm({ kind }: { kind: AuthFormKind }) {
     return () => window.clearInterval(timer);
   }, [showSuccessPanel, isSignUp, countdown]);
 
+  function clearFieldError(field: AuthField) {
+    setClearedFieldState((current) => ({
+      state,
+      fields: { ...(current?.state === state ? current.fields : {}), [field]: true },
+    }));
+    setDismissedFormErrorState(state);
+  }
+
+  function prepareSubmit() {
+    setClearedFieldState(null);
+    setDismissedFormErrorState(null);
+    setDismissedState(null);
+    if (isSignUp) setCountdown(60);
+  }
+
   if (showSuccessPanel && (isSignUp || isForgotPassword)) {
     const confirmedEmail = state.email ?? email;
     if (isSignUp) {
@@ -136,11 +223,7 @@ export function AuthForm({ kind }: { kind: AuthFormKind }) {
           <p className="mt-3 text-sm leading-6 text-[#6f5b6d]" role="status">
             We’ve sent a confirmation link to <strong>{confirmedEmail}</strong>. Tap the link to confirm your email. If you don’t see it in your inbox, check your spam folder.
           </p>
-          <form
-            action={resendAction}
-            className="mt-6"
-            onSubmit={() => setCountdown(60)}
-          >
+          <form action={resendAction} className="mt-6" noValidate onSubmit={() => setCountdown(60)}>
             <input name="email" type="hidden" value={confirmedEmail} />
             <button
               className="inline-flex min-h-12 w-full items-center justify-center rounded-full border border-[#4a2148]/25 px-6 font-semibold text-[#4a2148] transition hover:bg-[#fbf6f0] disabled:cursor-wait disabled:opacity-60"
@@ -149,11 +232,8 @@ export function AuthForm({ kind }: { kind: AuthFormKind }) {
             >
               Resend email
             </button>
-            <p className="mt-2 text-center text-sm text-[#806e7e]" aria-live="polite">
-              {countdown > 0 ? `Resend in ${countdown}s` : resendPending ? "Sending…" : ""}
-            </p>
-            <p className="mt-2 min-h-6 text-center text-sm text-[#63345d]" aria-live="polite">
-              {resendState.message}
+            <p className="mt-1.5 min-h-5 text-sm text-[#806e7e]" aria-live="polite">
+              {resendPending ? "Sending…" : resendState.message || (countdown > 0 ? `Resend in ${countdown}s` : "")}
             </p>
           </form>
           <button
@@ -183,29 +263,39 @@ export function AuthForm({ kind }: { kind: AuthFormKind }) {
     );
   }
 
+  const resetRequiresNewLink = state.message === "Use a valid password reset link to continue.";
+
   return (
     <>
       <form
         action={formAction}
         className="mt-8 space-y-5"
+        noValidate
         onSubmit={() => {
           setEmail(email.trim().toLowerCase());
-          if (isSignUp) setCountdown(60);
+          prepareSubmit();
         }}
       >
         {!isPasswordReset && (
           <div>
             <label className="block text-sm font-medium text-[#4c3a4c]" htmlFor={`${kind}-email`}>Email address</label>
             <input
+              ref={emailInput}
               autoComplete="email"
-              className="mt-2 min-h-12 w-full rounded-xl border border-[#dfd1d9] bg-white px-4 text-base text-[#28142b] outline-none transition placeholder:text-[#9a8998] focus:border-[#9a527d] focus:ring-4 focus:ring-[#b87aa5]/20"
+              aria-describedby={fieldError("email") ? `${kind}-email-error` : signInFailure ? "sign-in-failure" : undefined}
+              aria-invalid={Boolean(fieldError("email") || signInFailure)}
+              className={`mt-2 min-h-12 w-full rounded-xl border bg-white px-4 text-base text-[#28142b] outline-none transition placeholder:text-[#9a8998] focus:ring-4 focus:ring-[#b87aa5]/20 ${fieldError("email") || signInFailure ? "border-[#b42318] focus:border-[#b42318]" : "border-[#dfd1d9] focus:border-[#9a527d]"}`}
               id={`${kind}-email`}
               name="email"
-              onChange={(event) => setEmail(event.currentTarget.value)}
+              onChange={(event) => {
+                setEmail(event.currentTarget.value);
+                clearFieldError("email");
+              }}
               required
               type="email"
               value={email}
             />
+            <FieldError id={`${kind}-email-error`} message={fieldError("email")} />
           </div>
         )}
         {!isForgotPassword && (
@@ -215,6 +305,11 @@ export function AuthForm({ kind }: { kind: AuthFormKind }) {
               label={isPasswordReset ? "New password" : "Password"}
               name="password"
               autoComplete={isSignIn ? "current-password" : "new-password"}
+              error={fieldError("password")}
+              invalid={signInFailure}
+              describedBy={signInFailure ? "sign-in-failure" : undefined}
+              inputRef={passwordInput}
+              onChange={() => clearFieldError("password")}
             />
             {(isPasswordReset || isSignUp) && (
               <PasswordField
@@ -222,9 +317,18 @@ export function AuthForm({ kind }: { kind: AuthFormKind }) {
                 label={isSignUp ? "Confirm password" : "Confirm new password"}
                 name="confirmPassword"
                 autoComplete="new-password"
+                error={fieldError("confirmPassword")}
+                inputRef={confirmPasswordInput}
+                onChange={() => clearFieldError("confirmPassword")}
               />
             )}
+            {signInFailure && <InlineMessage id="sign-in-failure" status="error">Email or password is incorrect.</InlineMessage>}
           </>
+        )}
+        {resetFormError && (
+          <InlineMessage status="error">
+            {state.message}{resetRequiresNewLink && <> <Link className="font-semibold underline underline-offset-4" href="/forgot-password">Request a new link</Link></>}
+          </InlineMessage>
         )}
         <button
           className="inline-flex min-h-12 w-full items-center justify-center rounded-full bg-[#4a2148] px-6 font-semibold text-white transition hover:bg-[#5b2a58] focus:outline-none focus:ring-4 focus:ring-[#b87aa5]/40 disabled:cursor-wait disabled:opacity-60"
@@ -233,8 +337,6 @@ export function AuthForm({ kind }: { kind: AuthFormKind }) {
         >
           {pending ? "Please wait…" : isSignUp ? "Create account" : isSignIn ? "Sign in" : isForgotPassword ? "Send reset link" : "Update password"}
         </button>
-        {showActionFeedback && state.status === "error" && <Feedback status="error" message={state.message} />}
-        {showActionFeedback && state.status === "success" && state.message && <Feedback status="success" message={state.message} />}
       </form>
       {isSignIn && <p className="mt-5 text-center text-sm text-[#806e7e]"><Link className="font-semibold text-[#63345d] underline underline-offset-4" href="/forgot-password">Forgot password?</Link></p>}
       {isSignIn && <p className="mt-6 text-center text-sm text-[#806e7e]">New to Eluda? <Link className="font-semibold text-[#63345d] underline underline-offset-4" href="/sign-up">Create an account</Link></p>}
@@ -250,8 +352,8 @@ export function SignInNotice() {
   if (!notice) return null;
 
   return (
-    <div className="mb-6">
-      <Feedback status={notice.status} message={notice.message} />
-    </div>
+    <InlineMessage status={notice.status} className="mt-4">
+      {notice.message}
+    </InlineMessage>
   );
 }
