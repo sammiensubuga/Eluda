@@ -134,3 +134,9 @@ Authentication: email and password with required email confirmation (2026-11-20)
 - Women start with availability `AVAILABLE` (provisional); men start with no availability. A district chosen from a list and stored as a code, with the list source recorded, becomes required when Discovery is built.
 - `SUPABASE_SECRET_KEY` is a server-only dedicated named secret used only in `lib/supabase/admin.ts` to delete the Auth user for an under-18 sign-up. It is never exposed to client code.
 - The `users.gender` immutability trigger is recorded in migration `20261122120000_users_gender_immutable`; it was applied to the Eluda dev database on 2026-11-22 by the owner (BLD-015c) and verified by the Brain. The owner's reviewed correction script temporarily disables the trigger.
+
+## Sign-up verification by email code (2026-11-22)
+- Sign-up confirmation moves from a link to a numeric code entered in the app; password reset remains link-based.
+- Resend is included with a 60-second countdown. An unconfirmed user who signs in with the right password gets a fresh code and the code-entry screen.
+- Recommended dashboard settings are code length 8 and a short expiry; the app accepts 6–10 digits.
+- Supabase per-IP rate limits may see Vercel server addresses rather than user addresses; revisit before launch. Codes can only be guessed within Supabase's own attempt limits.

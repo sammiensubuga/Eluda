@@ -40,6 +40,18 @@ function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
+function isEmailNotConfirmed(error: unknown): boolean {
+  if (typeof error !== "object" || error === null) return false;
+  const candidate = error as { code?: unknown; message?: unknown };
+  return candidate.code === "email_not_confirmed" ||
+    (typeof candidate.message === "string" && /not confirmed/i.test(candidate.message));
+}
+
+const NEEDS_VERIFICATION: AuthActionState = {
+  status: "needs_verification",
+  message: "",
+};
+
 async function getAppOrigin(): Promise<string | null> {
   try {
     const origin = (await headers()).get("origin");
@@ -121,14 +133,70 @@ export async function signIn(
     return { status: "error", message: "", email, fieldErrors };
   }
 
+  let supabase: Awaited<ReturnType<typeof createSupabaseServerClient>> | null = null;
   try {
-    const supabase = await createSupabaseServerClient();
+    supabase = await createSupabaseServerClient();
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error && isEmailNotConfirmed(error)) {
+      try {
+        await supabase.auth.resend({ type: "signup", email });
+      } catch {
+        // Verification remains generic when delivery fails.
+      }
+      return withEmail(NEEDS_VERIFICATION, email);
+    }
     if (error || !data.user || !data.session) {
       return withEmail(SIGN_IN_FAILURE, email);
     }
-  } catch {
+  } catch (error) {
+    if (supabase && isEmailNotConfirmed(error)) {
+      try {
+        await supabase.auth.resend({ type: "signup", email });
+      } catch {
+        // Verification remains generic when delivery fails.
+      }
+      return withEmail(NEEDS_VERIFICATION, email);
+    }
     return withEmail(SIGN_IN_FAILURE, email);
+  }
+
+  redirect("/discover");
+}
+
+export async function verifySignUpCode(
+  _previousState: AuthActionState,
+  formData: FormData,
+): Promise<AuthActionState> {
+  const email = readText(formData, "email").toLowerCase();
+  const code = readText(formData, "code").replace(/[\s-]/g, "");
+
+  if (!/^\d{6,10}$/.test(code)) {
+    return {
+      status: "error",
+      message: "",
+      email,
+      fieldErrors: { code: "Enter the code from your email." },
+    };
+  }
+
+  try {
+    const supabase = await createSupabaseServerClient();
+    const { data, error } = await supabase.auth.verifyOtp({ email, token: code, type: "email" });
+    if (error || !data.session) {
+      return {
+        status: "error",
+        message: "",
+        email,
+        fieldErrors: { code: "That code is incorrect or has expired." },
+      };
+    }
+  } catch {
+    return {
+      status: "error",
+      message: "",
+      email,
+      fieldErrors: { code: "That code is incorrect or has expired." },
+    };
   }
 
   redirect("/discover");

@@ -1,11 +1,12 @@
 export type AuthActionState = {
-  status: "idle" | "success" | "error";
+  status: "idle" | "success" | "error" | "needs_verification";
   message: string;
   email?: string;
   fieldErrors?: {
     email?: string;
     password?: string;
     confirmPassword?: string;
+    code?: string;
   };
 };
 
