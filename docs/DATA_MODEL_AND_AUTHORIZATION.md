@@ -88,7 +88,7 @@ Men see and message women, and women see and message men. Discovery, Daily Picks
 - Account deletion: the account becomes inaccessible instantly, then personal data and photos are purged; payment records are kept but detached from personal data (`user_id` set to null).
 - Moderation access to message content is deferred.
 - Likes and matches are not a gate for messaging. They are built after messaging and NylonPay, and the `likes` table stays in the schema.
-- The authentication sign-in method (email, phone or both) is not decided.
+- Authentication sign-in method: email and password with required email confirmation (decided 2026-11-20). Phone sign-in is deferred.
 - Launch blockers (not blocking the MVP build): verification for women before they can message men; data-protection obligations and the 18+ approach; Supabase Realtime plan limits.
 
 ## Appendix A: Icebreaker catalogue (owner-approved wording, 2026-10-29)

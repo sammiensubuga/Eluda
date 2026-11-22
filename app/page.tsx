@@ -15,8 +15,8 @@ export default function Home() {
             <Image src={logo} alt="Eluda logo" className="h-11 w-11 rounded-xl object-contain" preload sizes="44px" />
             <span className="text-xl font-semibold tracking-[0.08em]">Eluda</span>
           </Link>
-          <Link href="/login" className="rounded-full border border-[#4a2148]/15 px-4 py-2.5 text-sm font-semibold transition hover:border-[#4a2148]/40 hover:bg-white/70">
-            Log in
+          <Link href="/sign-in" className="rounded-full border border-[#4a2148]/15 px-4 py-2.5 text-sm font-semibold transition hover:border-[#4a2148]/40 hover:bg-white/70">
+            Sign in
           </Link>
         </header>
 
@@ -33,7 +33,7 @@ export default function Home() {
               A more thoughtful way to find your people. Start with a conversation, build trust, and let a real connection take its time.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
-              <Link href="/register" className="inline-flex min-h-14 items-center justify-center gap-3 rounded-full bg-[#4a2148] px-7 text-base font-semibold text-white shadow-xl shadow-[#4a2148]/20 transition hover:-translate-y-0.5 hover:bg-[#5b2a58] focus:outline-none focus:ring-4 focus:ring-[#b87aa5]/40">
+              <Link href="/sign-up" className="inline-flex min-h-14 items-center justify-center gap-3 rounded-full bg-[#4a2148] px-7 text-base font-semibold text-white shadow-xl shadow-[#4a2148]/20 transition hover:-translate-y-0.5 hover:bg-[#5b2a58] focus:outline-none focus:ring-4 focus:ring-[#b87aa5]/40">
                 Create your account <span aria-hidden="true">↗</span>
               </Link>
               <span className="px-2 text-sm text-[#806e7e]">Free to get started</span>
