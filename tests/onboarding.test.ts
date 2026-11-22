@@ -8,6 +8,7 @@ const mocks = vi.hoisted(() => ({
   create: vi.fn(),
   adminDeleteUser: vi.fn(),
   createAdminClient: vi.fn(),
+  connection: vi.fn(async () => {}),
   redirect: vi.fn((path: string) => {
     throw new Error(`NEXT_REDIRECT:${path}`);
   }),
@@ -23,6 +24,10 @@ vi.mock("../lib/db", () => ({
   getDb: () => ({ user: { findUnique: mocks.findUnique, create: mocks.create } }),
 }));
 vi.mock("next/navigation", () => ({ redirect: mocks.redirect }));
+vi.mock("next/server", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("next/server")>()),
+  connection: mocks.connection,
+}));
 
 import { ProtectedDiscoverContent } from "../app/discover/protected-content";
 import OnboardingPage, { OnboardingGate } from "../app/onboarding/page";
@@ -347,6 +352,7 @@ describe("account state and onboarding gates", () => {
 
     mocks.findUnique.mockResolvedValue(null);
     await expect(OnboardingGate()).resolves.toBeDefined();
+    expect(mocks.connection).toHaveBeenCalled();
     expect(OnboardingPage()).toBeDefined();
   });
 });

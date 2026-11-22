@@ -1,9 +1,11 @@
 import { redirect } from "next/navigation";
+import { connection } from "next/server";
 
 import { signOut } from "../../lib/auth/actions";
 import { getAccountState } from "../../lib/auth/account";
 
 export async function ProtectedDiscoverContent() {
+  await connection();
   const accountState = await getAccountState();
   if (accountState.status === "signed_out" || accountState.status === "deleted") redirect("/sign-in");
   if (accountState.status === "needs_onboarding") redirect("/onboarding");

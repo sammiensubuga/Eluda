@@ -15,6 +15,7 @@ const mocks = vi.hoisted(() => ({
     signOut: vi.fn(),
   },
   headers: vi.fn(),
+  connection: vi.fn(async () => {}),
   redirect: vi.fn((path: string) => {
     throw new Error(`NEXT_REDIRECT:${path}`);
   }),
@@ -33,6 +34,10 @@ vi.mock("next/headers", () => ({
   headers: mocks.headers,
 }));
 vi.mock("next/navigation", () => ({ redirect: mocks.redirect }));
+vi.mock("next/server", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("next/server")>()),
+  connection: mocks.connection,
+}));
 
 import { signIn, signUp, requestPasswordReset, resendConfirmation, updatePassword } from "../lib/auth/actions";
 import { getCurrentUser } from "../lib/auth/current-user";
@@ -75,6 +80,7 @@ describe("protected Discover placeholder", () => {
     mocks.auth.getUser.mockResolvedValue({ data: { user: { id: "user-id", email: "private@example.test" } }, error: null });
     mocks.findUnique.mockResolvedValue({ id: "user-id", displayName: "Test User", deletedAt: null });
     const result = await ProtectedDiscoverContent();
+    expect(mocks.connection).toHaveBeenCalled();
     const markup = JSON.stringify(result);
     expect(markup).toContain("You are signed in");
     expect(markup).not.toContain("private@example.test");

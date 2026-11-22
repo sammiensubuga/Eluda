@@ -1,11 +1,13 @@
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
+import { connection } from "next/server";
 
 import { AuthPage } from "../auth-page";
 import { OnboardingForm } from "./onboarding-form";
 import { getAccountState } from "../../lib/auth/account";
 
 export async function OnboardingGate() {
+  await connection();
   const accountState = await getAccountState();
   if (accountState.status === "signed_out" || accountState.status === "deleted") redirect("/sign-in");
   if (accountState.status === "ready") redirect("/discover");
