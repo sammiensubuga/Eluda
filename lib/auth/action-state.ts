@@ -2,6 +2,11 @@ export type AuthActionState = {
   status: "idle" | "success" | "error";
   message: string;
   email?: string;
+  fieldErrors?: {
+    email?: string;
+    password?: string;
+    confirmPassword?: string;
+  };
 };
 
 export const INITIAL_AUTH_ACTION_STATE: AuthActionState = {
