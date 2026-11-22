@@ -403,8 +403,8 @@ This file records implementation work and its evidence. Keep entries concise and
 - **Owner/chat:** Brain (Task Packet); Builder (implementation); Sammie (owner approval)
 - **Scope:** Add server-validated inline field errors and accessible form-level feedback to the auth forms; record BLD-013 owner retest results.
 - **Files changed:** `app/auth-forms.tsx`, `lib/auth/action-state.ts`, `lib/auth/actions.ts`, `tests/auth.test.ts`, `TASK_LOG.md`, `PROJECT_STATUS.md`.
-- **Commit SHA:** Reported at close-out; included in the linked BLD-014 PR.
+- **Commit SHA:** `58b98d0cffae75f8395363ade7392388cd362a34` (PR #19).
 - **Tests run and results:** `npm run lint`, `npm run typecheck`, and `npm run check:client-env` passed. `npm test` passed (3 files, 71 tests). `npm run build` passed and generated all 10 static pages. `git diff --check` passed. UI rendering is not covered by automated component tests because the existing tooling does not include a component renderer.
-- **Preview/deployment evidence:** Pending PR and Vercel preview; owner preview check pending.
+- **Preview/deployment evidence:** PR #19: https://github.com/sammiensubuga/Eluda/pull/19. GitHub Actions CI run 25 succeeded. Vercel preview READY for `58b98d0`: https://eluda-hy0d4akr1-sammiesamz61-8614s-projects.vercel.app. Owner preview check pending.
 - **Known limitations:** UI rendering is not covered by automated component tests because the existing test tooling has no component renderer; owner preview check is pending.
 - **Reviewer decision:** Pending owner preview check.
