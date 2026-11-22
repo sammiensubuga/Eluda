@@ -28,12 +28,15 @@ export function OnboardingForm() {
     fields: Partial<Record<OnboardingField, boolean>>;
   } | null>(null);
   const [dismissedFormErrorState, setDismissedFormErrorState] = useState<OnboardingState | null>(null);
+  const [dismissedConfirmationState, setDismissedConfirmationState] = useState<OnboardingState | null>(null);
   const genderInput = useRef<HTMLInputElement>(null);
   const dateOfBirthInput = useRef<HTMLInputElement>(null);
   const displayNameInput = useRef<HTMLInputElement>(null);
   const intentInput = useRef<HTMLInputElement>(null);
+  const ageConfirmationHeading = useRef<HTMLHeadingElement>(null);
   const values = localInput?.state === state ? localInput.values : state.values ?? {};
   const clearedErrors = clearedErrorState?.state === state ? clearedErrorState.fields : {};
+  const showAgeConfirmation = state.status === "confirm_age" && state !== dismissedConfirmationState;
   const fieldError = (field: OnboardingField) =>
     state.status === "error" && !clearedErrors[field] ? state.fieldErrors?.[field] : undefined;
   const formError = state.status === "error" && state.message && dismissedFormErrorState !== state;
@@ -45,6 +48,10 @@ export function OnboardingForm() {
     else if (state.fieldErrors?.displayName) displayNameInput.current?.focus();
     else if (state.fieldErrors?.intent) intentInput.current?.focus();
   }, [state]);
+
+  useEffect(() => {
+    if (showAgeConfirmation) ageConfirmationHeading.current?.focus();
+  }, [showAgeConfirmation, state]);
 
   function updateField(field: OnboardingField, value: string) {
     setLocalInput((current) => ({
@@ -58,8 +65,40 @@ export function OnboardingForm() {
     setDismissedFormErrorState(state);
   }
 
+  if (showAgeConfirmation && state.age !== undefined) {
+    return (
+      <section className="mt-8 space-y-5" aria-label="Confirm your age">
+        <h2 ref={ageConfirmationHeading} className="text-xl font-semibold tracking-tight" tabIndex={-1}>Confirm your age</h2>
+        <p className="text-sm leading-6 text-[#6f5b6d]">You are <strong>{state.age}</strong>. Is that right?</p>
+        <p className="text-sm text-[#806e7e]">Your date of birth can’t be changed after this.</p>
+        <form action={formAction} className="space-y-4" noValidate>
+          <input name="gender" type="hidden" value={values.gender ?? ""} />
+          <input name="dateOfBirth" type="hidden" value={values.dateOfBirth ?? ""} />
+          <input name="displayName" type="hidden" value={values.displayName ?? ""} />
+          <input name="intent" type="hidden" value={values.intent ?? ""} />
+          <input name="confirmedAge" type="hidden" value={state.age} />
+          <button
+            className="inline-flex min-h-12 w-full items-center justify-center rounded-full bg-[#4a2148] px-6 font-semibold text-white transition hover:bg-[#5b2a58] focus:outline-none focus:ring-4 focus:ring-[#b87aa5]/40 disabled:cursor-wait disabled:opacity-60"
+            disabled={pending}
+            type="submit"
+          >
+            {pending ? "Please wait…" : "Yes, create my account"}
+          </button>
+        </form>
+        <button
+          className="min-h-11 w-full rounded-full px-4 text-sm font-semibold text-[#63345d] underline underline-offset-4 hover:bg-[#fbf6f0]"
+          onClick={() => setDismissedConfirmationState(state)}
+          type="button"
+        >
+          No, change my date of birth
+        </button>
+      </section>
+    );
+  }
+
   return (
     <form action={formAction} className="mt-8 space-y-6" noValidate>
+      {dismissedConfirmationState && <input name="ageConfirmationDismissed" type="hidden" value="true" />}
       <fieldset aria-describedby={fieldError("gender") ? "onboarding-gender-error" : undefined} className="min-w-0">
         <legend className="text-sm font-medium text-[#4c3a4c]">I am</legend>
         <div className="mt-2 grid grid-cols-2 gap-3">

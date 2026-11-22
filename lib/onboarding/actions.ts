@@ -27,7 +27,7 @@ function errorCode(error: unknown): string | undefined {
 }
 
 export async function completeOnboarding(
-  _previousState: OnboardingState,
+  previousState: OnboardingState,
   formData: FormData,
 ): Promise<OnboardingState> {
   const values = readValues(formData);
@@ -80,6 +80,21 @@ export async function completeOnboarding(
       // Continue to the fixed under-18 notice even if session cleanup fails.
     }
     redirect("/sign-in?notice=under-18");
+  }
+
+  const hasConfirmedAge = formData.has("confirmedAge");
+  const confirmedAge = formData.get("confirmedAge");
+  const returnedToDetails = formData.get("ageConfirmationDismissed") === "true";
+  if (!hasConfirmedAge && (previousState.status !== "confirm_age" || returnedToDetails)) {
+    return { status: "confirm_age", message: "", age: validated.birth.age, values };
+  }
+  if (typeof confirmedAge !== "string" || confirmedAge !== String(validated.birth.age)) {
+    return {
+      status: "error",
+      message: "",
+      fieldErrors: { dateOfBirth: "Check your date of birth." },
+      values,
+    };
   }
 
   let duplicateSubmission = false;

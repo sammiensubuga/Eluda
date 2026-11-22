@@ -448,3 +448,13 @@ This file records implementation work and its evidence. Keep entries concise and
 - **Tests:** `npm run lint` passed; `npm run typecheck` passed; `npm run check:client-env` passed (`check-client-env: no server-only env var names found in client components.`); `npm test` passed (5 files, 139 tests); `npm run build` passed (11 route entries, including partial prerendering for `/discover` and `/onboarding`); `git diff --check` passed.
 - **Known limitations:** Password helper hint behavior has no component-rendering test coverage.
 - **Reviewer decision:** In progress until checks pass and the branch is merged.
+
+## BLD-018 — Age confirmation and profile basics
+- **Date:** 2026-11-22
+- **Status:** In progress
+- **Owner/chat:** Brain (Task Packet); Builder (implementation); Sammie (owner approval)
+- **Scope:** Confirm computed age before creating an account; add a signed-in profile page for name, age, intent and women's availability; record approved profile and photo decisions in the specified docs.
+- **Files changed:** `lib/onboarding/actions.ts`, `lib/onboarding/state.ts`, `app/onboarding/onboarding-form.tsx`, `app/discover/protected-content.tsx`, `lib/profile/queries.ts`, `lib/profile/actions.ts`, `app/profile/page.tsx`, `app/profile/profile-forms.tsx`, `tests/onboarding.test.ts`, `tests/profile.test.ts`, `docs/DATA_MODEL_AND_AUTHORIZATION.md`, `docs/DECISION_LOG.md`, `PRODUCT_BRIEF.md`, `TASK_LOG.md`, `PROJECT_STATUS.md`.
+- **Tests:** `npm run lint`, `npm run typecheck`, and `npm run check:client-env` passed; `npm test` passed (6 files, 162 tests) in and outside the sandbox; `npm run build` passed with `/profile` dynamically rendered; `git diff --check` passed.
+- **Known limitations:** No component rendering tests; the owner's preview check is pending.
+- **Reviewer decision:** In progress until the owner checks the preview and the branch is merged.

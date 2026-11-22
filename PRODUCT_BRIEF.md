@@ -1,7 +1,7 @@
 # ELUDA Product Brief
 
 **Document status:** Working product brief — latest owner messaging rules recorded
-**Last updated:** 2026-11-22
+**Last updated:** 2026-11-23
 **Product:** ELUDA
 **Repository:** https://github.com/sammiensubuga/Eluda
 
@@ -175,6 +175,7 @@ Provisional direction: deep plum, warm ivory, rose pink and restrained gold acce
 - Provisional: a second Plan purchase starts when the current Plan ends. Account deletion makes the account inaccessible instantly, then purges personal data and photos; payment records are kept but detached from personal data. Moderator access to message content is deferred.
 - Launch blockers (not blocking the MVP build): verification for women before they can message men; data-protection obligations and the 18+ approach; Supabase Realtime plan limits.
 - Onboarding (2026-11-22): after sign-in a new user chooses gender (Female or Male, not editable afterwards), date of birth, display name (2 to 30 characters, letters, spaces, hyphens and apostrophes) and relationship intent. There is no bio in the MVP. Under 18: blocked, no date of birth stored, Auth user deleted. Age is computed on the server from the Africa/Kampala date and is self-declared. Location is not collected in onboarding; a district (from a list, stored as a code, source recorded) becomes required when Discovery is built. A signed-in user without an Eluda account row can reach only the onboarding page.
+- Profiles (2026-11-22): a profile shows display name, age (computed on the server, never the date of birth), intent and 2 to 6 photos; the first photo is the main one; display name and intent are editable, gender and date of birth are not; women's availability is Available, Busy or Hidden (default Available); publishing is an explicit action needing at least 2 photos; photos are private, re-encoded without metadata and served by short-lived signed URLs only to allowed viewers. A district is added when Discovery is built.
 
 ### Open questions
 

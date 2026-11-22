@@ -135,6 +135,15 @@ Authentication: email and password with required email confirmation (2026-11-20)
 - `SUPABASE_SECRET_KEY` is a server-only dedicated named secret used only in `lib/supabase/admin.ts` to delete the Auth user for an under-18 sign-up. It is never exposed to client code.
 - The `users.gender` immutability trigger is recorded in migration `20261122120000_users_gender_immutable`; it was applied to the Eluda dev database on 2026-11-22 by the owner (BLD-015c) and verified by the Brain. The owner's reviewed correction script temporarily disables the trigger.
 
+## Profile photos and profile basics (2026-11-22)
+- **Profile basics — decided:** The profile shows display name, age computed on the server (never date of birth), intent and photos; district is added when Discovery is built. Display name (same character rules) and intent can be edited; gender and date of birth cannot. Onboarding shows the computed age (“You are N. Is that right?”) before account creation; later corrections go through the owner using a reviewed script.
+- **Women's availability — decided:** Women have Available, Busy or Hidden on the profile screen; it defaults to Available. Hidden removes a woman from Discovery and prevents new conversations when those features are built.
+- **Photo counts and formats — decided; not yet implemented (BLD-019):** A profile has 2 to 6 photos. JPEG, PNG and WebP are accepted; the server validates real file contents and size. The first photo is the main photo. The MVP has no drag and drop; it uses “Make main” and “Delete” buttons. A published profile cannot delete a photo if fewer than 2 would remain.
+- **Upload processing — decided; not yet implemented (BLD-019):** The browser downscales photos before upload to account for Vercel's request body limit (about 4.5 MB) and mobile data costs. A route handler receives each upload; the server uses Sharp to re-encode it as JPEG with a long side of about 1600 pixels and strips all metadata, including GPS. Only the re-encoded JPEG is stored; the original is never retained. Add a technical upload rate limit.
+- **Photo privacy and deletion — decided; not yet implemented (BLD-019):** Store photos in the private `profile-photos` bucket with no storage policies. Serve them only through short-lived signed URLs issued to allowed viewers: signed in, opposite gender, not blocked either way, and the profile published; owners can see their own unpublished profile. Deleting a photo or account removes the stored file and leaves no orphan objects; verify this in BLD-019 tests.
+- **Publishing — decided; not yet implemented (BLD-019):** Publishing requires an explicit “Publish profile” action and at least 2 photos; it is not automatic.
+- **Open question:** Whether a Hidden woman's photos stay visible to existing conversation partners remains undecided.
+
 ## Sign-up verification by email code (2026-11-22)
 - Sign-up confirmation moves from a link to a numeric code entered in the app; password reset remains link-based.
 - Resend is included with a 60-second countdown. An unconfirmed user who signs in with the right password gets a fresh code and the code-entry screen.
