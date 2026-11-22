@@ -183,7 +183,7 @@ describe("unchanged generic sign-up and resend actions", () => {
 
     expect(result).toEqual({
       status: "success",
-      message: "If a confirmation is pending for this address, we’ve sent a new link.",
+      message: "If a confirmation is pending for this address, we’ve sent a new code.",
       email: "person@example.test",
     });
     expect(mocks.auth.resend).toHaveBeenCalledOnce();

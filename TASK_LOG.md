@@ -431,9 +431,20 @@ This file records implementation work and its evidence. Keep entries concise and
 
 ## BLD-016 — Sign-up verification by email code
 - **Date:** 2026-11-22
-- **Status:** In progress
+- **Status:** Complete
 - **Owner/chat:** Brain (Task Packet); Builder (implementation); Sammie (owner approval)
 - **Scope:** Replace sign-up confirmation links with email OTP entry, support unconfirmed sign-in by requesting a fresh code, and update the specified docs.
 - **Tests:** `npm run lint` passed; `npm run typecheck` passed; `npm run check:client-env` passed (`check-client-env: no server-only env var names found in client components.`); `npm test` passed (5 files, 138 tests); `npm run build` passed (11 route entries; static/partial prerender/dynamic output generated); `git diff --check` passed. Unit tests cover code normalization, validation, safe provider failures, unconfirmed sign-in resend, generic sign-up/resend responses, and absence of sensitive logging.
-- **Known limitations:** No component rendering tests. The owner has not yet pasted the Supabase dashboard template or OTP settings, and the preview check is pending. Once the template is switched, old confirmation emails cease working as links, though `/auth/confirm` still handles existing confirmation links.
-- **Reviewer decision:** In progress pending owner dashboard template and preview check.
+- **Preview/deployment evidence:** The owner pasted the Confirm sign up template and set the OTP settings on 2026-11-22 and tested on the preview: sign-up with a code, a wrong code, resend with the countdown, sign-in with an unconfirmed account, and password reset all passed, including with magic links and email OTP switched off. The branch was merged directly into feat/public-access-foundation as commit 199e1ca without a pull request, so there was no pull-request CI run; Vercel built 199e1ca READY; the push-triggered CI result was not confirmed by the Brain.
+- **Known limitations:** No component rendering tests. Existing link-based sign-up confirmation emails stopped working as links after the template switch, though `/auth/confirm` still handles old links.
+- **Reviewer decision:** Owner reports preview flows passed; merged into the base branch.
+
+## BLD-017 — Auth polish and docs refresh
+- **Date:** 2026-11-22
+- **Status:** In progress
+- **Owner/chat:** Brain (Task Packet); Builder (implementation); Sammie (owner approval)
+- **Scope:** Correct auth confirmation wording, normalize onboarding display names to NFC, hide duplicate password hints while errors show, and refresh the specified status and auth documentation.
+- **Files changed:** `lib/auth/actions.ts`, `lib/onboarding/validation.ts`, `app/auth-forms.tsx`, `tests/auth.test.ts`, `tests/otp.test.ts`, `tests/onboarding.test.ts`, `docs/EMAIL_TEMPLATES.md`, `docs/DECISION_LOG.md`, `TASK_LOG.md`, `PROJECT_STATUS.md`.
+- **Tests:** `npm run lint` passed; `npm run typecheck` passed; `npm run check:client-env` passed (`check-client-env: no server-only env var names found in client components.`); `npm test` passed (5 files, 139 tests); `npm run build` passed (11 route entries, including partial prerendering for `/discover` and `/onboarding`); `git diff --check` passed.
+- **Known limitations:** Password helper hint behavior has no component-rendering test coverage.
+- **Reviewer decision:** In progress until checks pass and the branch is merged.

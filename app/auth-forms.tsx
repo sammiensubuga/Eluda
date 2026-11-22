@@ -92,8 +92,9 @@ function PasswordField({
   const errorId = `${id}-error`;
   const hintId = `${id}-hint`;
   const hasHint = autoComplete === "new-password" && name === "password";
-  const descriptions = [error ? errorId : null, describedBy, hasHint ? hintId : null].filter(Boolean).join(" ");
   const hasError = Boolean(error || invalid);
+  const showHint = hasHint && !error;
+  const descriptions = [error ? errorId : null, describedBy, showHint ? hintId : null].filter(Boolean).join(" ");
 
   return (
     <div>
@@ -134,7 +135,7 @@ function PasswordField({
         </button>
       </div>
       <FieldError id={errorId} message={error} />
-      {hasHint && <span id={hintId} className="mt-1 block text-xs font-normal text-[#806e7e]">Use at least 10 characters.</span>}
+      {showHint && <span id={hintId} className="mt-1 block text-xs font-normal text-[#806e7e]">Use at least 10 characters.</span>}
     </div>
   );
 }

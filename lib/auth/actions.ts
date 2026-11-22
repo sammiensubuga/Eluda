@@ -14,7 +14,7 @@ const SIGN_IN_FAILURE: AuthActionState = {
 
 const SIGN_UP_CONFIRMATION: AuthActionState = {
   status: "success",
-  message: "If you can sign up with this email, check your email for a confirmation link.",
+  message: "If you can sign up with this email, check your email for a confirmation code.",
 };
 
 const PASSWORD_RESET_CONFIRMATION: AuthActionState = {
@@ -24,7 +24,7 @@ const PASSWORD_RESET_CONFIRMATION: AuthActionState = {
 
 const RESEND_CONFIRMATION: AuthActionState = {
   status: "success",
-  message: "If a confirmation is pending for this address, we’ve sent a new link.",
+  message: "If a confirmation is pending for this address, we’ve sent a new code.",
 };
 
 function withEmail(state: AuthActionState, email: string): AuthActionState {
