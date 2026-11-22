@@ -7,13 +7,13 @@ import { useSearchParams } from "next/navigation";
 
 import {
   requestPasswordReset,
-  resendConfirmation,
   signIn,
   signUp,
   updatePassword,
 } from "../lib/auth/actions";
 import { getAuthNotice, INITIAL_AUTH_ACTION_STATE } from "../lib/auth/action-state";
 import type { AuthActionState } from "../lib/auth/action-state";
+import { VerifyEmailPanel } from "./verify-email-panel";
 
 type AuthFormKind = "sign-up" | "sign-in" | "forgot-password" | "reset-password";
 type AuthField = keyof NonNullable<AuthActionState["fieldErrors"]>;
@@ -149,10 +149,8 @@ export function AuthForm({ kind }: { kind: AuthFormKind }) {
           ? requestPasswordReset
           : updatePassword;
   const [state, formAction, pending] = useActionState(action, INITIAL_AUTH_ACTION_STATE);
-  const [resendState, resendAction, resendPending] = useActionState(resendConfirmation, INITIAL_AUTH_ACTION_STATE);
   const [email, setEmail] = useState("");
   const [dismissedState, setDismissedState] = useState<AuthActionState | null>(null);
-  const [countdown, setCountdown] = useState(60);
   const [clearedFieldState, setClearedFieldState] = useState<{
     state: AuthActionState;
     fields: Partial<Record<AuthField, boolean>>;
@@ -167,8 +165,12 @@ export function AuthForm({ kind }: { kind: AuthFormKind }) {
   const isSignIn = kind === "sign-in";
   const isForgotPassword = kind === "forgot-password";
   const clearedFields = clearedFieldState?.state === state ? clearedFieldState.fields : {};
+  const showVerificationPanel =
+    ((isSignUp && state.status === "success") || (isSignIn && state.status === "needs_verification")) &&
+    state.email !== undefined &&
+    state !== dismissedState;
   const showSuccessPanel =
-    (isSignUp || isForgotPassword) &&
+    isForgotPassword &&
     state.status === "success" &&
     state.email !== undefined &&
     state !== dismissedState;
@@ -191,14 +193,6 @@ export function AuthForm({ kind }: { kind: AuthFormKind }) {
     if (showSuccessPanel) successHeading.current?.focus();
   }, [showSuccessPanel]);
 
-  useEffect(() => {
-    if (!showSuccessPanel || !isSignUp || countdown <= 0) return;
-    const timer = window.setInterval(() => {
-      setCountdown((remaining) => Math.max(remaining - 1, 0));
-    }, 1000);
-    return () => window.clearInterval(timer);
-  }, [showSuccessPanel, isSignUp, countdown]);
-
   function clearFieldError(field: AuthField) {
     setClearedFieldState((current) => ({
       state,
@@ -211,45 +205,21 @@ export function AuthForm({ kind }: { kind: AuthFormKind }) {
     setClearedFieldState(null);
     setDismissedFormErrorState(null);
     setDismissedState(null);
-    if (isSignUp) setCountdown(60);
   }
 
-  if (showSuccessPanel && (isSignUp || isForgotPassword)) {
+  if (showVerificationPanel) {
     const confirmedEmail = state.email ?? email;
-    if (isSignUp) {
-      return (
-        <section className="mt-8" aria-label="Confirmation email sent">
-          <h2 ref={successHeading} className="text-2xl font-semibold tracking-tight" tabIndex={-1}>Check your email</h2>
-          <p className="mt-3 text-sm leading-6 text-[#6f5b6d]" role="status">
-            We’ve sent a confirmation link to <strong>{confirmedEmail}</strong>. Tap the link to confirm your email. If you don’t see it in your inbox, check your spam folder.
-          </p>
-          <form action={resendAction} className="mt-6" noValidate onSubmit={() => setCountdown(60)}>
-            <input name="email" type="hidden" value={confirmedEmail} />
-            <button
-              className="inline-flex min-h-12 w-full items-center justify-center rounded-full border border-[#4a2148]/25 px-6 font-semibold text-[#4a2148] transition hover:bg-[#fbf6f0] disabled:cursor-wait disabled:opacity-60"
-              disabled={countdown > 0 || resendPending}
-              type="submit"
-            >
-              Resend email
-            </button>
-            <p className="mt-1.5 min-h-5 text-sm text-[#806e7e]" aria-live="polite">
-              {resendPending ? "Sending…" : resendState.message || (countdown > 0 ? `Resend in ${countdown}s` : "")}
-            </p>
-          </form>
-          <button
-            className="mt-3 min-h-11 w-full rounded-full px-4 text-sm font-semibold text-[#63345d] underline underline-offset-4 hover:bg-[#fbf6f0]"
-            onClick={() => setDismissedState(state)}
-            type="button"
-          >
-            Use a different email
-          </button>
-          <p className="mt-4 text-center text-sm text-[#806e7e]">
-            Already confirmed? <Link className="font-semibold text-[#63345d] underline underline-offset-4" href="/sign-in">Sign in</Link>
-          </p>
-        </section>
-      );
-    }
+    return (
+      <VerifyEmailPanel
+        email={confirmedEmail}
+        notice={isSignIn ? "Your email isn’t confirmed yet. We’ve sent you a new code." : undefined}
+        onUseDifferentEmail={() => setDismissedState(state)}
+      />
+    );
+  }
 
+  if (showSuccessPanel && isForgotPassword) {
+    const confirmedEmail = state.email ?? email;
     return (
       <section className="mt-8" aria-label="Password reset email sent">
         <h2 ref={successHeading} className="text-2xl font-semibold tracking-tight" tabIndex={-1}>Check your email</h2>
