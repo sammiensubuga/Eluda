@@ -140,3 +140,8 @@ Authentication: email and password with required email confirmation (2026-11-20)
 - Resend is included with a 60-second countdown. An unconfirmed user who signs in with the right password gets a fresh code and the code-entry screen.
 - Recommended dashboard settings are code length 8 and a short expiry; the app accepts 6–10 digits.
 - Supabase per-IP rate limits may see Vercel server addresses rather than user addresses; revisit before launch. Codes can only be guessed within Supabase's own attempt limits.
+
+## Auth dashboard settings (2026-11-22)
+- Owner-reported settings: Confirm email on; allow new users to sign up on; anonymous sign-ins off; manual linking off; magic links and email OTP off; email OTP length 8; email OTP expiration 900 seconds; minimum password length 10.
+- Leaked-password protection is not available on the free plan (Pro and above).
+- 'Secure password change' and 'Require current password when updating' were left unchanged; changing them requires retesting password reset.

@@ -92,6 +92,12 @@ describe("onboarding display-name validation", () => {
     expect(validateDisplayName("Al  Bo")).toEqual({ value: "Al Bo" });
   });
 
+  it("normalizes decomposed accents to NFC before validating and storing the name", () => {
+    const decomposed = "Zoe\u0308";
+    expect(normalizeDisplayName(decomposed)).toBe("Zoë");
+    expect(validateDisplayName(decomposed)).toEqual({ value: "Zoë" });
+  });
+
   it.each([
     ["A", "Use 2 to 30 characters."],
     ["A".repeat(31), "Use 2 to 30 characters."],

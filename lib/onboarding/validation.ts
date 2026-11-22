@@ -62,7 +62,7 @@ export function parseDateOfBirth(input: string, today: KampalaDate): ParsedDateO
 }
 
 export function normalizeDisplayName(input: string): string {
-  return input.trim().replace(/\s+/gu, " ");
+  return input.normalize("NFC").trim().replace(/\s+/gu, " ");
 }
 
 export function validateDisplayName(input: string): { value: string; error?: string } {

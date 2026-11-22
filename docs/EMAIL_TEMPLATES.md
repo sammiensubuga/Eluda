@@ -23,7 +23,7 @@ Password reset emails use `redirectTo` set to the app's `/auth/confirm` URL with
 </table>
 ```
 
-In the Supabase dashboard, change **Confirm sign up**, not **Magic link or OTP** (that template is for passwordless sign-in, which Eluda does not use). The code length and expiry are dashboard settings under Authentication, Email provider, if shown. The app accepts 6 to 10 digits; the recommended values are length 8 and a short expiry.
+In the Supabase dashboard, change **Confirm sign up**, not **Magic link or OTP** (that template is for passwordless sign-in, which Eluda does not use). The code length and expiry are dashboard settings under Authentication, Email provider, if shown. The app accepts 6 to 10 digits. Current dashboard values (owner-set, 2026-11-22): email OTP length 8, email OTP expiration 900 seconds, and the 'Enable magic links and email OTP' switch is off; the sign-up code flow was tested with it off.
 
 ## Reset password
 

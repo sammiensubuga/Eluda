@@ -189,7 +189,7 @@ describe("generic auth action responses", () => {
     const newAddress = await signUp({ status: "idle", message: "" }, input);
     expect(existing).toEqual(newAddress);
     expect(existing.email).toBe("person@example.test");
-    expect(existing.message).toBe("If you can sign up with this email, check your email for a confirmation link.");
+    expect(existing.message).toBe("If you can sign up with this email, check your email for a confirmation code.");
     expect(JSON.stringify(existing)).not.toContain("a-long-password");
   });
 
@@ -237,7 +237,7 @@ describe("generic auth action responses", () => {
     expect(success).toEqual(providerError);
     expect(success).toEqual(thrownError);
     expect(success.email).toBe("person@example.test");
-    expect(success.message).toBe("If a confirmation is pending for this address, we’ve sent a new link.");
+    expect(success.message).toBe("If a confirmation is pending for this address, we’ve sent a new code.");
     expect(JSON.stringify(success)).not.toContain("private");
     expect(JSON.stringify(success)).not.toContain("must-not-echo");
     expect(mocks.auth.resend).toHaveBeenNthCalledWith(1, {
