@@ -408,3 +408,15 @@ This file records implementation work and its evidence. Keep entries concise and
 - **Preview/deployment evidence:** PR #19: https://github.com/sammiensubuga/Eluda/pull/19. GitHub Actions CI run 25 succeeded. Vercel preview READY for `58b98d0`: https://eluda-hy0d4akr1-sammiesamz61-8614s-projects.vercel.app. Owner preview check pending.
 - **Known limitations:** UI rendering is not covered by automated component tests because the existing test tooling has no component renderer; owner preview check is pending.
 - **Reviewer decision:** Pending owner preview check.
+
+## BLD-015 — Onboarding and server-side account gate
+- **Date:** 2026-11-22
+- **Status:** In progress
+- **Owner/chat:** Brain (Task Packet); Builder (implementation); Sammie (owner approval)
+- **Scope:** Add onboarding for gender, date of birth, display name and intent; enforce the account gate and adult-age validation server-side; add the gender-immutability migration and update the specified product and engineering documentation.
+- **Files changed:** `app/auth-forms.tsx`, `app/auth-page.tsx`, `app/discover/protected-content.tsx`, `app/onboarding/page.tsx`, `app/onboarding/onboarding-form.tsx`, `lib/auth/account.ts`, `lib/auth/action-state.ts`, `lib/onboarding/actions.ts`, `lib/onboarding/state.ts`, `lib/onboarding/validation.ts`, `lib/supabase/admin.ts`, `prisma/migrations/20261122120000_users_gender_immutable/migration.sql`, `tests/auth.test.ts`, `tests/onboarding.test.ts`, `PRODUCT_BRIEF.md`, `PROJECT_STATUS.md`, `TASK_LOG.md`, `docs/DATA_MODEL_AND_AUTHORIZATION.md`, `docs/DECISION_LOG.md`, `docs/ENVIRONMENT_SETUP.md`.
+- **Commit SHA:** Pending.
+- **Tests run and results:** `npm run lint` passed with no warnings; `npm run typecheck` passed; `npm run check:client-env` passed; `npm test` passed (4 files, 122 tests); `npx prisma validate` passed; `npm run build` passed and generated 11 static pages, including partially prerendered `/discover` and `/onboarding`; `git diff --check` passed.
+- **Preview/deployment evidence:** Pending PR, CI and Vercel preview. Owner preview check pending.
+- **Known limitations:** The migration is written but has not been applied. The existing database `users_adult_check` uses UTC-date age while application validation uses Kampala local date; the documented edge near midnight remains. Age is self-declared. Auth-user cleanup for underage submissions is best effort and requires the server-only `SUPABASE_SECRET_KEY` in Vercel; failure does not store the submitted profile. Automated tests do not render UI components. No hosted database or Vercel settings were changed.
+- **Reviewer decision:** Pending owner preview check.

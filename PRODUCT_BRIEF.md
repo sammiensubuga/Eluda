@@ -1,7 +1,7 @@
 # ELUDA Product Brief
 
 **Document status:** Working product brief — latest owner messaging rules recorded
-**Last updated:** 2026-10-29
+**Last updated:** 2026-11-22
 **Product:** ELUDA
 **Repository:** https://github.com/sammiensubuga/Eluda
 
@@ -174,6 +174,7 @@ Provisional direction: deep plum, warm ivory, rose pink and restrained gold acce
 - Real-time chat is in the MVP and follows signal, then fetch (see Section 8). The single RLS policy exception is on `realtime.messages`.
 - Provisional: a second Plan purchase starts when the current Plan ends. Account deletion makes the account inaccessible instantly, then purges personal data and photos; payment records are kept but detached from personal data. Moderator access to message content is deferred.
 - Launch blockers (not blocking the MVP build): verification for women before they can message men; data-protection obligations and the 18+ approach; Supabase Realtime plan limits.
+- Onboarding (2026-11-22): after sign-in a new user chooses gender (Female or Male, not editable afterwards), date of birth, display name (2 to 30 characters, letters, spaces, hyphens and apostrophes) and relationship intent. There is no bio in the MVP. Under 18: blocked, no date of birth stored, Auth user deleted. Age is computed on the server from the Africa/Kampala date and is self-declared. Location is not collected in onboarding; a district (from a list, stored as a code, source recorded) becomes required when Discovery is built. A signed-in user without an Eluda account row can reach only the onboarding page.
 
 ### Open questions
 
@@ -191,6 +192,6 @@ Provisional direction: deep plum, warm ivory, rose pink and restrained gold acce
 
 ## 11. Current implementation status
 
-This brief records product and architecture direction. It does not certify that message locking, Plan enforcement, Prisma schema, authentication, storage policies or payment flow exist. A repository inspection on 2026-10-26 found a Next.js application at the repository root and no Prisma schema or migration files. Since then, Prisma 7.10.1 has been set up and the data model is written as Prisma models with migration SQL (BLD-008 to BLD-010). The migrations have not been applied to any database, and no authentication, messaging, entitlement or payment code exists yet. Verify the repository and the hosted Supabase project before implementation.
+This brief records product and architecture direction; implementation status is tracked in PROJECT_STATUS.md and TASK_LOG.md and this paragraph is only a snapshot. As of 2026-11-22: Prisma 7.10.1 is set up and the 14-table data model is applied to the Eluda dev database; email and password authentication with Supabase Auth is implemented and was tested end to end by the owner on a preview; onboarding is in progress. Message locking, Plan enforcement, storage policies, real-time signals and the payment flow are not implemented. A repository inspection on 2026-10-26 found a Next.js application at the repository root and no Prisma schema or migration files (historical). Verify the repository and the hosted Supabase project before implementation.
 
-**Review note:** This update records the final stack (Next.js + Prisma + Supabase + Vercel), the final Plans and blind-lock messaging rules, and the Meetups category. The 2026-10-29 update adds the four relationship intents, the opposite-gender rule, the Hidden-woman rule, the real-time signal-then-fetch design and the approved data-model decisions. Other project documents were reconciled in the same change.
+**Review note:** This update records the final stack (Next.js + Prisma + Supabase + Vercel), the final Plans and blind-lock messaging rules, and the Meetups category. The 2026-10-29 update adds the four relationship intents, the opposite-gender rule, the Hidden-woman rule, the real-time signal-then-fetch design and the approved data-model decisions. Other project documents were reconciled in the same change. The 2026-11-22 update refreshes the implementation-status paragraph and records the onboarding decisions.

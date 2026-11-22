@@ -53,7 +53,7 @@ function InlineMessage({
   );
 }
 
-function FieldError({ id, message }: { id: string; message?: string }) {
+export function FieldError({ id, message }: { id: string; message?: string }) {
   if (!message) return null;
   return (
     <p id={id} className="mt-1.5 flex items-start gap-2 text-sm leading-5 text-[#b42318]">

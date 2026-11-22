@@ -29,5 +29,12 @@ export function getAuthNotice(code: string | null): { status: "error" | "success
     };
   }
 
+  if (code === "under-18") {
+    return {
+      status: "error",
+      message: "You must be 18 or older to use Eluda.",
+    };
+  }
+
   return null;
 }
