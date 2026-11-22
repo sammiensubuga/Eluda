@@ -126,3 +126,11 @@ Statuses: **Approved**, **Proposed**, **Open**, **Superseded**. Only the product
 
 ## Authentication (2026-11-20)
 Authentication: email and password with required email confirmation (2026-11-20). Phone sign-in is deferred and undecided. Anonymous sign-ins, social logins and manual linking are off.
+
+## Onboarding and account gate (2026-11-22)
+- After sign-in, a user without an Eluda users row must complete onboarding before accessing anything else. The row is created server-side with a nested profiles row.
+- Onboarding collects gender (Female or Male, immutable after creation), date of birth, display name (2 to 30 Unicode code points; letters, spaces, hyphens and apostrophes) and one intent (Meetups, Dating, Marriage or Make New Friends). There is no bio in the MVP; the existing column is reserved and never written. Location is not collected during onboarding.
+- Age is computed server-side from the Africa/Kampala calendar date and is self-declared. An under-18 submission stores no date of birth, creates no users or profiles row, deletes the Supabase Auth user best effort and ends the session. Real age verification remains an open launch blocker.
+- Women start with availability `AVAILABLE` (provisional); men start with no availability. A district chosen from a list and stored as a code, with the list source recorded, becomes required when Discovery is built.
+- `SUPABASE_SECRET_KEY` is a server-only dedicated named secret used only in `lib/supabase/admin.ts` to delete the Auth user for an under-18 sign-up. It is never exposed to client code.
+- The `users.gender` immutability trigger is recorded in migration `20261122120000_users_gender_immutable`; the migration is committed but not yet applied. The owner's reviewed correction script temporarily disables the trigger.

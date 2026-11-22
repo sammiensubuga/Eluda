@@ -22,7 +22,19 @@ const pageContent = {
   },
 } as const;
 
-export function AuthPage({ kind, children }: { kind: keyof typeof pageContent; children?: ReactNode }) {
+export function AuthPage({
+  kind,
+  children,
+  title,
+  description,
+  form,
+}: {
+  kind: keyof typeof pageContent;
+  children?: ReactNode;
+  title?: string;
+  description?: string;
+  form?: ReactNode;
+}) {
   const content = pageContent[kind];
 
   return (
@@ -30,10 +42,10 @@ export function AuthPage({ kind, children }: { kind: keyof typeof pageContent; c
       <div className="mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-md flex-col justify-center">
         <Link className="mb-8 self-center text-xl font-semibold tracking-[0.08em] text-[#4a2148]" href="/">Eluda</Link>
         <section className="rounded-3xl border border-[#eadde3] bg-white/90 p-6 shadow-xl shadow-[#4a2148]/5 sm:p-9">
-          <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{content.title}</h1>
-          <p className="mt-2 text-sm leading-6 text-[#806e7e]">{content.description}</p>
+          <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{title ?? content.title}</h1>
+          <p className="mt-2 text-sm leading-6 text-[#806e7e]">{description ?? content.description}</p>
           {children}
-          <AuthForm kind={kind} />
+          {form ?? <AuthForm kind={kind} />}
         </section>
       </div>
     </main>

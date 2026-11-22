@@ -1,6 +1,6 @@
 # ELUDA Environment Setup
 
-**Status:** Initial guidance; verify against the current repository before use
+**Status:** Reviewed 2026-11-22; verify against the current repository before use
 
 ## Prerequisites
 - Git.
@@ -11,9 +11,10 @@
 1. Clone the repository.
 2. Change to the repository root; the Next.js application and package files live there.
 3. Inspect the lockfile and package manager before installing dependencies.
-4. Install dependencies with the matching package manager.
+4. Install dependencies with npm ci.
 5. Run `npm run dev` (or the equivalent command for the lockfile's package manager).
 6. Run `npm run lint` and `npm run build` before reporting changes complete.
+7. Note: `npm run dev` regenerates the Next.js agent-rules block at the top of `AGENTS.md`; do not commit that change. On the Builder's Windows environment, builds run outside the sandbox with `TEMP` and `TMP` set to `C:\dev\.tmp-codex`.
 
 ## Environment variables
 Inspect source code and example environment files to identify required variable names. Document names and purpose only; never copy secret values into documentation, issue comments or chat reports. If a variable is needed, provide a safe placeholder in examples.
@@ -25,17 +26,20 @@ Inspect source code and example environment files to identify required variable 
 - Do not run destructive commands against production systems during setup.
 
 ## Backend
-The backend framework and local database setup have not yet been confirmed. Add backend setup steps only after architecture and repository inspection.
+There is no separate backend service. Route Handlers and Server Actions in the Next.js application at the repository root are the backend. Data access goes through Prisma (`prisma/schema.prisma`, migrations in `prisma/migrations`) to the Supabase PostgreSQL project; Supabase Auth handles sign-in. There is no local database: development uses the Eluda dev Supabase project through the variables below. Never apply a migration to the hosted project without the owner's explicit approval.
 
 ## Verification
 This document is a starting point. Confirm prerequisites, scripts and environment variables against the current repository before treating these steps as fully tested.
 
-## Database environment variables (names only)
+## Environment variables (names only)
 
 Local values live in an uncommitted `.env` file and in Vercel environment settings. Never commit them or paste them into chat.
 
 | Name | Used by | Value to use |
 |---|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | Public by design; used by the server Supabase client for sessions | Set by the owner |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Public by design; used by the server Supabase client for sessions | Set by the owner |
+| `SUPABASE_SECRET_KEY` | Server-only; used only by `lib/supabase/admin.ts` to delete the Auth user of an under-18 sign-up; dedicated named secret key created by the owner | Set by the owner in Vercel; never use a `NEXT_PUBLIC_` name or client code |
 | `DATABASE_URL` | The running app (Prisma Client through `@prisma/adapter-pg`, created in `lib/db.ts`) | The Supabase Supavisor transaction-mode pooled connection string (port 6543, with `?pgbouncer=true`) for the dedicated `prisma` database role |
 | `DIRECT_URL` | Prisma CLI commands that touch a database (migrate, db pull), through `prisma.config.ts` | The Supabase Supavisor session-mode connection string (port 5432) for the same role. The direct connection string works only on IPv6 networks or with the IPv4 add-on |
 

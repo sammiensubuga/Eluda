@@ -1,13 +1,14 @@
 import { redirect } from "next/navigation";
+import { connection } from "next/server";
 
 import { signOut } from "../../lib/auth/actions";
-import { getCurrentUser } from "../../lib/auth/current-user";
+import { getAccountState } from "../../lib/auth/account";
 
 export async function ProtectedDiscoverContent() {
-  const user = await getCurrentUser();
-  if (!user) {
-    redirect("/sign-in");
-  }
+  await connection();
+  const accountState = await getAccountState();
+  if (accountState.status === "signed_out" || accountState.status === "deleted") redirect("/sign-in");
+  if (accountState.status === "needs_onboarding") redirect("/onboarding");
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#fbf6f0] px-5 text-[#28142b]">

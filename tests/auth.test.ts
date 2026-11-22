@@ -15,20 +15,29 @@ const mocks = vi.hoisted(() => ({
     signOut: vi.fn(),
   },
   headers: vi.fn(),
+  connection: vi.fn(async () => {}),
   redirect: vi.fn((path: string) => {
     throw new Error(`NEXT_REDIRECT:${path}`);
   }),
+  findUnique: vi.fn(),
 }));
 
 vi.mock("server-only", () => ({}));
 vi.mock("../lib/supabase/server", () => ({
   createSupabaseServerClient: vi.fn(async () => ({ auth: mocks.auth })),
 }));
+vi.mock("../lib/db", () => ({
+  getDb: () => ({ user: { findUnique: mocks.findUnique } }),
+}));
 vi.mock("next/headers", () => ({
   cookies: vi.fn(async () => ({ getAll: () => [], set: vi.fn() })),
   headers: mocks.headers,
 }));
 vi.mock("next/navigation", () => ({ redirect: mocks.redirect }));
+vi.mock("next/server", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("next/server")>()),
+  connection: mocks.connection,
+}));
 
 import { signIn, signUp, requestPasswordReset, resendConfirmation, updatePassword } from "../lib/auth/actions";
 import { getCurrentUser } from "../lib/auth/current-user";
@@ -69,7 +78,9 @@ describe("protected Discover placeholder", () => {
 
   it("renders only the signed-in placeholder without profile data", async () => {
     mocks.auth.getUser.mockResolvedValue({ data: { user: { id: "user-id", email: "private@example.test" } }, error: null });
+    mocks.findUnique.mockResolvedValue({ id: "user-id", displayName: "Test User", deletedAt: null });
     const result = await ProtectedDiscoverContent();
+    expect(mocks.connection).toHaveBeenCalled();
     const markup = JSON.stringify(result);
     expect(markup).toContain("You are signed in");
     expect(markup).not.toContain("private@example.test");
@@ -390,7 +401,7 @@ describe("recent recovery-link session validation", () => {
 });
 
 describe("sign-in notices", () => {
-  it("maps only two known codes to fixed safe messages", () => {
+  it("maps known codes to fixed safe messages", () => {
     expect(getAuthNotice("confirmation")).toEqual({
       status: "error",
       message: "That link is invalid, expired or already used. If you already confirmed your email, sign in below. To reset your password, use “Forgot password?”.",
@@ -399,6 +410,10 @@ describe("sign-in notices", () => {
       status: "success",
       message: "Your password has been updated. Sign in with your new password.",
     });
+    expect(getAuthNotice("under-18")).toEqual({
+      status: "error",
+      message: "You must be 18 or older to use Eluda.",
+    });
     expect(getAuthNotice("<img src=x onerror=alert(1)>")).toBeNull();
     expect(getAuthNotice("anything-else")).toBeNull();
     expect(getAuthNotice(null)).toBeNull();
@@ -406,7 +421,7 @@ describe("sign-in notices", () => {
 });
 
 describe("secret-key naming guard", () => {
-  it("does not find service-role or Supabase secret key names in app/ or lib/", async () => {
+  it("allows the Supabase secret key name only in the dedicated server admin module", async () => {
     const { readdir, readFile } = await import("node:fs/promises");
     const { join } = await import("node:path");
     const roots = ["app", "lib"];
@@ -419,12 +434,20 @@ describe("secret-key naming guard", () => {
       }
     }
     for (const root of roots) await visit(root);
-    const forbidden = /service[_-]?role|supabase[_-]?secret[_-]?key|sb_secret/i;
+    const forbidden = [
+      new RegExp(["service", "role"].join("[_-]?"), "i"),
+      new RegExp(["supabase", "secret", "key"].join("[_-]?"), "i"),
+      new RegExp(["sb", "secret"].join("[_-]?"), "i"),
+    ];
+    const adminPath = join("lib", "supabase", "admin.ts");
     const hits: string[] = [];
+    const adminReferences: string[] = [];
     for (const file of files) {
       const contents = await readFile(file, "utf8");
-      if (forbidden.test(contents)) hits.push(file);
+      if (forbidden.some((pattern) => pattern.test(contents))) hits.push(file);
+      if (contents.includes("SUPABASE_SECRET_KEY")) adminReferences.push(file);
     }
-    expect(hits).toEqual([]);
+    expect(hits).toEqual([adminPath]);
+    expect(adminReferences).toEqual([adminPath]);
   });
 });

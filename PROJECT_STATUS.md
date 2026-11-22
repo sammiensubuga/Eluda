@@ -1,13 +1,13 @@
 # ELUDA Project Status
 
-**Status:** Documentation baseline in progress
+**Status:** Early build: documentation baseline reconciled, authentication implemented, onboarding in progress
 **Last updated:** 2026-11-22
 **Working branch:** `feat/public-access-foundation`
 **Production branch:** `main`
 **Production URL:** https://eluda.vercel.app
 
 ## Summary
-ELUDA has a GitHub repository and a Next.js application at the repository root. A provisional public welcome page has previously been deployed to a Vercel preview. The documentation baseline is being reconciled with the final stack, Plans, blind-lock messaging and Meetups rules. This status is a cautious baseline, not a complete repository, security or deployment audit.
+ELUDA is a Next.js application at the repository root. The 14-table data model is applied to the Eluda dev database and email and password authentication is implemented. Onboarding is in progress; profiles, photos, messaging, Plans, payments and Discovery are not implemented. This status is a cautious baseline, not a complete repository, security or deployment audit.
 
 ## Documentation progress
 - `PRODUCT_BRIEF.md`: updated to record the final stack, Plans, blind-lock messaging rules and Meetups category. Saved in commit `6c2938c0cfa01d338382b20fda7dd3539e06c0ab`.
@@ -20,11 +20,11 @@ ELUDA has a GitHub repository and a Next.js application at the repository root. 
 - BLD-001 complete: PR #3 merged into `feat/public-access-foundation` (merge commit `9faea61`).
 - Branch layout: PR #7 merged `feat/public-access-foundation` into `main` (merge commit `f60b47c`). `main` now has the root-level Next.js app, and the legacy `frontend/` and `backend/` folders were removed. Tasks currently branch from `feat/public-access-foundation`. The Vercel production deployment for `f60b47c` built READY with the root-level layout, so the Vercel Root Directory is the repository root. Production branch is `main`.
 - BLD-001b complete: PR #4 merged (merge commit `30085b0`); the Builder may merge a pull request under an Owner approval line in a Task Packet.
-- BLD-002 complete: PR #5 merged (merge commit `5801422`); the homepage logo uses the local file with `next/image`. Known remaining: the homepage "Log in" link points to `/login`, which does not exist yet; it is created in the Supabase Auth task.
+- BLD-002 complete: PR #5 merged (merge commit `5801422`); the homepage logo uses the local file with `next/image`. The homepage links now point to /sign-in and /sign-up (fixed in BLD-013).
 - Hosted Supabase project "Eluda" (read-only audit, 2026-10-28): empty `public` schema, no migrations, no edge functions, no storage buckets, no Auth users. Used as the development and test database; a separate production project is planned before launch.
-- Vercel env var names currently set (names only): `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, for production, preview and development. No database, payment or service-role variables exist yet. Vercel deployment protection currently requires Vercel login on all `*.vercel.app` URLs.
+- Vercel env var names (names only): NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY, and DATABASE_URL are configured for Preview. BLD-015 initially failed because DATABASE_URL was missing; after the owner added it and redeployed, the owner reported the app now works and later confirmed sign-up works as expected. The latest Preview is READY, and the recent runtime error query returned no errors. `SUPABASE_SECRET_KEY` is configured for Preview and Production; the under-18 Auth-user cleanup path remains unverified. No payment variables exist yet. Vercel deployment protection currently requires Vercel login on all *.vercel.app URLs.
 - BLD-003 complete: PR #6 merged (merge commit `1611d6c`). BLD-004 and BLD-004m complete: PR #7 merged into `main` (merge commit `f60b47c`).
-- Built routes (production build of `f60b47c`): `/` and `/_not-found` only. The homepage links "Log in" and "Create your account" point to `/login` and `/register`, which do not exist yet; they are created in the Supabase Auth task.
+- Built routes (BLD-015 build): `/`, `/_not-found`, `/auth/confirm`, `/discover`, `/forgot-password`, `/onboarding`, `/reset-password`, `/sign-in`, and `/sign-up`; Discover and onboarding use partial prerendering with dynamic server-streamed content.
 - Build warnings (not addressed): npm reports `eslint@9.39.5` as deprecated and one install script (`unrs-resolver`) not covered by `allowScripts`. The build succeeds.
 - BLD-005 and BLD-006 series: PR #8 (merge commit `2681fc4`) and PR #9 (merge commit `b1a9c01`) merged. The data-model and authorization design is approved and committed as `docs/DATA_MODEL_AND_AUTHORIZATION.md` (design only; nothing is implemented). PRODUCT_BRIEF.md and docs/DECISION_LOG.md record the 2026-10-29 decisions.
 - BLD-006c complete: PR #10 merged into `feat/public-access-foundation` (merge commit `dcf803c`); the remaining docs now match the approved decisions.
@@ -38,7 +38,8 @@ ELUDA has a GitHub repository and a Next.js application at the repository root. 
 - BLD-012 complete: Next.js and eslint-config-next upgraded from 16.4.3 to 16.4.6; lint, typecheck, client-env, tests and build passed, and the audit no longer lists Next.js. The owner accepted the remaining Prisma effect advisory chain for now.
 - BLD-013: email and password authentication is implemented and unit-tested (64 tests across 3 files in the final BLD-013f run), and the owner tested the flows end to end on the preview including password reset. The custom email templates are in the Supabase dashboard (source of truth `docs/EMAIL_TEMPLATES.md`); the Supabase minimum password length is 10 (owner-reported).
 - BLD-014: server validation now returns field-level errors for auth forms and the UI displays inline field and form feedback; action tests cover the validation and generic responses. The owner's preview check is pending.
-- Next planned work, in order: onboarding and profile basics (the Eluda users row with gender, date of birth and the 18+ check), conversation basics, the entitlement model, the message lock with fetch-based bypass tests, real-time signals, NylonPay payments, then likes and Discovery.
+- BLD-015: onboarding (gender, date of birth, display name, intent) with a server-side gate, under-18 blocking and a gender-immutability migration. Implemented and unit-tested (4 files, 122 tests); lint, typecheck, client-env, Prisma validation and production build passed. Follow-up adds request-time session reads after Preview logs showed a Next.js prerender-time clock error. The owner reports Preview sign-up works as expected after configuring `DATABASE_URL`; the under-18 cleanup path remains unverified. The migration is not applied.
+- Next planned work, in order: profile photos and profile basics, conversation basics, the entitlement model, the message lock with fetch-based bypass tests, real-time signals, NylonPay payments, then likes and Discovery.
 
 ## Launch blockers (not blocking the MVP build)
 1. Verification for women before they can message men (method and provider open). The main abuse risk is fake-female accounts messaging men to drive paid unlocks; gender immutability does not address it.
@@ -60,26 +61,24 @@ ELUDA has a GitHub repository and a Next.js application at the repository root. 
 | Repository | Exists | Inspect current tree and branch head |
 | Public welcome page | Previously implemented | Recheck current code and preview |
 | Responsive design | Intended; full audit pending | Test mobile and desktop sizes |
-| Registration/login/recovery | Not confirmed implemented | Inspect routes and interactions |
-| Profile creation/discovery | Not confirmed implemented | Inspect routes and code |
+| Registration/login/recovery | Implemented (BLD-013, BLD-014); the owner tested sign-up, confirmation, sign-in and reset on a preview | Cross-device link opening and scanner-consumed links not yet tested |
+| Profile creation/discovery | Onboarding implemented (BLD-015) and unit-tested; profile photos, profile editing and Discovery not implemented | Owner preview check of onboarding |
 | Likes/matches/chat | Not confirmed implemented | Inspect routes and code |
 | Privacy/safety controls | Requirements documented; implementation unverified | Audit code and tests |
-| Backend/database | Not confirmed | Inspect repository/configuration without exposing secrets |
-| Automated tests | Vitest harness and CI added in BLD-007 (one scanner test only); no feature tests yet | Add tests with each feature task |
-| Build/lint | Commands exist; current results unknown | Run against a clean checkout |
+| Backend/database | 14 tables with RLS applied to the Eluda dev database (BLD-011); Prisma Client first used at runtime by onboarding (BLD-015) | Gender-immutability migration written, not applied |
+| Automated tests | Vitest and CI (BLD-007); auth and onboarding unit tests (4 files, 122 tests); no component rendering tests | Add tests with each feature task |
+| Build/lint | CI runs lint, typecheck, client-env, tests and build on every PR (BLD-007) | Check the CI result of each PR |
 | Production readiness | Not established | Security, functional, privacy and release review required |
 
 ## Outstanding work
-1. Reconcile the remaining documentation with the current Product Brief and Decision Log, reviewing changes before editing each document.
-2. Audit repository tree, branch history, routes, assets, dependencies and available tests.
-3. Complete product requirements and screen inventory.
-4. Approve user journeys and UI/UX design system before feature implementation.
-5. Decide architecture and data handling based on requirements.
-6. Define testable acceptance criteria and release gates.
-7. Implement approved tasks in small changes and update this document with evidence.
+1. Keep documents consistent with the Product Brief and Decision Log and refresh stale status text when a task changes it.
+2. Complete the screen inventory and the UI/UX design system approval before large UI work.
+3. Define testable acceptance criteria and release gates.
+4. Decide Discovery rules (including the district list), Daily Picks logic, verification for women and data-protection obligations.
+5. Implement approved tasks in small changes and update this document with evidence.
 
 ## Next task
-**Supabase Auth** (planned, owner screenshots needed).
+**BLD-015** (in progress): onboarding. After it merges, the gender-immutability migration is applied to the Eluda dev database with the owner's approval, then profile photos and profile basics.
 
 ## Update rules
 For every status update, distinguish:
