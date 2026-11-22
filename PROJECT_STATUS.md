@@ -38,7 +38,8 @@ ELUDA is a Next.js application at the repository root. The 14-table data model i
 - BLD-012 complete: Next.js and eslint-config-next upgraded from 16.4.3 to 16.4.6; lint, typecheck, client-env, tests and build passed, and the audit no longer lists Next.js. The owner accepted the remaining Prisma effect advisory chain for now.
 - BLD-013: email and password authentication is implemented and unit-tested (64 tests across 3 files in the final BLD-013f run), and the owner tested the flows end to end on the preview including password reset. The custom email templates are in the Supabase dashboard (source of truth `docs/EMAIL_TEMPLATES.md`); the Supabase minimum password length is 10 (owner-reported).
 - BLD-014: server validation now returns field-level errors for auth forms and the UI displays inline field and form feedback; action tests cover the validation and generic responses. The owner's preview check is pending.
-- BLD-015: onboarding (gender, date of birth, display name, intent) with a server-side gate, under-18 blocking and a gender-immutability migration. Implemented and unit-tested (4 files, 122 tests); lint, typecheck, client-env, Prisma validation and production build passed. Follow-up adds request-time session reads after Preview logs showed a Next.js prerender-time clock error. The owner reports Preview sign-up works as expected after configuring `DATABASE_URL`; the under-18 cleanup path remains unverified. The migration is not applied.
+- BLD-015: onboarding (gender, date of birth, display name, intent) with a server-side gate, under-18 blocking and a gender-immutability migration. Implemented and unit-tested (4 files, 122 tests); lint, typecheck, client-env, Prisma validation and production build passed. Follow-up adds request-time session reads after Preview logs showed a Next.js prerender-time clock error. The owner reports Preview sign-up works as expected after configuring `DATABASE_URL`; the under-18 cleanup path remains unverified. The gender-immutability migration was applied to the Eluda dev database on 2026-11-22 by the owner (BLD-015c) and verified by the Brain.
+- BLD-015c complete: the gender-immutability migration is applied to the Eluda dev database (applied by the owner in PowerShell).
 - Next planned work, in order: profile photos and profile basics, conversation basics, the entitlement model, the message lock with fetch-based bypass tests, real-time signals, NylonPay payments, then likes and Discovery.
 
 ## Launch blockers (not blocking the MVP build)
@@ -46,6 +47,7 @@ ELUDA is a Next.js application at the repository root. The 14-table data model i
 2. Data-protection obligations and the 18+ approach.
 3. Supabase Realtime plan limits (concurrent connections and message volume).
 4. Production email: Gmail SMTP is for development only. Before launch, buy a domain and send through a transactional email provider (Resend is the candidate) from a verified domain.
+5. Supabase security advisor: leaked-password protection is disabled; check whether it can be enabled on the current plan before launch.
 
 ## Previously confirmed
 - Repository: `sammiensubuga/Eluda`.
@@ -65,7 +67,7 @@ ELUDA is a Next.js application at the repository root. The 14-table data model i
 | Profile creation/discovery | Onboarding implemented (BLD-015) and unit-tested; profile photos, profile editing and Discovery not implemented | Owner preview check of onboarding |
 | Likes/matches/chat | Not confirmed implemented | Inspect routes and code |
 | Privacy/safety controls | Requirements documented; implementation unverified | Audit code and tests |
-| Backend/database | 14 tables with RLS applied to the Eluda dev database (BLD-011); Prisma Client first used at runtime by onboarding (BLD-015) | Gender-immutability migration written, not applied |
+| Backend/database | 14 tables with RLS applied to the Eluda dev database (BLD-011); Prisma Client first used at runtime by onboarding (BLD-015); gender-immutability migration applied by the owner and verified by the Brain (BLD-015c) | Brain verified the trigger and database security state; production application needs separate approval |
 | Automated tests | Vitest and CI (BLD-007); auth and onboarding unit tests (4 files, 122 tests); no component rendering tests | Add tests with each feature task |
 | Build/lint | CI runs lint, typecheck, client-env, tests and build on every PR (BLD-007) | Check the CI result of each PR |
 | Production readiness | Not established | Security, functional, privacy and release review required |
@@ -78,7 +80,7 @@ ELUDA is a Next.js application at the repository root. The 14-table data model i
 5. Implement approved tasks in small changes and update this document with evidence.
 
 ## Next task
-**BLD-015** (in progress): onboarding. After it merges, the gender-immutability migration is applied to the Eluda dev database with the owner's approval, then profile photos and profile basics.
+**Profile photos and profile basics** (next): BLD-015c applied the gender-immutability migration to the Eluda dev database; proceed with profile photos and profile basics.
 
 ## Update rules
 For every status update, distinguish:
