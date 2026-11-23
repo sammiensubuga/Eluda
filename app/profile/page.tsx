@@ -5,9 +5,11 @@ import { connection } from "next/server";
 import { AuthPage } from "../auth-page";
 import { ProfileForms } from "./profile-forms";
 import { getAccountState } from "../../lib/auth/account";
+import { getDb } from "../../lib/db";
 import { getOwnProfile } from "../../lib/profile/queries";
 import { getOwnPhotoUrls } from "../../lib/photos/service";
 import { PhotoManager } from "./photo-manager";
+import { PublishPanel } from "./publish-panel";
 
 const intentLabels = {
   MEETUPS: "Meetups",
@@ -29,14 +31,27 @@ export async function ProfileGate() {
   if (accountState.status === "needs_onboarding") redirect("/onboarding");
   const profile = await getOwnProfile();
   if (!profile) redirect("/discover");
-  const photos = await getOwnPhotoUrls(accountState.account.id);
+  const [photos, profileVisibility] = await Promise.all([
+    getOwnPhotoUrls(accountState.account.id),
+    getDb().profile.findUnique({
+      where: { userId: accountState.account.id },
+      select: { publishedAt: true },
+    }),
+  ]);
+  const published = profileVisibility?.publishedAt !== null && profileVisibility?.publishedAt !== undefined;
 
   return (
     <AuthPage
       kind="sign-in"
       title="Your profile"
       description="Manage your profile details and photos."
-      form={<><ProfileForms profile={profile} /><PhotoManager photos={photos} /></>}
+      form={
+        <>
+          <ProfileForms profile={profile} />
+          <PublishPanel published={published} photoCount={photos.length} />
+          <PhotoManager photos={photos} />
+        </>
+      }
     >
       <dl className="mt-6 space-y-4 rounded-2xl bg-[#fbf6f0] p-4">
         <div>

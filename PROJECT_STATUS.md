@@ -7,7 +7,7 @@
 **Production URL:** https://eluda.vercel.app
 
 ## Summary
-ELUDA is a Next.js application at the repository root. The 14-table data model is applied to the Eluda dev database. Email and password authentication (with sign-up verification by emailed code and password reset by link) and onboarding are implemented. Profile photos, profile editing, messaging, Plans, payments and Discovery are not implemented. This status is a cautious baseline, not a complete repository, security or deployment audit.
+ELUDA is a Next.js application at the repository root. The 14-table data model is applied to the Eluda dev database. Email and password authentication (with sign-up verification by emailed code and password reset by link), onboarding, profile editing, profile photos and profile publishing are implemented. Discovery, viewing other profiles, photo moderation, messaging, Plans and payments are not implemented. This status is a cautious baseline, not a complete repository, security or deployment audit.
 
 ## Documentation progress
 - `PRODUCT_BRIEF.md`: updated to record the final stack, Plans, blind-lock messaging rules and Meetups category. Saved in commit `6c2938c0cfa01d338382b20fda7dd3539e06c0ab`.
@@ -24,7 +24,7 @@ ELUDA is a Next.js application at the repository root. The 14-table data model i
 - Hosted Supabase project "Eluda" (read-only audit, 2026-10-28): empty `public` schema, no migrations, no edge functions, no storage buckets, no Auth users. Used as the development and test database; a separate production project is planned before launch.
 - Vercel env var names (names only): NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY, and DATABASE_URL are configured for Preview. BLD-015 initially failed because DATABASE_URL was missing; after the owner added it and redeployed, the owner reported the app now works and later confirmed sign-up works as expected. The latest Preview is READY, and the recent runtime error query returned no errors. `SUPABASE_SECRET_KEY` is configured for Preview and Production; the owner reports the under-18 signup was rejected and its Auth user deleted. No payment variables exist yet. Vercel deployment protection currently requires Vercel login on all *.vercel.app URLs.
 - BLD-003 complete: PR #6 merged (merge commit `1611d6c`). BLD-004 and BLD-004m complete: PR #7 merged into `main` (merge commit `f60b47c`).
-- Built routes (BLD-015 build): `/`, `/_not-found`, `/auth/confirm`, `/discover`, `/forgot-password`, `/onboarding`, `/reset-password`, `/sign-in`, and `/sign-up`; Discover and onboarding use partial prerendering with dynamic server-streamed content.
+- Built routes (BLD-020 build): `/`, `/_not-found`, `/api/profile/photos`, `/auth/confirm`, `/discover`, `/forgot-password`, `/onboarding`, `/profile`, `/reset-password`, `/sign-in`, and `/sign-up`; Discover and onboarding use partial prerendering with dynamic server-streamed content.
 - Build warnings (not addressed): npm reports `eslint@9.39.5` as deprecated and one install script (`unrs-resolver`) not covered by `allowScripts`. The build succeeds.
 - BLD-005 and BLD-006 series: PR #8 (merge commit `2681fc4`) and PR #9 (merge commit `b1a9c01`) merged. The data-model and authorization design is approved and committed as `docs/DATA_MODEL_AND_AUTHORIZATION.md` (design only; nothing is implemented). PRODUCT_BRIEF.md and docs/DECISION_LOG.md record the 2026-10-29 decisions.
 - BLD-006c complete: PR #10 merged into `feat/public-access-foundation` (merge commit `dcf803c`); the remaining docs now match the approved decisions.
@@ -42,8 +42,9 @@ ELUDA is a Next.js application at the repository root. The 14-table data model i
 - BLD-015c complete: the gender-immutability migration is applied to the Eluda dev database (applied by the owner in PowerShell).
 - BLD-016: sign-up verification by email code is implemented, unit-tested (5 files, 139 tests) and tested end to end by the owner on the preview, including with magic links off.
 - BLD-018: age confirmation before account creation and a signed-in profile page for name, age, intent and women's availability are implemented and unit-tested (6 files, 162 tests); the owner's preview check is pending.
-- BLD-019: profile photo processing, private owner-only upload/display/delete/main selection and upload rate limiting are implemented and unit-tested (189 tests across 7 files); the rate-limit migration is written but unapplied, and the owner's preview test is pending.
-- Next planned work, in order: profile photos and publishing, conversation basics, the entitlement model, the message lock with fetch-based bypass tests, real-time signals, NylonPay payments, then likes and Discovery.
+- BLD-019: profile photo processing, private owner-only upload/display/delete/main selection and upload rate limiting are implemented. Merged in PR #24 (merge commit `807c3ef`) on 2026-11-23. The owner ran the preview upload test; the Brain then read the database and Vercel read-only: 3 photo rows and 3 stored objects with none unmatched in either direction, all image/jpeg, positions 0 to 2, no Vercel runtime errors in the previous 24 hours, so sharp ran on Vercel. Removal of location data is proven by unit tests with fixtures, not by inspecting a stored photo. The rate-limit migration was applied by the owner on 2026-11-23 and verified by the Brain.
+- BLD-020: profile publish/unpublish actions, minimum-photo enforcement, the pure photo visibility rule, viewer photo URL service, and account-deletion photo helper are implemented; 207 tests across 8 files pass. The visibility function and deletion helper are not wired to a feature, no component rendering tests are available, and the owner's preview check is pending.
+- Next task: Decide Discovery rules (district list, Daily Picks logic) and the first conversation features; the owner's decisions are needed before the next build task.
 
 ## Launch blockers (not blocking the MVP build)
 1. Verification for women before they can message men (method and provider open). The main abuse risk is fake-female accounts messaging men to drive paid unlocks; gender immutability does not address it.
@@ -69,11 +70,11 @@ ELUDA is a Next.js application at the repository root. The 14-table data model i
 | Public welcome page | Previously implemented | Recheck current code and preview |
 | Responsive design | Intended; full audit pending | Test mobile and desktop sizes |
 | Registration/login/recovery | Implemented (BLD-013, BLD-014, BLD-016); the owner tested code-based sign-up confirmation, wrong code, resend countdown, unconfirmed sign-in and password reset on the preview, including with magic links off | Cross-device password-reset link opening and scanner-consumed links not yet tested |
-| Profile creation/discovery | Onboarding (with age confirmation, BLD-018) and a profile page for name, intent and availability are implemented; photos, publishing and Discovery are not | Photos and publishing (BLD-019); owner preview check of BLD-018 |
+| Profile creation/discovery | Onboarding, the profile page, photos and publishing are implemented; Discovery, viewing other profiles and photo moderation are not | Owner preview check for BLD-020; define Discovery rules |
 | Likes/matches/chat | Not confirmed implemented | Inspect routes and code |
 | Privacy/safety controls | Requirements documented; implementation unverified | Audit code and tests |
 | Backend/database | 14 tables with RLS applied to the Eluda dev database (BLD-011); Prisma Client first used at runtime by onboarding (BLD-015); gender-immutability migration applied by the owner and verified by the Brain (BLD-015c) | Brain verified the trigger and database security state; production application needs separate approval |
-| Automated tests | Vitest and CI (BLD-007); 5 files, 139 tests; no component rendering tests | Add tests with each feature task |
+| Automated tests | Vitest and CI (BLD-007); 8 files, 207 tests; no component rendering tests | Add tests with each feature task |
 | Build/lint | CI runs lint, typecheck, client-env, tests and build on every PR (BLD-007) | Check the CI result of each PR |
 | Production readiness | Not established | Security, functional, privacy and release review required |
 
@@ -85,7 +86,7 @@ ELUDA is a Next.js application at the repository root. The 14-table data model i
 5. Implement approved tasks in small changes and update this document with evidence.
 
 ## Next task
-BLD-020 (planned): publish profile, viewer visibility rules for photos, account-deletion photo helper.
+Decide Discovery rules (district list, Daily Picks logic) and the first conversation features; the owner's decisions are needed before the next build task.
 
 ## Update rules
 For every status update, distinguish:
