@@ -9,7 +9,7 @@
 - Every table we create has Row Level Security enabled and no policies, and the `anon` and `authenticated` privileges are revoked, in the same migration that creates the table. The single exception is a narrow SELECT-only policy on Supabase's own `realtime.messages` table (Section 6). Supabase advisors are re-run after every applied migration.
 - Only the server-only data-access layer talks to Prisma. Prisma uses a role that bypasses RLS, so every rule in this document is enforced in server code and covered by automated tests.
 - Gender for all rules is the gender chosen at signup. It is not editable afterwards; corrections are made by the owner through a reviewed script, not a feature. No orientation data is collected.
-- No rate limits are added beyond the generic, invisible technical limits already described in `docs/SECURITY_REQUIREMENTS.md`. There is no new-conversation cap.
+- Photo uploads have an invisible technical limit of 20 per user per hour. There is no new-conversation cap.
 
 ## 2. Opposite-gender rule (MVP)
 Men see and message women, and women see and message men. Discovery, Daily Picks, likes, viewing a profile, creating a conversation and sending a message all require exactly one MALE and one FEMALE participant. The server rejects same-gender attempts on every one of these paths.
@@ -26,12 +26,15 @@ Men see and message women, and women see and message men. Discovery, Daily Picks
 | `message_contents` | message_id, body | CUSTOM messages only |
 | `message_unlocks` | message_id (unique), recipient_id, unlocked_at, reason | reason: NOT_REQUIRED, ACTIVE_PLAN_AT_ARRIVAL, PLAN_ACTIVATION |
 | `icebreaker_daily_counts` | user_id, day (Africa/Kampala), count | atomic upsert, maximum 15 |
+| `rate_limit_counters` | key, window_start, count | technical counters, no personal data; RLS enabled, no policies |
 | `payments` | id, user_id (nullable), plan_code, amount_ugx, provider_reference (unique), status | NylonPay |
 | `plan_entitlements` | id, payment_id (unique), user_id, plan_code, starts_at, ends_at | active Plan: starts_at <= now < ends_at |
 | `webhook_events` | provider, event_id (unique), received_at, processed_at | idempotency |
 | `blocks`, `reports` | blocker/blocked; reporter/reported, conversation, message, reason, status | free safety controls |
 
 `messages.seq` is a per-conversation counter assigned under a row lock on the conversation (`conversations.last_seq`). A global identity column is not used: a later-committing transaction could receive a lower number and a catch-up cursor would skip it.
+
+Photo objects use the private bucket path `{user_id}/{photo_id}.jpg`; the server derives the user ID from the session, validates and re-encodes the image before storage, and stores only the JPEG output. Uploads are limited to 20 per user per hour using `rate_limit_counters`, which has RLS enabled and no client policies; owners receive short-lived signed URLs for their own photos.
 
 ## 4. Message rules
 - Who may send what: PRESET only from a MALE with no active Plan at the time of sending, at most 15 per day (the day resets at midnight Africa/Kampala). CUSTOM only from a FEMALE, or from a MALE with an active Plan, with no daily total cap; a man with an active Plan can start conversations.

@@ -421,7 +421,7 @@ describe("sign-in notices", () => {
 });
 
 describe("secret-key naming guard", () => {
-  it("allows the Supabase secret key name only in the dedicated server admin module", async () => {
+  it("keeps the Supabase secret key name in the admin module and limits its importers", async () => {
     const { readdir, readFile } = await import("node:fs/promises");
     const { join } = await import("node:path");
     const roots = ["app", "lib"];
@@ -442,12 +442,18 @@ describe("secret-key naming guard", () => {
     const adminPath = join("lib", "supabase", "admin.ts");
     const hits: string[] = [];
     const adminReferences: string[] = [];
+    const adminImporters: string[] = [];
     for (const file of files) {
       const contents = await readFile(file, "utf8");
       if (forbidden.some((pattern) => pattern.test(contents))) hits.push(file);
       if (contents.includes("SUPABASE_SECRET_KEY")) adminReferences.push(file);
+      if (contents.includes("supabase/admin")) adminImporters.push(file);
     }
     expect(hits).toEqual([adminPath]);
     expect(adminReferences).toEqual([adminPath]);
+    expect(adminImporters.sort()).toEqual([
+      join("lib", "onboarding", "actions.ts"),
+      join("lib", "photos", "service.ts"),
+    ].sort());
   });
 });

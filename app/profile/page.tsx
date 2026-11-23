@@ -6,6 +6,8 @@ import { AuthPage } from "../auth-page";
 import { ProfileForms } from "./profile-forms";
 import { getAccountState } from "../../lib/auth/account";
 import { getOwnProfile } from "../../lib/profile/queries";
+import { getOwnPhotoUrls } from "../../lib/photos/service";
+import { PhotoManager } from "./photo-manager";
 
 const intentLabels = {
   MEETUPS: "Meetups",
@@ -22,20 +24,19 @@ const availabilityLabels = {
 
 export async function ProfileGate() {
   await connection();
+  const accountState = await getAccountState();
+  if (accountState.status === "signed_out" || accountState.status === "deleted") redirect("/sign-in");
+  if (accountState.status === "needs_onboarding") redirect("/onboarding");
   const profile = await getOwnProfile();
-  if (!profile) {
-    const accountState = await getAccountState();
-    if (accountState.status === "signed_out" || accountState.status === "deleted") redirect("/sign-in");
-    if (accountState.status === "needs_onboarding") redirect("/onboarding");
-    redirect("/discover");
-  }
+  if (!profile) redirect("/discover");
+  const photos = await getOwnPhotoUrls(accountState.account.id);
 
   return (
     <AuthPage
       kind="sign-in"
       title="Your profile"
-      description="Photos are coming soon."
-      form={<ProfileForms profile={profile} />}
+      description="Manage your profile details and photos."
+      form={<><ProfileForms profile={profile} /><PhotoManager photos={photos} /></>}
     >
       <dl className="mt-6 space-y-4 rounded-2xl bg-[#fbf6f0] p-4">
         <div>
@@ -69,7 +70,7 @@ export default function ProfilePage() {
         <AuthPage
           kind="sign-in"
           title="Your profile"
-          description="Photos are coming soon."
+          description="Manage your profile details and photos."
           form={<p aria-busy="true" className="mt-8 text-sm text-[#806e7e]">Loading your profile…</p>}
         />
       }

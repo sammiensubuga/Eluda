@@ -39,10 +39,12 @@ Local values live in an uncommitted `.env` file and in Vercel environment settin
 |---|---|---|
 | `NEXT_PUBLIC_SUPABASE_URL` | Public by design; used by the server Supabase client for sessions | Set by the owner |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Public by design; used by the server Supabase client for sessions | Set by the owner |
-| `SUPABASE_SECRET_KEY` | Server-only; used only by `lib/supabase/admin.ts` to delete the Auth user of an under-18 sign-up; dedicated named secret key created by the owner | Set by the owner in Vercel; never use a `NEXT_PUBLIC_` name or client code |
+| `SUPABASE_SECRET_KEY` | Server-only; `lib/supabase/admin.ts` uses it for under-18 Auth cleanup and photo storage operations; the key is created by the owner | Set by the owner in Vercel; never use a `NEXT_PUBLIC_` name or client code |
 | `DATABASE_URL` | The running app (Prisma Client through `@prisma/adapter-pg`, created in `lib/db.ts`) | The Supabase Supavisor transaction-mode pooled connection string (port 6543, with `?pgbouncer=true`) for the dedicated `prisma` database role |
 | `DIRECT_URL` | Prisma CLI commands that touch a database (migrate, db pull), through `prisma.config.ts` | The Supabase Supavisor session-mode connection string (port 5432) for the same role. The direct connection string works only on IPv6 networks or with the IPv4 add-on |
 
 `prisma generate`, installs, CI and builds do not need these variables: `prisma.config.ts` falls back to an empty URL. Prisma commands that need a database fail until `DIRECT_URL` is set.
 
 Prisma is pinned to 7.10.1 (stable). The `latest` npm tag currently points to an 8.0 release candidate; do not upgrade without a Task Packet. The generated client is written to `prisma/generated` (git-ignored) by `prisma generate`, which runs on `npm install` and `npm ci`.
+
+Sharp is a dependency used to validate and re-encode profile photos. No new environment variables are needed. The owner created the `profile-photos` Supabase Storage bucket as private, with a 3 MB file limit, `image/jpeg` allowed, and no storage policies.

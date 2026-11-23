@@ -144,6 +144,14 @@ Authentication: email and password with required email confirmation (2026-11-20)
 - **Publishing — decided; not yet implemented (BLD-019):** Publishing requires an explicit “Publish profile” action and at least 2 photos; it is not automatic.
 - **Open question:** Whether a Hidden woman's photos stay visible to existing conversation partners remains undecided.
 
+## Profile photo pipeline (2026-11-23)
+- Browser downscaling followed by a route-handler upload keeps requests below Vercel's approximately 4.5 MB function body limit and reduces mobile data use; direct-to-storage uploads were rejected because unsanitized originals, including GPS metadata, would first reside in storage and require quarantine and cleanup.
+- The server validates image magic bytes and decodes with sharp, then re-encodes to JPEG with a 1600 px maximum long side and removes image metadata. The original upload is never stored.
+- Photos use the owner's private `profile-photos` bucket with no storage policies. Owners see photos through signed URLs that expire after 300 seconds.
+- `SUPABASE_SECRET_KEY` remains in `lib/supabase/admin.ts`; that module is imported by `lib/onboarding/actions.ts` and by the single storage service importer, `lib/photos/service.ts`, for Auth deletion and photo storage operations.
+- The `rate_limit_counters` table tracks technical upload counts, with a limit of 20 uploads per user per hour; rate limiting fails closed if the database is unavailable. The migration is committed but not applied.
+- Publishing and visibility to other viewers are deferred to BLD-020.
+
 ## Sign-up verification by email code (2026-11-22)
 - Sign-up confirmation moves from a link to a numeric code entered in the app; password reset remains link-based.
 - Resend is included with a 60-second countdown. An unconfirmed user who signs in with the right password gets a fresh code and the code-entry screen.
