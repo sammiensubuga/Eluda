@@ -1,7 +1,7 @@
 # ELUDA Project Status
 
 **Status:** Early build: documentation baseline reconciled, authentication and onboarding implemented
-**Last updated:** 2026-11-22
+**Last updated:** 2026-11-23
 **Working branch:** `feat/public-access-foundation`
 **Production branch:** `main`
 **Production URL:** https://eluda.vercel.app
@@ -37,11 +37,12 @@ ELUDA is a Next.js application at the repository root. The 14-table data model i
 - BLD-011 complete: both migrations applied to the Eluda dev database on 2026-11-20 (read-only check by the Brain: 14 application tables, Row Level Security on for all of them, no policies, no grants to anon, authenticated or public).
 - BLD-012 complete: Next.js and eslint-config-next upgraded from 16.4.3 to 16.4.6; lint, typecheck, client-env, tests and build passed, and the audit no longer lists Next.js. The owner accepted the remaining Prisma effect advisory chain for now.
 - BLD-013: email and password authentication is implemented and unit-tested (64 tests across 3 files in the final BLD-013f run), and the owner tested the flows end to end on the preview including password reset. The custom email templates are in the Supabase dashboard (source of truth `docs/EMAIL_TEMPLATES.md`); the Supabase minimum password length is 10 (owner-reported).
-- BLD-014: server validation now returns field-level errors for auth forms and the UI displays inline field and form feedback; action tests cover the validation and generic responses. The owner's preview check is pending.
+- BLD-014: server validation now returns field-level errors for auth forms and the UI displays inline field and form feedback; action tests cover the validation and generic responses. Merged in PR #19; an owner preview check was not separately recorded.
 - BLD-015: onboarding (gender, date of birth, display name, intent) with a server-side gate, under-18 blocking and a gender-immutability migration. Implemented and unit-tested (4 files, 122 tests); lint, typecheck, client-env, Prisma validation and production build passed. Follow-up adds request-time session reads after Preview logs showed a Next.js prerender-time clock error. The owner reports Preview sign-up works as expected after configuring `DATABASE_URL`; the owner reports an under-18 signup was rejected, its Auth user deleted, and the Brain found no orphan users rows. The gender-immutability migration was applied to the Eluda dev database on 2026-11-22 by the owner (BLD-015c) and verified by the Brain.
 - BLD-015c complete: the gender-immutability migration is applied to the Eluda dev database (applied by the owner in PowerShell).
 - BLD-016: sign-up verification by email code is implemented, unit-tested (5 files, 139 tests) and tested end to end by the owner on the preview, including with magic links off.
-- Next planned work, in order: profile photos and profile basics, conversation basics, the entitlement model, the message lock with fetch-based bypass tests, real-time signals, NylonPay payments, then likes and Discovery.
+- BLD-018: age confirmation before account creation and a signed-in profile page for name, age, intent and women's availability are implemented and unit-tested (6 files, 162 tests); the owner's preview check is pending.
+- Next planned work, in order: profile photos and publishing, conversation basics, the entitlement model, the message lock with fetch-based bypass tests, real-time signals, NylonPay payments, then likes and Discovery.
 
 ## Launch blockers (not blocking the MVP build)
 1. Verification for women before they can message men (method and provider open). The main abuse risk is fake-female accounts messaging men to drive paid unlocks; gender immutability does not address it.
@@ -50,6 +51,7 @@ ELUDA is a Next.js application at the repository root. The 14-table data model i
 4. Production email: Gmail SMTP is for development only. Before launch, buy a domain and send through a transactional email provider (Resend is the candidate) from a verified domain.
 5. Supabase security advisor: leaked-password protection is disabled and is only available on the Supabase Pro plan and above; decide before launch whether to upgrade.
 6. Supabase per-IP rate limits may see Vercel server addresses and not user addresses because auth calls are made from Server Actions; add application-level rate limiting or confirm the behaviour before launch.
+7. Photo moderation and takedown: a report-photo path and a way for the owner to remove a photo or ban an account quickly, alongside verification for women.
 
 ## Previously confirmed
 - Repository: `sammiensubuga/Eluda`.
@@ -66,7 +68,7 @@ ELUDA is a Next.js application at the repository root. The 14-table data model i
 | Public welcome page | Previously implemented | Recheck current code and preview |
 | Responsive design | Intended; full audit pending | Test mobile and desktop sizes |
 | Registration/login/recovery | Implemented (BLD-013, BLD-014, BLD-016); the owner tested code-based sign-up confirmation, wrong code, resend countdown, unconfirmed sign-in and password reset on the preview, including with magic links off | Cross-device password-reset link opening and scanner-consumed links not yet tested |
-| Profile creation/discovery | Onboarding implemented (BLD-015) and unit-tested; profile photos, profile editing and Discovery not implemented | Owner preview check of onboarding |
+| Profile creation/discovery | Onboarding (with age confirmation, BLD-018) and a profile page for name, intent and availability are implemented; photos, publishing and Discovery are not | Photos and publishing (BLD-019); owner preview check of BLD-018 |
 | Likes/matches/chat | Not confirmed implemented | Inspect routes and code |
 | Privacy/safety controls | Requirements documented; implementation unverified | Audit code and tests |
 | Backend/database | 14 tables with RLS applied to the Eluda dev database (BLD-011); Prisma Client first used at runtime by onboarding (BLD-015); gender-immutability migration applied by the owner and verified by the Brain (BLD-015c) | Brain verified the trigger and database security state; production application needs separate approval |
@@ -82,7 +84,7 @@ ELUDA is a Next.js application at the repository root. The 14-table data model i
 5. Implement approved tasks in small changes and update this document with evidence.
 
 ## Next task
-Profile photos and profile basics (next)
+BLD-019 (planned): profile photos (private storage, upload, delete, make main) and publishing.
 
 ## Update rules
 For every status update, distinguish:

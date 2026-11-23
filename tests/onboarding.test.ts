@@ -59,6 +59,16 @@ function validOnboarding(overrides: Record<string, string> = {}) {
   });
 }
 
+function confirmedOnboarding(overrides: Record<string, string> = {}) {
+  const submission = validOnboarding(overrides);
+  const dateOfBirth = submission.get("dateOfBirth");
+  if (typeof dateOfBirth !== "string") throw new Error("Test date of birth missing");
+  const birth = parseDateOfBirth(dateOfBirth, kampalaToday(new Date()));
+  if ("error" in birth) throw new Error("Test date of birth invalid");
+  submission.set("confirmedAge", String(birth.age));
+  return submission;
+}
+
 const sessionUser = { id: "session-user-id" };
 
 beforeEach(() => {
@@ -75,6 +85,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  vi.useRealTimers();
   vi.restoreAllMocks();
   vi.unstubAllEnvs();
 });
@@ -201,6 +212,67 @@ describe("onboarding action", () => {
     expect(mocks.adminDeleteUser).not.toHaveBeenCalled();
   });
 
+  it("asks an adult to confirm their computed age before creating an account", async () => {
+    const today = kampalaToday(new Date());
+    const result = await completeOnboarding({ status: "idle", message: "" }, validOnboarding({
+      dateOfBirth: `${today.year - 20}-${String(today.month).padStart(2, "0")}-${String(today.day).padStart(2, "0")}`,
+    }));
+
+    expect(result).toEqual({
+      status: "confirm_age",
+      message: "",
+      age: 20,
+      values: {
+        gender: "FEMALE",
+        dateOfBirth: `${today.year - 20}-${String(today.month).padStart(2, "0")}-${String(today.day).padStart(2, "0")}`,
+        displayName: "Amina",
+        intent: "DATING",
+      },
+    });
+    expect(mocks.create).not.toHaveBeenCalled();
+    expect(mocks.adminDeleteUser).not.toHaveBeenCalled();
+  });
+
+  it("asks again after returning to the details form", async () => {
+    const result = await completeOnboarding(
+      { status: "confirm_age", message: "", age: 18 },
+      validOnboarding({ ageConfirmationDismissed: "true" }),
+    );
+    expect(result.status).toBe("confirm_age");
+    expect(mocks.create).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ["missing", undefined],
+    ["non-numeric", "eighteen"],
+    ["mismatching", "19"],
+  ] as const)("rejects a %s confirmedAge on the confirmation submission", async (label, confirmedAge) => {
+    const values = validOnboarding();
+    if (confirmedAge !== undefined) values.set("confirmedAge", confirmedAge);
+    const result = await completeOnboarding({ status: "confirm_age", message: "", age: 18 }, values);
+
+    expect(result).toEqual({
+      status: "error",
+      message: "",
+      fieldErrors: { dateOfBirth: "Check your date of birth." },
+      values: { gender: "FEMALE", dateOfBirth: "2000-01-01", displayName: "Amina", intent: "DATING" },
+    });
+    expect(mocks.create).not.toHaveBeenCalled();
+  });
+
+  it("creates an account on the second submission when confirmedAge matches", async () => {
+    const first = await completeOnboarding({ status: "idle", message: "" }, validOnboarding());
+    expect(first.status).toBe("confirm_age");
+    if (first.status !== "confirm_age" || first.age === undefined) throw new Error("Expected age confirmation state");
+
+    await expectRedirect(
+      completeOnboarding(first, confirmedOnboarding({ dateOfBirth: "2000-01-01" })),
+      "/discover",
+    );
+    expect(mocks.create).toHaveBeenCalledOnce();
+    expect(mocks.adminDeleteUser).not.toHaveBeenCalled();
+  });
+
   it("deletes an under-18 Auth user by session id, signs out, and redirects without storing DOB", async () => {
     const sequence: string[] = [];
     const dob = `${new Date().getUTCFullYear() - 16}-01-01`;
@@ -220,6 +292,35 @@ describe("onboarding action", () => {
     expect(sequence).toEqual(["delete", "signOut"]);
     expect(mocks.adminDeleteUser).toHaveBeenCalledWith(sessionUser.id);
     expect(mocks.create).not.toHaveBeenCalled();
+  });
+
+  it("deletes an under-18 Auth user even when a forged confirmedAge is present", async () => {
+    const dob = `${new Date().getUTCFullYear() - 16}-01-01`;
+    await expectRedirect(
+      completeOnboarding({ status: "confirm_age", message: "", age: 18 }, validOnboarding({
+        dateOfBirth: dob,
+        confirmedAge: "18",
+      })),
+      "/sign-in?notice=under-18",
+    );
+    expect(mocks.adminDeleteUser).toHaveBeenCalledWith(sessionUser.id);
+    expect(mocks.signOut).toHaveBeenCalledOnce();
+    expect(mocks.create).not.toHaveBeenCalled();
+  });
+
+  it("uses the Kampala date at the local birthday boundary before requesting confirmation", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-11-21T21:30:00.000Z"));
+
+    const result = await completeOnboarding(
+      { status: "idle", message: "" },
+      validOnboarding({ dateOfBirth: "2008-11-22" }),
+    );
+
+    expect(result.status).toBe("confirm_age");
+    expect(result.age).toBe(18);
+    expect(mocks.create).not.toHaveBeenCalled();
+    expect(mocks.adminDeleteUser).not.toHaveBeenCalled();
   });
 
   it("still signs out and redirects when the Auth deletion helper returns false", async () => {
@@ -271,7 +372,7 @@ describe("onboarding action", () => {
     await expectRedirect(
       completeOnboarding(
         { status: "idle", message: "" },
-        validOnboarding({ gender, dateOfBirth: "2000-02-03", displayName: " Al  Bo " }),
+        confirmedOnboarding({ gender, dateOfBirth: "2000-02-03", displayName: " Al  Bo " }),
       ),
       "/discover",
     );
@@ -290,7 +391,7 @@ describe("onboarding action", () => {
 
   it("treats a unique violation as a duplicate submit and redirects to Discover", async () => {
     mocks.create.mockRejectedValue(Object.assign(new Error("duplicate"), { code: "P2002" }));
-    await expectRedirect(completeOnboarding({ status: "idle", message: "" }, validOnboarding()), "/discover");
+    await expectRedirect(completeOnboarding({ status: "idle", message: "" }, confirmedOnboarding()), "/discover");
     expect(mocks.create).toHaveBeenCalledOnce();
   });
 
@@ -299,7 +400,7 @@ describe("onboarding action", () => {
     const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
     const result = await completeOnboarding(
       { status: "idle", message: "" },
-      validOnboarding({ displayName: " Amina " }),
+      confirmedOnboarding({ displayName: " Amina " }),
     );
     expect(result).toEqual({
       status: "error",

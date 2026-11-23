@@ -8,8 +8,9 @@ export type OnboardingValues = {
 };
 
 export type OnboardingState = {
-  status: "idle" | "error";
+  status: "idle" | "error" | "confirm_age";
   message: string;
+  age?: number;
   fieldErrors?: OnboardingFieldErrors;
   values?: OnboardingValues;
 };
