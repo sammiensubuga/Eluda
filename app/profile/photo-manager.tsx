@@ -116,7 +116,7 @@ export function PhotoManager({ photos }: { photos: OwnPhotoUrl[] }) {
           <input accept="image/jpeg,image/png,image/webp" aria-label="Choose a photo" className="sr-only" disabled={uploading} onChange={(event) => {
             const file = event.currentTarget.files?.[0];
             if (file) void upload(file);
-          }} ref={inputRef} tabIndex={-1} type="file" />
+          }} ref={inputRef} type="file" />
         </label>
       )}
       {error && <p className="mt-2 text-sm leading-5 text-[#b42318]" role="alert">{error}</p>}
