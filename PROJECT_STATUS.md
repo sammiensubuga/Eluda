@@ -42,6 +42,7 @@ ELUDA is a Next.js application at the repository root. The 14-table data model i
 - BLD-015c complete: the gender-immutability migration is applied to the Eluda dev database (applied by the owner in PowerShell).
 - BLD-016: sign-up verification by email code is implemented, unit-tested (5 files, 139 tests) and tested end to end by the owner on the preview, including with magic links off.
 - BLD-018: age confirmation before account creation and a signed-in profile page for name, age, intent and women's availability are implemented and unit-tested (6 files, 162 tests); the owner's preview check is pending.
+- BLD-019: profile photo processing, private owner-only upload/display/delete/main selection and upload rate limiting are implemented and unit-tested (189 tests across 7 files); the rate-limit migration is written but unapplied, and the owner's preview test is pending.
 - Next planned work, in order: profile photos and publishing, conversation basics, the entitlement model, the message lock with fetch-based bypass tests, real-time signals, NylonPay payments, then likes and Discovery.
 
 ## Launch blockers (not blocking the MVP build)
@@ -84,7 +85,7 @@ ELUDA is a Next.js application at the repository root. The 14-table data model i
 5. Implement approved tasks in small changes and update this document with evidence.
 
 ## Next task
-BLD-019 (planned): profile photos (private storage, upload, delete, make main) and publishing.
+BLD-020 (planned): publish profile, viewer visibility rules for photos, account-deletion photo helper.
 
 ## Update rules
 For every status update, distinguish:

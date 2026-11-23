@@ -458,3 +458,13 @@ This file records implementation work and its evidence. Keep entries concise and
 - **Tests:** `npm run lint`, `npm run typecheck`, and `npm run check:client-env` passed; `npm test` passed (6 files, 162 tests) in and outside the sandbox; `npm run build` passed with `/profile` dynamically rendered; `git diff --check` passed.
 - **Known limitations:** No component rendering tests; the owner's preview check is pending.
 - **Reviewer decision:** In progress until the owner checks the preview and the branch is merged.
+
+## BLD-019 — Profile photo pipeline
+- **Date:** 2026-11-23
+- **Status:** In progress until the migration is applied and the owner's preview upload test passes.
+- **Scope:** Add private owner-only photo upload, processing, display, deletion and main-photo selection, with an atomic per-user upload rate limit and the related documentation.
+- **Files changed:** `prisma/schema.prisma`, `prisma/migrations/20261123120000_rate_limit_counters/migration.sql`, `lib/photos/constants.ts`, `lib/photos/process.ts`, `lib/photos/service.ts`, `lib/photos/actions.ts`, `lib/photos/client-resize.ts`, `lib/rate-limit.ts`, `lib/supabase/admin.ts`, `app/api/profile/photos/route.ts`, `app/profile/page.tsx`, `app/profile/photo-manager.tsx`, `tests/photos.test.ts`, `tests/auth.test.ts`, `tests/onboarding.test.ts`, `docs/DECISION_LOG.md`, `docs/DATA_MODEL_AND_AUTHORIZATION.md`, `docs/ENVIRONMENT_SETUP.md`, `TASK_LOG.md`, `PROJECT_STATUS.md`.
+- **Tests:** `npm run lint`, `npm run typecheck`, `npm run check:client-env`, `npx prisma validate`, and `npm test` passed; the test suite has 189 tests across 7 files. The `rate_limit_counters` migration is statically checked for its CHECK constraint, RLS enablement and privilege revokes.
+- **Known limitations:** No component rendering tests; the canvas downscale is untested; sharp on Vercel is confirmed only by the preview test; the migration is written but not applied; unreferenced storage objects can occur if the process dies between upload and database insert, and the owner/Brain can list them with a read-only query.
+- **Reviewer decision:** Awaiting migration review/application and the owner's upload check on the Vercel preview.
+- sharp was initially used through Next.js's hoisted optional dependency; BLD-019b declared it as a direct dependency (0.35.5) and made the photo input keyboard-reachable.

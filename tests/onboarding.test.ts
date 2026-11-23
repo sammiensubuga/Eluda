@@ -465,7 +465,7 @@ describe("account state and onboarding gates", () => {
 });
 
 describe("Supabase admin helper and static boundaries", () => {
-  it("starts with the server-only marker and is imported only by the onboarding action", async () => {
+  it("starts with the server-only marker and has only the approved service importers", async () => {
     const { readFile, readdir } = await import("node:fs/promises");
     const { join } = await import("node:path");
     const adminFile = "lib/supabase/admin.ts";
@@ -496,7 +496,7 @@ describe("Supabase admin helper and static boundaries", () => {
       if (normalizedPath !== adminFile && /(?:supabase\/admin|\.\/admin)["']/.test(source)) adminImports.push(normalizedPath);
     }
     expect(hits).toEqual([]);
-    expect(adminImports).toEqual(["lib/onboarding/actions.ts"]);
+    expect(adminImports.sort()).toEqual(["lib/onboarding/actions.ts", "lib/photos/service.ts"].sort());
   });
 
   it("returns false for missing credentials, provider errors and success without logging key material", async () => {
