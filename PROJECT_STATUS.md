@@ -1,7 +1,7 @@
 # ELUDA Project Status
 
 **Status:** Early build: documentation baseline reconciled, authentication and onboarding implemented
-**Last updated:** 2026-11-23
+**Last updated:** 2026-11-24
 **Working branch:** `feat/public-access-foundation`
 **Production branch:** `main`
 **Production URL:** https://eluda.vercel.app
@@ -44,6 +44,7 @@ ELUDA is a Next.js application at the repository root. The 14-table data model i
 - BLD-018: age confirmation before account creation and a signed-in profile page for name, age, intent and women's availability are implemented and unit-tested (6 files, 162 tests); the owner's preview check is pending.
 - BLD-019: profile photo processing, private owner-only upload/display/delete/main selection and upload rate limiting are implemented. Merged in PR #24 (merge commit `807c3ef`) on 2026-11-23. The owner ran the preview upload test; the Brain then read the database and Vercel read-only: 3 photo rows and 3 stored objects with none unmatched in either direction, all image/jpeg, positions 0 to 2, no Vercel runtime errors in the previous 24 hours, so sharp ran on Vercel. Removal of location data is proven by unit tests with fixtures, not by inspecting a stored photo. The rate-limit migration was applied by the owner on 2026-11-23 and verified by the Brain.
 - BLD-020: profile publish/unpublish actions, minimum-photo enforcement, the pure photo visibility rule, viewer photo URL service, and account-deletion photo helper are implemented; 207 tests across 8 files pass. The visibility function and deletion helper are not wired to a feature, no component rendering tests are available, and the owner's preview check is pending.
+- BLD-021: profile screen redesign, photo options sheet and approved palette helpers are implemented and unit-tested; lint, typecheck, client-env, tests and build pass; the owner's preview check is pending.
 - Next task: Decide Discovery rules (district list, Daily Picks logic) and the first conversation features; the owner's decisions are needed before the next build task.
 
 ## Launch blockers (not blocking the MVP build)

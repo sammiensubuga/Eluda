@@ -1,11 +1,12 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { deletePhoto, makeMainPhoto } from "../../lib/photos/actions";
 import type { OwnPhotoUrl } from "../../lib/photos/service";
 import { prepareUpload, UploadPreparationError } from "../../lib/photos/client-resize";
+import { PhotoOptionsSheet } from "./photo-options-sheet";
 
 const ERROR_MESSAGES: Record<string, string> = {
   unsupported: "Use a JPEG, PNG or WebP photo.",
@@ -17,13 +18,26 @@ const ERROR_MESSAGES: Record<string, string> = {
 
 const INITIAL_ACTION_STATE = { status: "idle" as const, message: "" };
 
-export function PhotoManager({ photos }: { photos: OwnPhotoUrl[] }) {
+function ErrorLine({ message }: { message: string }) {
+  return (
+    <p className="mt-3 flex items-start gap-2 text-sm leading-5 text-error" role="alert">
+      <svg aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0" fill="none" viewBox="0 0 20 20" stroke="currentColor" strokeWidth="1.8">
+        <circle cx="10" cy="10" r="7.2" />
+        <path strokeLinecap="round" d="M10 6.2v4.4m0 3.2h.01" />
+      </svg>
+      <span>{message}</span>
+    </p>
+  );
+}
+
+export function PhotoManager({ photos, published }: { photos: OwnPhotoUrl[]; published: boolean }) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
+  const optionsButtonRef = useRef<HTMLButtonElement>(null);
+  const [selectedPhoto, setSelectedPhoto] = useState<OwnPhotoUrl | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
-  const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
-  const [pending, startTransition] = useTransition();
 
   async function upload(file: File) {
     setError("");
@@ -57,69 +71,87 @@ export function PhotoManager({ photos }: { photos: OwnPhotoUrl[] }) {
     }
   }
 
-  function updatePhoto(action: typeof deletePhoto | typeof makeMainPhoto, photoId: string) {
+  async function updatePhoto(action: typeof deletePhoto | typeof makeMainPhoto, photoId: string): Promise<boolean> {
+    if (pending) return false;
     setError("");
-    startTransition(async () => {
+    setPending(true);
+    try {
       const result = await action(INITIAL_ACTION_STATE, photoId);
       if (result.status === "success") {
-        setConfirmDelete(null);
         router.refresh();
-      } else {
-        setError(result.message || "We couldn’t update your photos. Try again.");
+        return true;
       }
-    });
+      setError(result.message || "We couldn’t update your photos. Try again.");
+      return false;
+    } finally {
+      setPending(false);
+    }
   }
 
   return (
-    <section aria-labelledby="photos-heading" className="mt-8 border-t border-[#eadde3] pt-6">
+    <section aria-labelledby="photos-heading" className="rounded-3xl border border-line/70 bg-white p-5 shadow-[0_8px_28px_rgba(40,20,43,0.04)] sm:p-6">
       <div className="flex items-baseline justify-between gap-3">
-        <h2 className="text-lg font-semibold text-[#28142b]" id="photos-heading">Photos</h2>
-        <p className="text-sm text-[#806e7e]">{photos.length} of 6</p>
+        <h2 className="text-lg font-semibold text-ink" id="photos-heading">Photos</h2>
+        <p className="text-sm font-medium text-muted">{photos.length} of 6</p>
       </div>
-      <p className="mt-1 text-sm leading-5 text-[#806e7e]">Add at least 2 photos. The first photo is your main photo.</p>
 
-      {photos.length > 0 && (
-        <ul className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
-          {photos.map((photo) => (
-            <li className="min-w-0" key={photo.id}>
-              <div className="relative aspect-square overflow-hidden rounded-xl bg-[#f4edf1]">
-                {photo.url ? (
-                  // eslint-disable-next-line @next/next/no-img-element -- Private signed URLs must not pass through the image optimizer cache.
-                  <img alt={`Photo ${photo.position + 1}`} className="h-full w-full object-cover" loading="lazy" referrerPolicy="no-referrer" src={photo.url} />
-                ) : (
-                  <div aria-label={`Photo ${photo.position + 1} unavailable`} className="h-full w-full" role="img" />
-                )}
-                {photo.isMain && <span className="absolute left-2 top-2 rounded-full bg-white/95 px-2.5 py-1 text-xs font-semibold text-[#4a2148]">Main</span>}
-              </div>
-              <div className="mt-2 grid gap-2">
-                {confirmDelete === photo.id ? (
-                  <>
-                    <p className="text-center text-sm font-medium text-[#4c3a4c]">Delete photo?</p>
-                    <button className="min-h-11 rounded-full border border-[#dfd1d9] px-3 text-sm font-semibold text-[#4a2148] disabled:opacity-50" disabled={pending} onClick={() => updatePhoto(deletePhoto, photo.id)} type="button">Yes, delete</button>
-                    <button className="min-h-11 rounded-full px-3 text-sm text-[#806e7e]" onClick={() => setConfirmDelete(null)} type="button">Cancel</button>
-                  </>
-                ) : (
-                  <>
-                    {!photo.isMain && <button className="min-h-11 rounded-full border border-[#dfd1d9] px-3 text-sm font-semibold text-[#4a2148] disabled:opacity-50" disabled={pending} onClick={() => updatePhoto(makeMainPhoto, photo.id)} type="button">Make main</button>}
-                    <button className="min-h-11 rounded-full border border-[#eadde3] px-3 text-sm text-[#806e7e] disabled:opacity-50" disabled={pending} onClick={() => setConfirmDelete(photo.id)} type="button">Delete</button>
-                  </>
-                )}
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
+      <ul className="mt-4 grid grid-cols-3 gap-2" style={{ gridAutoRows: "clamp(5.25rem, calc((100vw - 3.5rem) / 3), 10rem)" }}>
+        {photos.map((photo, index) => (
+          <li className={`group relative min-w-0 overflow-hidden rounded-2xl bg-ivory ${index === 0 ? "col-span-2 row-span-2" : ""}`} key={photo.id}>
+            {photo.url ? (
+              // eslint-disable-next-line @next/next/no-img-element -- Private signed URLs must not pass through the image optimizer cache.
+              <img alt={`Photo ${photo.position + 1}`} className="h-full w-full object-cover" loading="lazy" referrerPolicy="no-referrer" src={photo.url} />
+            ) : (
+              <div aria-label={`Photo ${photo.position + 1} unavailable`} className="h-full w-full" role="img" />
+            )}
+            {photo.isMain && <span className="absolute left-2 top-2 rounded-full bg-ivory px-2.5 py-1 text-xs font-semibold text-plum">Main</span>}
+            <button
+              aria-label="Photo options"
+              className="absolute bottom-1 right-1 inline-flex h-11 w-11 items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+              onClick={() => { setError(""); optionsButtonRef.current = document.activeElement instanceof HTMLButtonElement ? document.activeElement : null; setSelectedPhoto(photo); }}
+              ref={selectedPhoto?.id === photo.id ? optionsButtonRef : undefined}
+              type="button"
+            >
+              <span aria-hidden="true" className="flex h-9 w-9 items-center justify-center rounded-full bg-[rgba(30,12,34,0.66)] text-white">
+                <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.8" /><circle cx="12" cy="12" r="1.8" /><circle cx="19" cy="12" r="1.8" /></svg>
+              </span>
+            </button>
+          </li>
+        ))}
 
-      {photos.length < 6 && (
-        <label className={`mt-4 inline-flex min-h-12 w-full cursor-pointer items-center justify-center rounded-full bg-[#4a2148] px-6 font-semibold text-white transition hover:bg-[#5b2a58] focus-within:outline-none focus-within:ring-4 focus-within:ring-[#b87aa5]/40 ${uploading ? "cursor-wait opacity-60" : ""}`}>
-          {uploading ? "Uploading…" : "Add photo"}
-          <input accept="image/jpeg,image/png,image/webp" aria-label="Choose a photo" className="sr-only" disabled={uploading} onChange={(event) => {
-            const file = event.currentTarget.files?.[0];
-            if (file) void upload(file);
-          }} ref={inputRef} type="file" />
-        </label>
-      )}
-      {error && <p className="mt-2 text-sm leading-5 text-[#b42318]" role="alert">{error}</p>}
+        {photos.length < 6 && (
+          <li className="min-w-0">
+            <label aria-disabled={uploading} className={`flex h-full min-h-0 w-full flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-line px-2 text-center text-sm font-semibold text-plum transition hover:bg-ivory focus-within:outline-none focus-within:ring-2 focus-within:ring-plum ${uploading ? "cursor-wait opacity-75" : "cursor-pointer"}`}>
+              {uploading ? (
+                <>
+                  <span aria-hidden="true" className="motion-safe:animate-spin h-5 w-5 rounded-full border-2 border-line border-t-plum" />
+                  <span>Uploading…</span>
+                </>
+              ) : (
+                <><span aria-hidden="true" className="text-xl leading-none">+</span><span>Add photo</span></>
+              )}
+              <input accept="image/jpeg,image/png,image/webp" aria-label="Add photo" className="sr-only" disabled={uploading} onChange={(event) => {
+                const file = event.currentTarget.files?.[0];
+                if (file) void upload(file);
+              }} ref={inputRef} type="file" />
+            </label>
+          </li>
+        )}
+      </ul>
+
+      <p className="mt-3 text-sm leading-5 text-muted">Tap ⋯ on a photo to make it your main photo or delete it.</p>
+      {error && <ErrorLine message={error} />}
+
+      <PhotoOptionsSheet
+        focusReturn={() => optionsButtonRef.current?.focus()}
+        onClose={() => setSelectedPhoto(null)}
+        onDelete={(photoId) => updatePhoto(deletePhoto, photoId)}
+        onMakeMain={(photoId) => updatePhoto(makeMainPhoto, photoId)}
+        pending={pending}
+        photo={selectedPhoto}
+        photoCount={photos.length}
+        published={published}
+      />
     </section>
   );
 }

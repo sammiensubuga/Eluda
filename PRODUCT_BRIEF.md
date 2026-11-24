@@ -143,7 +143,7 @@ This is an architecture decision, not a claim that anything is built. Source fil
 
 ## 9. Visual direction
 
-Provisional direction: deep plum, warm ivory, rose pink and restrained gold accents. These tokens remain provisional until approved in the UI/UX review.
+Approved (palette, 2026-11-24; logo mark pending): ink #28142B, plum #4A2148, ivory #FBF6F0, muted #6F5D6E, line #D9C9D6, error #B42318, success #146C43, rose #C4476F and gold #B8893A. Use muted only at #6F5D6E or darker; gold is decorative only and must not be text or sit behind white text; rose is for large text or buttons with white text, never small text on ivory; success and error text use only the specified values. Contrast ratios: ink/ivory 15.95:1; plum/ivory 12.20:1; white/plum 13.11:1; muted/ivory 5.64:1 and muted/white 6.06:1; error/ivory 6.12:1; success/ivory 6.00:1; rose/ivory 4.36:1 (not allowed for small text); white/rose 4.69:1; gold/ivory 2.93:1 and white/gold 3.14:1 (decorative only); retired grey #806E7E/ivory 4.39:1. Use one primary button per screen state.
 
 ## 10. Decisions and open questions
 

@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Fraunces, Inter } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
+const fraunces = Fraunces({ subsets: ["latin"], weight: "600", variable: "--font-fraunces" });
 
 export const metadata: Metadata = {
   title: "Eluda — Real connections, your pace",
@@ -15,7 +16,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html className={fraunces.variable} lang="en">
       <body className={inter.className}>{children}</body>
     </html>
   );
