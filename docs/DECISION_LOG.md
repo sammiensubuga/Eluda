@@ -152,6 +152,13 @@ Authentication: email and password with required email confirmation (2026-11-20)
 - The `rate_limit_counters` table tracks technical upload counts, with a limit of 20 uploads per user per hour; rate limiting fails closed if the database is unavailable. The migration is committed but not applied.
 - Publishing and visibility to other viewers are deferred to BLD-020.
 
+## Publishing and photo visibility (2026-11-23)
+- Profiles have explicit Publish and Unpublish buttons. Publishing requires at least 2 photos and is enforced in server code under the profile-row lock.
+- Owners can view their own photos unless their account is deleted. Other viewers can see photos only when signed in, of the opposite gender, not blocked either way, and the owner is published and not deleted.
+- Every denial from the viewer photo service returns the same empty result to callers.
+- The account-deletion photo helper exists; no feature calls it yet.
+- Open question: whether a Hidden woman's photos stay visible to existing conversation partners remains open.
+
 ## Sign-up verification by email code (2026-11-22)
 - Sign-up confirmation moves from a link to a numeric code entered in the app; password reset remains link-based.
 - Resend is included with a 60-second countdown. An unconfirmed user who signs in with the right password gets a fresh code and the code-entry screen.

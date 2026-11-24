@@ -155,4 +155,15 @@ Stored as constants in code with a stable key and the intents each applies to ("
 
 ## Profile and photos (decided 2026-11-22)
 
-A profile contains display name, age computed on the server (never date of birth), intent and photos; a district is added when Discovery is built. Owners may edit display name and intent, but not gender or date of birth. Women's availability is Available, Busy or Hidden (default Available); Hidden excludes a woman from Discovery and new conversations when those features are built. Profiles use a private `profile-photos` bucket without storage policies. Planned photo paths use `{user_id}/{photo_id}.jpg`; short-lived signed URLs are issued only to signed-in, opposite-gender viewers who are not blocked either way and when the profile is published; owners can view their own unpublished profile. Photos are not yet implemented (BLD-019). The maximum of 6 photos and the 2-photo minimum for publishing are enforced in server code inside a transaction that locks the profile row, because the database has no constraint for them.
+A profile contains display name, age computed on the server (never date of birth), intent and photos; a district is added when Discovery is built. Owners may edit display name and intent, but not gender or date of birth. Women's availability is Available, Busy or Hidden (default Available); Hidden excludes a woman from Discovery and new conversations when those features are built. Profiles use a private `profile-photos` bucket without storage policies. Photo upload, owner display, deletion and main-photo selection are implemented (BLD-019). Publishing is implemented with explicit Publish and Unpublish actions; the server enforces the 2-photo minimum inside a transaction that locks the profile row. The pure photo-visibility function exists (BLD-020) but is not wired to a page; it permits owners to view their own photos unless deleted, and other viewers only when signed in, opposite-gender, not blocked either way, and the owner is published and not deleted. Short-lived signed URLs are used for allowed viewers.
+
+### Read-only storage checks
+The owner and the Brain can run these read-only queries to find stored objects without a row and rows without a stored object. Both should return no rows.
+
+```sql
+select o.name from storage.objects o where o.bucket_id = 'profile-photos' and not exists (select 1 from public.profile_photos p where p.storage_path = o.name);
+```
+
+```sql
+select p.id from public.profile_photos p where not exists (select 1 from storage.objects o where o.bucket_id = 'profile-photos' and o.name = p.storage_path);
+```

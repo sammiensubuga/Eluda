@@ -461,10 +461,19 @@ This file records implementation work and its evidence. Keep entries concise and
 
 ## BLD-019 — Profile photo pipeline
 - **Date:** 2026-11-23
-- **Status:** In progress until the migration is applied and the owner's preview upload test passes.
+- **Status:** Complete.
 - **Scope:** Add private owner-only photo upload, processing, display, deletion and main-photo selection, with an atomic per-user upload rate limit and the related documentation.
 - **Files changed:** `prisma/schema.prisma`, `prisma/migrations/20261123120000_rate_limit_counters/migration.sql`, `lib/photos/constants.ts`, `lib/photos/process.ts`, `lib/photos/service.ts`, `lib/photos/actions.ts`, `lib/photos/client-resize.ts`, `lib/rate-limit.ts`, `lib/supabase/admin.ts`, `app/api/profile/photos/route.ts`, `app/profile/page.tsx`, `app/profile/photo-manager.tsx`, `tests/photos.test.ts`, `tests/auth.test.ts`, `tests/onboarding.test.ts`, `docs/DECISION_LOG.md`, `docs/DATA_MODEL_AND_AUTHORIZATION.md`, `docs/ENVIRONMENT_SETUP.md`, `TASK_LOG.md`, `PROJECT_STATUS.md`.
 - **Tests:** `npm run lint`, `npm run typecheck`, `npm run check:client-env`, `npx prisma validate`, and `npm test` passed; the test suite has 189 tests across 7 files. The `rate_limit_counters` migration is statically checked for its CHECK constraint, RLS enablement and privilege revokes.
-- **Known limitations:** No component rendering tests; the canvas downscale is untested; sharp on Vercel is confirmed only by the preview test; the migration is written but not applied; unreferenced storage objects can occur if the process dies between upload and database insert, and the owner/Brain can list them with a read-only query.
-- **Reviewer decision:** Awaiting migration review/application and the owner's upload check on the Vercel preview.
+- **Known limitations:** No component rendering tests; the canvas downscale is untested; unreferenced storage objects can occur if the process dies between upload and database insert, and the owner/Brain can list them with a read-only query.
+- **Reviewer decision:** Complete. Merged in PR #24 (merge commit 807c3ef) on 2026-11-23. The owner ran the preview upload test; the Brain then read the database and Vercel read-only: 3 photo rows and 3 stored objects with none unmatched in either direction, all image/jpeg, positions 0 to 2, no Vercel runtime errors in the previous 24 hours, so sharp ran on Vercel. Removal of location data is proven by unit tests with fixtures, not by inspecting a stored photo. The rate-limit migration was applied by the owner on 2026-11-23 and verified by the Brain.
 - sharp was initially used through Next.js's hoisted optional dependency; BLD-019b declared it as a direct dependency (0.35.5) and made the photo input keyboard-reachable.
+
+## BLD-020 — Profile publishing and photo visibility
+- **Date:** 2026-11-23
+- **Status:** In progress until its checks pass, the owner's preview check passes and it is merged.
+- **Scope:** Add explicit profile publishing, server-side photo visibility rules and signed URLs for allowed viewers, an account-deletion photo helper, tests and documentation.
+- **Files changed:** `lib/photos/visibility.ts`, `lib/photos/service.ts`, `lib/profile/publish-actions.ts`, `app/profile/publish-panel.tsx`, `app/profile/page.tsx`, `tests/publish.test.ts`, `docs/DECISION_LOG.md`, `docs/DATA_MODEL_AND_AUTHORIZATION.md`, `TASK_LOG.md`, `PROJECT_STATUS.md`.
+- **Tests:** `npm run lint`, `npm run typecheck`, `npm run check:client-env`, `npm test` (207 tests across 8 files), `npm run build`, and `git diff --check` passed. The owner's preview check is pending.
+- **Known limitations:** No component rendering tests; the visibility function and the deletion helper are not wired to any feature yet.
+- **Reviewer decision:** In progress until the owner's preview check passes and the branch is merged.
