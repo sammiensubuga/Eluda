@@ -159,6 +159,13 @@ Authentication: email and password with required email confirmation (2026-11-20)
 - The account-deletion photo helper exists; no feature calls it yet.
 - Open question: whether a Hidden woman's photos stay visible to existing conversation partners remains open.
 
+## Visual palette and profile screen (2026-11-24)
+- **Approved palette:** ink #28142B, plum #4A2148, ivory #FBF6F0, muted #6F5D6E, line #D9C9D6, error #B42318, success #146C43, rose #C4476F and gold #B8893A.
+- **Usage:** muted text is #6F5D6E or darker; gold is decorative only, never text or behind white text; rose is reserved for large text or buttons with white text and never small text on ivory; success and error text use their approved tokens. Fraunces 600 is the profile display font.
+- Use one primary button per screen state.
+- A photo's ⋯ options menu replaces inline Make main and Delete controls. Profile changes use one Save changes button.
+- The logo mark and removal of the auth-page wordmark are part of the logo task.
+
 ## Sign-up verification by email code (2026-11-22)
 - Sign-up confirmation moves from a link to a numeric code entered in the app; password reset remains link-based.
 - Resend is included with a 60-second countdown. An unconfirmed user who signs in with the right password gets a fresh code and the code-entry screen.

@@ -1,45 +1,66 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 import { publishProfile, unpublishProfile } from "../../lib/profile/publish-actions";
 import type { PublishActionState } from "../../lib/profile/publish-actions";
+import { publishActionModel } from "./profile-copy";
 
 const INITIAL_STATE: PublishActionState = { status: "idle", message: "" };
 
+function ResultLine({ state }: { state: PublishActionState }) {
+  if (!state.message) return null;
+  const isError = state.status === "error";
+  return (
+    <p className={`mt-3 flex items-start gap-2 text-sm leading-5 ${isError ? "text-error" : "text-success"}`} role={isError ? "alert" : "status"}>
+      <svg aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0" fill="none" viewBox="0 0 20 20" stroke="currentColor" strokeWidth="1.8">
+        {isError ? <><circle cx="10" cy="10" r="7.2" /><path strokeLinecap="round" d="M10 6.2v4.4m0 3.2h.01" /></> : <><circle cx="10" cy="10" r="7.2" /><path strokeLinecap="round" strokeLinejoin="round" d="m6.5 10.2 2.3 2.3 4.8-5" /></>}
+      </svg>
+      <span>{state.message}</span>
+    </p>
+  );
+}
+
 export function PublishPanel({ published, photoCount }: { published: boolean; photoCount: number }) {
+  const router = useRouter();
   const [publishState, publishAction, publishPending] = useActionState(publishProfile, INITIAL_STATE);
   const [unpublishState, unpublishAction, unpublishPending] = useActionState(unpublishProfile, INITIAL_STATE);
+  const model = publishActionModel(published, photoCount);
   const state = published ? unpublishState : publishState;
   const pending = published ? unpublishPending : publishPending;
 
+  useEffect(() => {
+    if (state.status === "success") router.refresh();
+  }, [router, state]);
+
   return (
-    <section aria-labelledby="visibility-heading" className="mt-8 border-t border-[#eadde3] pt-6">
-      <h2 className="text-lg font-semibold text-[#28142b]" id="visibility-heading">Visibility</h2>
-      <p className="mt-1 text-sm leading-5 text-[#806e7e]">
-        {published
-          ? "Published. Your profile can be shown to others."
-          : "Not published. Others can’t see your profile or photos."}
+    <section aria-labelledby="visibility-heading" className="rounded-3xl border border-line/70 bg-white p-5 shadow-[0_8px_28px_rgba(40,20,43,0.04)] sm:p-6">
+      <div className="flex items-center gap-3">
+        <span aria-hidden="true" className={`h-2.5 w-2.5 shrink-0 rounded-full ${published ? "bg-success" : "bg-gold"}`} />
+        <h2 className="text-lg font-semibold text-ink" id="visibility-heading">{published ? "Published" : "Not published"}</h2>
+      </div>
+      <p className="mt-2 text-sm leading-5 text-muted">
+        {published ? "Your profile can be shown to others." : "Others can’t see your profile or photos yet."}
       </p>
       {published ? (
-        <form action={unpublishAction} className="mt-3">
-          <button className="inline-flex min-h-12 w-full items-center justify-center rounded-full border border-[#dfd1d9] px-6 font-semibold text-[#4a2148] transition hover:bg-[#fbf6f0] focus:outline-none focus:ring-4 focus:ring-[#b87aa5]/40 disabled:cursor-wait disabled:opacity-60" disabled={pending} type="submit">
-            {pending ? "Please wait…" : "Unpublish profile"}
-          </button>
-        </form>
+        <>
+          <form action={unpublishAction} className="mt-4">
+            <button className="inline-flex min-h-12 w-full items-center justify-center rounded-full border border-plum px-6 font-semibold text-plum transition hover:bg-ivory focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-plum disabled:cursor-wait disabled:opacity-60" disabled={pending} type="submit">
+              {pending ? "Please wait…" : "Unpublish profile"}
+            </button>
+          </form>
+          <p className="mt-2 text-sm text-muted">You can publish again any time.</p>
+        </>
       ) : (
-        <form action={publishAction} className="mt-3">
-          <button className="inline-flex min-h-12 w-full items-center justify-center rounded-full bg-[#4a2148] px-6 font-semibold text-white transition hover:bg-[#5b2a58] focus:outline-none focus:ring-4 focus:ring-[#b87aa5]/40 disabled:cursor-not-allowed disabled:opacity-50" disabled={photoCount < 2 || pending} type="submit">
+        <form action={publishAction} className="mt-4">
+          <button className="inline-flex min-h-12 w-full items-center justify-center rounded-full bg-plum px-6 font-semibold text-white transition hover:bg-plum/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-plum disabled:cursor-not-allowed disabled:opacity-50" disabled={model.disabled || pending} type="submit">
             {pending ? "Please wait…" : "Publish profile"}
           </button>
-          {photoCount < 2 && <p className="mt-2 text-sm leading-5 text-[#806e7e]">Add at least 2 photos to publish.</p>}
+          {model.reason && <p className="mt-2 text-sm leading-5 text-muted">{model.reason}</p>}
         </form>
       )}
-      {state.message && (
-        <p className={`mt-2 text-sm leading-5 ${state.status === "error" ? "text-[#b42318]" : "text-[#17663a]"}`} role={state.status === "error" ? "alert" : "status"}>
-          {state.message}
-        </p>
-      )}
+      <ResultLine state={state} />
     </section>
   );
 }

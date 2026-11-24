@@ -477,3 +477,13 @@ This file records implementation work and its evidence. Keep entries concise and
 - **Tests:** `npm run lint`, `npm run typecheck`, `npm run check:client-env`, `npm test` (207 tests across 8 files), `npm run build`, and `git diff --check` passed. The owner's preview check is pending.
 - **Known limitations:** No component rendering tests; the visibility function and the deletion helper are not wired to any feature yet.
 - **Reviewer decision:** In progress until the owner's preview check passes and the branch is merged.
+
+## BLD-021 — Profile screen redesign and approved palette
+- **Date:** 2026-11-24
+- **Status:** In progress until checks pass, the owner's preview check passes and the branch is merged.
+- **Scope:** Redesign the profile screen, photo options sheet and accessible photo controls; combine profile edits into one save action; record the approved palette, typography and contrast rules.
+- **Files changed:** `PRODUCT_BRIEF.md`, `PROJECT_STATUS.md`, `TASK_LOG.md`, `app/globals.css`, `app/layout.tsx`, `app/profile/page.tsx`, `app/profile/profile-forms.tsx`, `app/profile/photo-manager.tsx`, `app/profile/publish-panel.tsx`, `app/profile/photo-options-sheet.tsx`, `app/profile/profile-copy.ts`, `docs/DECISION_LOG.md`, `docs/UI_UX_SPEC.md`, `tests/profile-ui.test.ts`.
+- **Tests:** `npm run lint` passed with 6 warnings (2 `aria-invalid` warnings on radio inputs in `app/profile/profile-forms.tsx`; 4 existing unused-argument warnings in `lib/profile/publish-actions.ts`); `npm run typecheck` passed; `npm run check:client-env` passed; `npm test` passed (9 files, 212 tests); `npm run build` passed and emitted the route table below; `git diff --check` passed. No `routes:list` script exists in `package.json`.
+- **Built routes:** `/`, `/_not-found`, `/api/profile/photos`, `/auth/confirm`, `/discover`, `/forgot-password`, `/onboarding`, `/profile`, `/reset-password`, `/sign-in`, `/sign-up`.
+- **Known limitations:** No component-rendering test tooling was available; palette contrast failures in untouched application files are reported to the owner and were not changed. The owner's preview check is pending.
+- **Reviewer decision:** In progress until the owner checks the preview and the branch is merged.
